@@ -4,8 +4,7 @@ import { LoggerMain, TranslatorMain, WindowHelper } from '@tser-framework/main';
 import { BrowserWindow, IpcMainInvokeEvent, Menu, app, ipcMain, protocol } from 'electron';
 import path from 'path';
 
-import { applicationLogic } from './applicationLogic';
-import { initializeBeforeReady, initializeWhenReady } from './initialize';
+import { runBeforeReady, runWhenReady } from './applicationLogic';
 import {
   appConfig,
   deepLinkBindings,
@@ -24,11 +23,11 @@ const initTime = Date.now();
   LoggerMain.system('##################################################');
   LoggerMain.system('#                  Started main                  #');
   LoggerMain.system('##################################################');
-  LoggerMain.system('Running initializeBeforeReady');
+  LoggerMain.system('Running runBeforeReady');
   LoggerMain.addTab();
-  await initializeBeforeReady();
+  await runBeforeReady();
   LoggerMain.removeTab();
-  LoggerMain.system('Ended initializeBeforeReady');
+  LoggerMain.system('Ended runBeforeReady');
   if (!app.requestSingleInstanceLock() && appConfig.singleInstance) {
     LoggerMain.error('Application already running');
     app.quit();
@@ -137,6 +136,7 @@ const initTime = Date.now();
 
       app.on('quit', function () {
         const msg = ' Stopped main after ' + msToTime(Date.now() - initTime) + ' ';
+        LoggerMain.removeTab();
         LoggerMain.system('##################################################');
         LoggerMain.system(
           '#' +
@@ -177,13 +177,9 @@ const initTime = Date.now();
         }
       });
 
-      LoggerMain.system('Running initializeWhenReady');
+      LoggerMain.system('Running runWhenReady');
       LoggerMain.addTab();
-      await initializeWhenReady();
-      LoggerMain.removeTab();
-      LoggerMain.system('Ended initializeWhenReady');
-
-      applicationLogic();
+      runWhenReady();
     });
   }
 })();

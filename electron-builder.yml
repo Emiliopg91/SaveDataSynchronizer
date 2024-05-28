@@ -1,5 +1,5 @@
-appId: com.electron.app
-productName: electron-app
+appId: es.epulidogil.savedatasynchronizer
+productName: SaveDataSynchronizer
 directories:
   buildResources: build
 files:
@@ -12,8 +12,8 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: electron-app
-  icon: resources/icon.png
+  executableName: SaveDataSynchronizer
+  icon: resources/icons/icon-512x512.png
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
