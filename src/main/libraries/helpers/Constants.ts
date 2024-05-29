@@ -2,6 +2,7 @@ import { ConfigurationHelper, FileHelper } from '@tser-framework/main';
 import { join } from 'path';
 
 export class Constants {
+  public static SDS_FILE_NAME = '.sds';
   public static REMOTE_FOLDER = join(FileHelper.APP_DIR, 'remote');
   public static DIST_FOLDER = join(FileHelper.APP_DIR, 'dist');
   public static ICONS_FOLDER = join(FileHelper.APP_DIR, 'icons');

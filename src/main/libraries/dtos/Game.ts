@@ -10,4 +10,5 @@ export interface Game {
   exclusions?: Array<string>;
   process?: string;
   psProcess?: string;
+  wasRunning?: boolean;
 }

@@ -52,6 +52,43 @@ export class RCloneClient {
     RCloneClient.ADDITIONAL_OPTIONS.push(LoggerMain.LOG_FILE);
     RCloneClient.ADDITIONAL_OPTIONS.push('-v');
   }
+
+  public static localSync(): Promise<void> {
+    return new Promise<void>((resolve) => {
+      RCloneClient.MUTEX.acquire().then(async (release) => {
+        LoggerMain.info('Syncing with server');
+        RCloneClient.runRclone(RCloneClient.LOCAL_SYNC_COMMAND)
+          .then((retCode) => {
+            if (retCode > 0) {
+              RCloneClient.runRclone(RCloneClient.LOCAL_RESYNC_COMMAND)
+                .then((retCode) => {
+                  if (retCode > 0) {
+                    release();
+                    resolve();
+                    throw new RCloneException('Error on sync');
+                  }
+                  release();
+                  resolve();
+                })
+                .catch((e) => {
+                  LoggerMain.error('Error on sync', e);
+                  release();
+                  resolve();
+                });
+            } else {
+              release();
+              resolve();
+            }
+          })
+          .catch((e) => {
+            LoggerMain.error('Error on sync', e);
+            release();
+            resolve();
+          });
+      });
+    });
+  }
+
   public static remoteSync(): Promise<void> {
     return new Promise<void>((resolve) => {
       RCloneClient.MUTEX.acquire().then(async (release) => {
@@ -130,7 +167,7 @@ export class RCloneClient {
             });
             subProcess.on('close', (code) => {
               setTimeout(() => {
-                LoggerMain.info('Execution finished with status code ', code);
+                LoggerMain.info('Execution finished with status code', code);
                 resolve(code as number);
               }, 100);
             });

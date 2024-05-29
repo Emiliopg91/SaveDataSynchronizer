@@ -1,9 +1,9 @@
-import { ConfigurationHelper, FileHelper, LoggerMain } from '@tser-framework/main';
+import { ConfigurationHelper, FileHelper, LoggerMain, Powershell } from '@tser-framework/main';
 import path from 'path';
 
 import { Configuration } from '../dtos/Configuration';
 import { Constants } from '../helpers/Constants';
-import { GameHelper } from '../helpers/GameHelper';
+import { Event, GameHelper } from '../helpers/GameHelper';
 import { NotificationUtils } from '../helpers/NotificationUtils';
 import { RCloneClient } from '../helpers/RCloneClient';
 
@@ -20,13 +20,89 @@ export class SaveDataSynchronizer {
       if (!isFirstSync) {
         LoggerMain.info('');
         await RCloneClient.remoteSync();
+        LoggerMain.info('');
       }
 
-      NotificationUtils.displayReadyToPlay();
-      LoggerMain.info('');
-      LoggerMain.info('Ready!');
-      LoggerMain.info('');
-      SaveDataSynchronizer.READY = true;
+      let count = 0;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let error: any | undefined = undefined;
+      SaveDataSynchronizer.CONFIG.games.forEach((g) => {
+        try {
+          count += GameHelper.synchronize(g);
+        } catch (e) {
+          LoggerMain.error("Error syncing '" + g.name + "'", e);
+          error = e;
+        }
+      });
+
+      if (!error) {
+        if (count > 0) {
+          LoggerMain.info('');
+          await RCloneClient.localSync();
+        }
+
+        let command = 'Get-Process -ErrorAction SilentlyContinue -Name ';
+        SaveDataSynchronizer.CONFIG.games.forEach((g) => {
+          command += g.psProcess + ',';
+        });
+        if (command.endsWith(',')) {
+          command = command.substring(0, command.length - 1);
+        }
+        command += ' | Select-Object ProcessName';
+
+        setInterval(() => {
+          Powershell.runCommand(command).then((res: string) => {
+            let ab = false;
+            const processes: Array<string> = [];
+            res.split('\r').forEach((line: string) => {
+              if (line.includes('---')) {
+                ab = true;
+              } else if (ab) {
+                processes.push(line.trim());
+              }
+            });
+            SaveDataSynchronizer.CONFIG.games.forEach(async (g) => {
+              const event: Event = GameHelper.getEvent(
+                g,
+                processes.includes(g.psProcess as string)
+              );
+              let cnt = 0;
+              switch (event) {
+                case Event.STARTED:
+                  LoggerMain.info("STARTED '" + g.name + "'");
+                  /*GameHelper.suspend(g);*/
+                  NotificationUtils.displayDownloadingData(g.icon);
+                  await RCloneClient.remoteSync();
+                  /*GameHelper.download(g);
+                  GameHelper.resume(g);
+                  GameHelper.touchSdsFile(g);*/
+                  LoggerMain.info('');
+                  break;
+                case Event.STOPPED:
+                  LoggerMain.info("STOPPED '" + g.name + "'");
+                  NotificationUtils.displayUploadingData(g.icon);
+                  /*cnt = GameHelper.update(g);
+                  GameHelper.deleteSdsFile(g);*/
+                  LoggerMain.info('');
+                  if (cnt > 0) {
+                    await RCloneClient.localSync();
+                  }
+                  NotificationUtils.displayUploadFinished(g.icon);
+                  LoggerMain.info('');
+                  break;
+              }
+            });
+          });
+        }, SaveDataSynchronizer.CONFIG.checkInterval);
+
+        NotificationUtils.displayReadyToPlay();
+        LoggerMain.info('');
+        LoggerMain.info('Ready!');
+        LoggerMain.info('');
+        SaveDataSynchronizer.READY = true;
+      } else {
+        NotificationUtils.displayReadinessError();
+      }
     })();
   }
 
