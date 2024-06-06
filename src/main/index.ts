@@ -1,10 +1,13 @@
 import { electronApp, is } from '@electron-toolkit/utils';
 import { JsonUtils } from '@tser-framework/commons';
 import { LoggerMain, TranslatorMain, WindowHelper } from '@tser-framework/main';
-import { BrowserWindow, IpcMainInvokeEvent, Menu, app, ipcMain, protocol } from 'electron';
+import { BrowserWindow, IpcMainInvokeEvent, Menu, app, dialog, ipcMain, protocol } from 'electron';
+import log from 'electron-log/main';
+import { autoUpdater } from 'electron-updater';
 import path from 'path';
 
 import { runBeforeReady, runWhenReady } from './applicationLogic';
+import { RCloneClient } from './libraries/helpers/RCloneClient';
 import {
   appConfig,
   deepLinkBindings,
@@ -15,24 +18,26 @@ import {
   windowConfig
 } from './setup';
 
-let mainWindow: BrowserWindow | null = null;
+export let mainWindow: BrowserWindow | null = null;
 const initTime = Date.now();
+let shownUpdate = false;
 
 (async (): Promise<void> => {
   await LoggerMain.initialize();
-  LoggerMain.system('##################################################');
-  LoggerMain.system('#                  Started main                  #');
-  LoggerMain.system('##################################################');
-  LoggerMain.system('Running runBeforeReady');
+
+  LoggerMain.info('##################################################');
+  LoggerMain.info('#                  Started main                  #');
+  LoggerMain.info('##################################################');
+  LoggerMain.info('Running runBeforeReady');
   LoggerMain.addTab();
   await runBeforeReady();
   LoggerMain.removeTab();
-  LoggerMain.system('Ended runBeforeReady');
+  LoggerMain.info('Ended runBeforeReady');
   if (!app.requestSingleInstanceLock() && appConfig.singleInstance) {
     LoggerMain.error('Application already running');
     app.quit();
   } else {
-    LoggerMain.system('Services registration');
+    LoggerMain.info('Services registration');
     LoggerMain.addTab();
     Object.keys(ipcListeners).forEach((id) => {
       const listener = ipcListeners[id];
@@ -41,7 +46,7 @@ const initTime = Date.now();
         ipcMain.handle(id, (event: IpcMainInvokeEvent, ...args: any): unknown => {
           return listener.fn(event, ...args);
         });
-        LoggerMain.system("Synchronous IPC '" + id + "'");
+        LoggerMain.info("Synchronous IPC '" + id + "'");
       }
     });
     Object.keys(ipcListeners).forEach((id) => {
@@ -51,7 +56,7 @@ const initTime = Date.now();
         ipcMain.on(id, (event: IpcMainInvokeEvent, ...args: any): void => {
           listener.fn(event, ...args);
         });
-        LoggerMain.system("Asynchronous IPC '" + id + "'");
+        LoggerMain.info("Asynchronous IPC '" + id + "'");
       }
     });
 
@@ -66,7 +71,7 @@ const initTime = Date.now();
 
       Object.keys(protocolBindings).forEach((id) => {
         protocol.handle(id, protocolBindings[id].handler);
-        LoggerMain.system("Registered protocol '" + id + "'");
+        LoggerMain.info("Registered protocol '" + id + "'");
       });
 
       if (deepLinkBindings) {
@@ -78,11 +83,11 @@ const initTime = Date.now();
           } else {
             app.setAsDefaultProtocolClient(id);
           }
-          LoggerMain.system("Associated deep-link '" + id + "'");
+          LoggerMain.info("Associated deep-link '" + id + "'");
         });
       }
       LoggerMain.removeTab();
-      LoggerMain.system('Registration finished');
+      LoggerMain.info('Registration finished');
 
       let menu: Menu | null = null;
       if (menuTemplate) {
@@ -96,12 +101,11 @@ const initTime = Date.now();
       if (trayBuilder) {
         const tray = trayBuilder.build();
         if (windowConfig.closeToTray || windowConfig.minimizeToTray) {
-          tray.on('double-click', () => {
+          tray.on('double-click', async () => {
             if (mainWindow == null) {
-              createWindow();
+              (await createWindow()).show();
             } else {
-              mainWindow.show();
-              mainWindow.maximize();
+              if (!mainWindow.isDestroyed()) mainWindow.show();
             }
           });
         }
@@ -121,9 +125,7 @@ const initTime = Date.now();
             alwaysOnTop: true
           },
           appConfig.splashScreen
-        ).then(() => {
-          createWindow();
-        });
+        );
       } else {
         createWindow();
       }
@@ -137,15 +139,15 @@ const initTime = Date.now();
       app.on('quit', function () {
         const msg = ' Stopped main after ' + msToTime(Date.now() - initTime) + ' ';
         LoggerMain.removeTab();
-        LoggerMain.system('##################################################');
-        LoggerMain.system(
+        LoggerMain.info('##################################################');
+        LoggerMain.info(
           '#' +
             ''.padEnd((48 - msg.length) / 2, ' ') +
             msg +
             ''.padEnd((48 - msg.length) / 2, ' ') +
             '#'
         );
-        LoggerMain.system('##################################################');
+        LoggerMain.info('##################################################');
       });
 
       app.on('window-all-closed', () => {
@@ -177,7 +179,46 @@ const initTime = Date.now();
         }
       });
 
-      LoggerMain.system('Running runWhenReady');
+      autoUpdater.logger = log;
+      autoUpdater.autoDownload = true;
+      autoUpdater.forceDevUpdateConfig = true;
+      autoUpdater.on('update-downloaded', (): void => {
+        if (!shownUpdate) {
+          dialog
+            .showMessageBox({
+              type: 'info',
+              buttons: [
+                TranslatorMain.translate('restart.now'),
+                TranslatorMain.translate('update.on.restart')
+              ],
+              defaultId: 0,
+              cancelId: 1,
+              title: TranslatorMain.translate('update.available'),
+              message: TranslatorMain.translate('update.available.msg')
+            })
+            .then((returnValue) => {
+              if (returnValue.response === 0) {
+                RCloneClient.MUTEX.acquire().then((release) => {
+                  autoUpdater.quitAndInstall();
+                  release();
+                });
+              } else {
+                setInterval(() => {
+                  mainWindow?.webContents?.send('listen-update', true);
+                }, 1000);
+              }
+            });
+          shownUpdate = true;
+        }
+      });
+      autoUpdater.on('update-not-available', (): void => {
+        setTimeout(async () => {
+          await autoUpdater.checkForUpdates();
+        }, 3600000);
+      });
+      autoUpdater.checkForUpdates();
+
+      LoggerMain.info('Running runWhenReady');
       LoggerMain.addTab();
       runWhenReady();
     });
@@ -219,9 +260,8 @@ function configureShortcutEvents(window: Electron.BrowserWindow): void {
   });
 }
 
-async function createWindow(): Promise<void> {
-  mainWindow = WindowHelper.createMainWindow(windowConfig);
-  mainWindow.show();
+export async function createWindow(): Promise<BrowserWindow> {
+  return (mainWindow = WindowHelper.createMainWindow(windowConfig));
 }
 
 function msToTime(duration): string {

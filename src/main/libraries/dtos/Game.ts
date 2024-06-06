@@ -1,7 +1,7 @@
 export interface Game {
   icon?: string;
   name: string;
-  category: 'game' | 'emulator' | 'tools';
+  category: string;
   executable: string;
   localDir: string;
   remoteDir: string;

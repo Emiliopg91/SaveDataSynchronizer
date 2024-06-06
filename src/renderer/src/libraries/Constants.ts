@@ -1,6 +1,7 @@
 export class Constants {
   private constructor() {}
 
-  public static ROUTE_INDEX = '/';
-  public static ROUTE_CONTACT = '/contact';
+  public static ROUTE_GAMES = '/';
+  public static ROUTE_EMULATORS = '/emulators';
+  public static ROUTE_LAUNCHERS = '/lauchers';
 }

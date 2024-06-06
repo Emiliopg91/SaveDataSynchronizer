@@ -1,21 +1,57 @@
 import { FileHelper, LoggerMain, Powershell } from '@tser-framework/main';
+import { spawn } from 'child_process';
 import path from 'path';
 
-import iconPs1 from '../../../../resources/scripts/icon.ps1?asset';
+import { mainWindow } from '../..';
 import { Game } from '../dtos/Game';
 import { Constants } from './Constants';
 import { FileUtils } from './FileUtils';
 
 export class GameHelper {
-  public static async generateIcon(game: Game): Promise<void> {
-    game.icon = path.join(Constants.ICONS_FOLDER, (game.psProcess as string) + '.ico');
-    await Powershell.runCommand("$exeFile='" + game.executable + "'");
-    await Powershell.runCommand("$iconFile='" + game.icon + "'");
-
-    const lines = FileHelper.read(iconPs1).split('\n');
-    for (let i = 0; i < lines.length; i++) {
-      await Powershell.runCommand(lines[i]);
+  public static deleteSdsFile(g: Game): void {
+    const sds = path.join(g.localDir, Constants.SDS_FILE_NAME);
+    if (FileHelper.exists(sds)) {
+      FileHelper.delete(sds);
     }
+  }
+  public static touchSdsFile(g: Game): void {
+    const sds = path.join(g.localDir, Constants.SDS_FILE_NAME);
+    if (FileHelper.exists(sds)) {
+      FileHelper.delete(sds);
+    }
+    FileHelper.write(sds, '');
+  }
+  public static resume(g: Game): Promise<number> {
+    return GameHelper.runPssuspend('-r', g.psProcess as string);
+  }
+
+  public static suspend(g: Game): Promise<number> {
+    return GameHelper.runPssuspend(g.psProcess as string);
+  }
+
+  public static async generateIcon(game: Game): Promise<void> {
+    await Powershell.runCommand(
+      "[System.Reflection.Assembly]::LoadWithPartialName('System.Drawing') | Out-Null"
+    );
+    await Powershell.runCommand(
+      "[System.Drawing.Icon]::ExtractAssociatedIcon('" +
+        game.executable +
+        "').ToBitmap().Save('" +
+        game.icon +
+        "')"
+    );
+  }
+
+  private static runPssuspend(...args: Array<string>): Promise<number> {
+    return new Promise<number>((resolve, reject) => {
+      const subProcess = spawn(Constants.PSSUSPEND_EXE, args);
+      subProcess.stderr.on('data', (data) => {
+        reject(data);
+      });
+      subProcess.on('close', (code) => {
+        resolve(code as number);
+      });
+    });
   }
 
   public static synchronize(game: Game): number {
@@ -54,7 +90,7 @@ export class GameHelper {
     }
     if (game.inclusions) {
       for (const inc in game.inclusions) {
-        const f = path.join(game.localDir, inc);
+        const f = path.join(game.localDir, game.inclusions[inc]);
         if (FileHelper.exists(f)) {
           count += FileUtils.syncFile(f, game.localDir, game.remoteDir, dryRun);
         }
@@ -89,7 +125,7 @@ export class GameHelper {
     LoggerMain.info('Downloading', game.name);
     if (game.inclusions) {
       for (const inc in game.inclusions) {
-        const f = path.join(game.remoteDir, inc);
+        const f = path.join(game.remoteDir, game.inclusions[inc]);
         if (FileHelper.exists(f)) {
           count += FileUtils.syncFile(f, game.remoteDir, game.localDir, false);
         }
@@ -124,12 +160,20 @@ export class GameHelper {
     let event: Event = Event.NO_CHANGES;
     if (game.wasRunning && !running) {
       event = Event.STOPPED;
+      mainWindow?.webContents?.send('listen-running', game.name, false);
     }
     if (!game.wasRunning && running) {
       event = Event.STARTED;
+      mainWindow?.webContents?.send('listen-running', game.name, true);
     }
     game.wasRunning = running;
     return event;
+  }
+
+  public static launch(game: Game): void {
+    spawn(game.executable, {
+      cwd: game.executable.substring(0, game.executable.lastIndexOf(path.sep))
+    });
   }
 }
 

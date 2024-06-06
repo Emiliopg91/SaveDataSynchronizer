@@ -1,4 +1,5 @@
 import { App } from '@renderer/components/App';
+import { AppsProvider } from '@renderer/contexts/AppsContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import 'primereact/resources/themes/bootstrap4-light-blue/theme.css';
@@ -11,6 +12,8 @@ const root = createRoot(container);
 
 root.render(
   <>
-    <App />
+    <AppsProvider>
+      <App />
+    </AppsProvider>
   </>
 );

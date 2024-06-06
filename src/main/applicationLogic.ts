@@ -1,8 +1,15 @@
-import { ConfigurationHelper, FileHelper, Powershell, TranslatorMain } from '@tser-framework/main';
+import {
+  ConfigurationHelper,
+  CryptoHelper,
+  FileHelper,
+  LoggerMain,
+  Powershell,
+  TranslatorMain
+} from '@tser-framework/main';
 
-import rcloneCfg from '../../resources/cfg/rclone.cfg?asset';
+import pssuspendExe from '../../resources/dist/pssuspend.exe?asset';
 import rcloneExe from '../../resources/dist/rclone.exe?asset';
-import translations from '../../resources/translations.i18n.json';
+import translations from '../../translations.i18n.json';
 import { Constants } from './libraries/helpers/Constants';
 import { NotificationUtils } from './libraries/helpers/NotificationUtils';
 import { SaveDataSynchronizer } from './libraries/logic/SaveDataSynchronizer';
@@ -24,12 +31,12 @@ export async function runWhenReady(): Promise<void> {
     FileHelper.mkdir(Constants.ICONS_FOLDER);
   }
 
-  if (!FileHelper.exists(Constants.RCLONE_CFG)) {
-    FileHelper.copy(rcloneCfg, Constants.RCLONE_CFG);
-  }
-
   if (!FileHelper.exists(Constants.RCLONE_EXE)) {
     FileHelper.copy(rcloneExe, Constants.RCLONE_EXE);
+  }
+
+  if (!FileHelper.exists(Constants.PSSUSPEND_EXE)) {
+    FileHelper.copy(pssuspendExe, Constants.PSSUSPEND_EXE);
   }
 
   SaveDataSynchronizer.main();

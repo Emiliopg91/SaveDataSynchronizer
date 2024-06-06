@@ -78,7 +78,7 @@ export class FileUtils {
       let time = 0;
       if (inclusions && inclusions.length > 0) {
         for (const inc in inclusions) {
-          const file = path.join(folder, inc);
+          const file = path.join(folder, inclusions[inc]);
           if (FileHelper.exists(file)) {
             time = Math.max(time, FileHelper.getLastModified(file));
           }

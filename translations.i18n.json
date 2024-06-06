@@ -1,0 +1,174 @@
+{
+  "loading": {
+    "es": "Sincronizando datos",
+    "en": "Syncing data"
+  },
+  "games": {
+    "es": "Juegos",
+    "en": "Games"
+  },
+  "emulators": {
+    "es": "Emuladores",
+    "en": "Emulators"
+  },
+  "launchers": {
+    "es": "Lanzadores",
+    "en": "Launchers"
+  },
+  "add.new.entry": {
+    "es": "Agregar nuevo",
+    "en": "Add new"
+  },
+  "game.executable": {
+    "es": "Ejecutable",
+    "en": "Executable"
+  },
+  "game.name": {
+    "es": "Nombre",
+    "en": "Name"
+  },
+  "game.local.dir": {
+    "es": "Directorio local",
+    "en": "Local directory"
+  },
+  "game.remote.dir": {
+    "es": "Directorio remoto",
+    "en": "Remote directory"
+  },
+  "game.policy": {
+    "es": "Política de inclusion",
+    "en": "Inclusion policy"
+  },
+  "game.include.all": {
+    "es": "Incluir todos los archivos",
+    "en": "Include all files"
+  },
+  "game.include.selected": {
+    "es": "Incluir archivos seleccionados",
+    "en": "Include selected files"
+  },
+  "game.exclude.selected": {
+    "es": "Excluir archivos seleccionados",
+    "en": "Exclude selected files"
+  },
+  "explore": {
+    "es": "Explorar",
+    "en": "Explore"
+  },
+  "save": {
+    "es": "Guardar",
+    "en": "Save"
+  },
+  "confirm.save": {
+    "es": "¿Guardar nueva entrada?",
+    "en": "Save new entry?"
+  },
+  "launch.now": {
+    "es": "Lanzar",
+    "en": "Launch"
+  },
+  "sync.now": {
+    "es": "Sincronizar",
+    "en": "Sync"
+  },
+  "remove.entry": {
+    "es": "Eliminar",
+    "en": "Remove"
+  },
+  "sure.to.remove": {
+    "es": "¿Borrar entrada seleccionada?",
+    "en": "Delete selected entry?"
+  },
+  "invalid.remote.dir": {
+    "es": "Directorio remoto inválido",
+    "en": "Invalid remote directory"
+  },
+  "remote.must.be.inside": {
+    "es": "El directorio remoto ha de estar dentro de '{remote}'",
+    "en": "Remote directory must be inside '{remote}'"
+  },
+  "error.sync": {
+    "es": "Error en sincronizacion, pulse aquí para ver los registros",
+    "en": "Sync error, click here to view logs"
+  },
+  "upload.finished": {
+    "es": "Finalizada actualizacion",
+    "en": "Update finished"
+  },
+  "uploading.data": {
+    "es": "Actualizando datos",
+    "en": "Updating data"
+  },
+  "syncing.data": {
+    "es": "Sincronizando datos",
+    "en": "Syncing data"
+  },
+  "syncing.data.finished": {
+    "es": "Sincronización finalizada",
+    "en": "Sync finished"
+  },
+  "downloading.data": {
+    "es": "Descargando datos",
+    "en": "Downloading data"
+  },
+  "error.loading": {
+    "es": "Error durante la carga, pulse aquí para ver los registros",
+    "en": "Loading error, click here to view logs"
+  },
+  "ready.to.play": {
+    "es": "Listo para jugar",
+    "en": "Ready to play"
+  },
+  "starting.synchronizer": {
+    "es": "Iniciando sincronizador",
+    "en": "Starting synchronizer"
+  },
+  "select.cloud.provider": {
+    "es": "Seleccione proveedor de Cloud",
+    "en": "Select cloud provider"
+  },
+  "already.running": {
+    "es": "SaveDataSynchronizer se está ejecutando en segundo plano. ¡Disfruta el juego!",
+    "en": "SaveDataSynchronizer is running in the background. Enjoy the game!"
+  },
+  "entry.saved": {
+    "es": "Entrada guardada",
+    "en": "Entry saved"
+  },
+  "exit": {
+    "es": "Salir",
+    "en": "Exit"
+  },
+  "filter.entries": {
+    "es": "Filtrar",
+    "en": "Filter"
+  },
+  "running.now": {
+    "es": "En ejecución",
+    "en": "Running now"
+  },
+  "restart.now": {
+    "es": "Reiniciar ahora",
+    "en": "Restart now"
+  },
+  "update.on.restart": {
+    "es": "Mas tarde",
+    "en": "Later"
+  },
+  "update.available": {
+    "es": "Actualización disponible",
+    "en": "Update available"
+  },
+  "update.available.msg": {
+    "es": "Una nueva version ha sido descargada. Reinicie ahora para completar la actualizacion",
+    "en": "A new version has been downloaded. Restart now to complete the update."
+  },
+  "up.to.date": {
+    "es": "Actualizado",
+    "en": "Updated"
+  },
+  "make.a.donation": {
+    "es": "Haz una donacion",
+    "en": "Make a donation"
+  }
+}
