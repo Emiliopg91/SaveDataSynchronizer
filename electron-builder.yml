@@ -43,3 +43,4 @@ publish:
   provider: github
   owner: Emiliopg91
   repo: SaveDataSynchronizer-Releases
+  updaterCacheDirName: SaveDataSynchronizer

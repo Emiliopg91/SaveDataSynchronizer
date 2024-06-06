@@ -4,10 +4,18 @@ import path from 'path';
 
 import { mainWindow } from '../..';
 import { Game } from '../dtos/Game';
+import { SaveDataSynchronizer } from '../logic/SaveDataSynchronizer';
 import { Constants } from './Constants';
 import { FileUtils } from './FileUtils';
 
 export class GameHelper {
+  public static kill(appName: string): void {
+    SaveDataSynchronizer.CONFIG.games.forEach((g) => {
+      if (g.name == appName && g.pid) {
+        Powershell.runCommand('taskkill /F /PID ' + g.pid);
+      }
+    });
+  }
   public static deleteSdsFile(g: Game): void {
     const sds = path.join(g.localDir, Constants.SDS_FILE_NAME);
     if (FileHelper.exists(sds)) {
@@ -156,17 +164,17 @@ export class GameHelper {
     return count;
   }
 
-  public static getEvent(game: Game, running: boolean): Event {
+  public static getEvent(game: Game, pid: string | undefined): Event {
     let event: Event = Event.NO_CHANGES;
-    if (game.wasRunning && !running) {
+    if (game.pid && !pid) {
       event = Event.STOPPED;
       mainWindow?.webContents?.send('listen-running', game.name, false);
     }
-    if (!game.wasRunning && running) {
+    if (!game.pid && pid) {
       event = Event.STARTED;
       mainWindow?.webContents?.send('listen-running', game.name, true);
     }
-    game.wasRunning = running;
+    game.pid = pid;
     return event;
   }
 

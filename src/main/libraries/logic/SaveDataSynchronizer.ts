@@ -88,27 +88,34 @@ export class SaveDataSynchronizer {
                 if (command.endsWith(',')) {
                   command = command.substring(0, command.length - 1);
                 }
-                command += ' | Select-Object ProcessName';
+                command += ' | Select-Object ProcessName,Id';
 
                 Powershell.runCommand(command).then((res: string) => {
                   let ab = false;
-                  const processes: Array<string> = [];
+                  const processNames: Array<string> = [];
+                  const processIds: Array<string> = [];
                   res.split('\r').forEach((line: string) => {
                     if (line.includes('---')) {
                       ab = true;
                     } else if (ab) {
-                      processes.push(line.trim());
+                      if (line.trim().length > 0) {
+                        processNames.push(line.substring(0, line.indexOf(' ')).trim());
+                        processIds.push(line.substring(line.indexOf(' ')).trim());
+                      }
                     }
                   });
                   SaveDataSynchronizer.CONFIG.games.forEach(async (g) => {
-                    const event: Event = GameHelper.getEvent(
-                      g,
-                      processes.includes(g.psProcess as string)
-                    );
+                    let pid: string | undefined = undefined;
+                    if (processNames.indexOf(g.psProcess as string) > -1) {
+                      pid = processIds[processNames.indexOf(g.psProcess as string)];
+                    }
+
+                    const event: Event = GameHelper.getEvent(g, pid);
                     let cnt = 0;
                     switch (event) {
                       case Event.STARTED:
-                        LoggerMain.info("STARTED '" + g.name + "'");
+                        LoggerMain.info("STARTED '" + g.name + "' WITH PID " + pid);
+                        g.pid = pid;
                         await GameHelper.suspend(g);
                         NotificationUtils.displayDownloadingData(g.icon);
                         await RCloneClient.remoteSync();

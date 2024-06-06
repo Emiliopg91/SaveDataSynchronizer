@@ -79,6 +79,10 @@
     "es": "¿Borrar entrada seleccionada?",
     "en": "Delete selected entry?"
   },
+  "sure.to.stop": {
+    "es": "¿Detener aplicación? Cualquier progreso no guardado se perderá",
+    "en": "Stop application? Any unsaved progress will be lost"
+  },
   "invalid.remote.dir": {
     "es": "Directorio remoto inválido",
     "en": "Invalid remote directory"
@@ -170,5 +174,9 @@
   "make.a.donation": {
     "es": "Haz una donacion",
     "en": "Make a donation"
+  },
+  "kill.now": {
+    "es": "Detener",
+    "en": "Stop"
   }
 }

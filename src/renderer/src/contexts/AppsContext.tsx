@@ -1,29 +1,56 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { createContext, useEffect, useState } from 'react';
 
-export const AppsContext = createContext({
+interface ContextType {
+  category: string;
+  setCategory: (value: string) => void;
+  showAddModal: boolean;
+  setShowAddModal: (value: boolean) => void;
+  pendingUpdate: boolean;
+  setPendingUpdate: (value: boolean) => void;
+  syncing: boolean;
+  setSyncing: (value: boolean) => void;
+  running: Array<string>;
+  setRunning: (value: Array<string>) => void;
+}
+
+const defaultValue: ContextType = {
   category: '',
-  setCategory: (_cat: string) => {},
+  setCategory: () => {},
   showAddModal: true,
-  setShowAddModal: (_show: boolean) => {},
+  setShowAddModal: () => {},
   pendingUpdate: false,
-  setPendingUpdate: (_pending: boolean) => {},
+  setPendingUpdate: () => {},
   syncing: false,
-  setSyncing: (_pending: boolean) => {}
-});
+  setSyncing: () => {},
+  running: [],
+  setRunning: () => {}
+};
+
+export const AppsContext = createContext(defaultValue);
 
 export function AppsProvider({ children }: { children: JSX.Element }): JSX.Element {
   const [category, setCategory] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [pendingUpdate, setPendingUpdate] = useState(false);
   const [syncing, setSyncing] = useState(false);
+  const [running, setRunning] = useState<Array<string>>([]);
 
   useEffect(() => {
-    const unsubscribe = window.api.listenUpdate((_, pending) => {
+    const unsubscribe1 = window.api.listenUpdate((_, pending) => {
       setPendingUpdate(pending);
     });
+    const unsubscribe2 = window.api.listenRunning((_, app: string, isRunning: boolean): void => {
+      const newRunning = [...running];
+      if (isRunning) {
+        newRunning.push(app);
+      }
+      setRunning(newRunning);
+    });
+
     return (): void => {
-      unsubscribe();
+      unsubscribe1();
+      unsubscribe2();
     };
   }, []);
 
@@ -37,7 +64,9 @@ export function AppsProvider({ children }: { children: JSX.Element }): JSX.Eleme
         pendingUpdate,
         setPendingUpdate,
         syncing,
-        setSyncing
+        setSyncing,
+        running,
+        setRunning
       }}
     >
       {children}

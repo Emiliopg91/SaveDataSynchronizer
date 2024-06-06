@@ -4,7 +4,6 @@ import { useContext, useEffect, useState } from 'react';
 
 export function useApp(): [any[], (type: string) => void, (type: string) => void] {
   const ctx = useContext(AppsContext);
-  const [running, setRunning] = useState<Record<string, boolean>>({});
   const [apps, setApps] = useState<Array<any>>([]);
   const [filtered, setFiltered] = useState<Array<any>>([]);
   const [filter, setFilter] = useState('');
@@ -13,15 +12,6 @@ export function useApp(): [any[], (type: string) => void, (type: string) => void
     window.api.getAllGames().then((res) => {
       setApps(res);
     });
-    const unsubscribe = window.api.listenRunning((_, app: string, isRunning: boolean): void => {
-      const newRunning = { ...running };
-      newRunning[app] = isRunning;
-      setRunning(newRunning);
-    });
-
-    return (): void => {
-      unsubscribe();
-    };
   }, []);
 
   useEffect(() => {
@@ -34,10 +24,10 @@ export function useApp(): [any[], (type: string) => void, (type: string) => void
           );
         })
         .map((e) => {
-          return { ...e, running: running[e.name] ? running[e.name] : false };
+          return { ...e, running: ctx.running.includes(e.name) };
         })
     );
-  }, [apps, ctx.category, filter, running]);
+  }, [apps, ctx.category, filter, ctx.running]);
 
   useEffect(() => {
     ctx.setCategory(ctx.category);

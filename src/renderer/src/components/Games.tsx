@@ -4,7 +4,7 @@ import { TranslatorRenderer } from '@tser-framework/renderer';
 import { useContext, useEffect } from 'react';
 import { Col, Container, Form, Row } from 'react-bootstrap';
 import { FaSyncAlt } from 'react-icons/fa';
-import { FaRegTrashAlt } from 'react-icons/fa';
+import { FaRegTrashAlt, FaStop } from 'react-icons/fa';
 import { FaPlay } from 'react-icons/fa6';
 import { IoAddCircleOutline } from 'react-icons/io5';
 
@@ -39,7 +39,20 @@ export function Games({ type }: { type: string }): JSX.Element {
                 <b>{g.name}</b>
               </Col>
               <Col sm={4} style={{ paddingTop: 5, textAlign: 'right', margin: 'auto' }}>
-                {g['running'] && <b>{TranslatorRenderer.translate('running.now')}</b>}
+                {g['running'] && (
+                  <button
+                    type="button"
+                    className="btn"
+                    title={TranslatorRenderer.translate('kill.now')}
+                    onClick={() => {
+                      if (confirm(TranslatorRenderer.translate('sure.to.stop'))) {
+                        window.api.killApp(g.name);
+                      }
+                    }}
+                  >
+                    <FaStop color="red" />
+                  </button>
+                )}
                 {!g['running'] && (
                   <>
                     <button

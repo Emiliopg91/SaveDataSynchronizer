@@ -181,7 +181,9 @@ let shownUpdate = false;
 
       autoUpdater.logger = log;
       autoUpdater.autoDownload = true;
+      autoUpdater.disableWebInstaller = true;
       autoUpdater.forceDevUpdateConfig = true;
+      autoUpdater.disableDifferentialDownload = true;
       autoUpdater.on('update-downloaded', (): void => {
         if (!shownUpdate) {
           dialog
@@ -199,7 +201,7 @@ let shownUpdate = false;
             .then((returnValue) => {
               if (returnValue.response === 0) {
                 RCloneClient.MUTEX.acquire().then((release) => {
-                  autoUpdater.quitAndInstall();
+                  autoUpdater.quitAndInstall(true, true);
                   release();
                 });
               } else {

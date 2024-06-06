@@ -86,6 +86,9 @@ export const exposed = {
     },
     buyMeACoffee(): void {
       ipcRenderer.send('buy-me-a-coffee');
+    },
+    killApp(appName: string): void {
+      ipcRenderer.send('kill-app', appName);
     }
   },
   app: {

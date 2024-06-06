@@ -47,6 +47,7 @@ export const windowConfig: WindowConfig = {
     minHeight: 760,
     maxHeight: 760,
     maximizable: false,
+    fullscreenable: false,
     resizable: false,
     show: false,
     title: app.getName() + ' v' + app.getVersion(),
@@ -100,7 +101,7 @@ export const ipcListeners: Record<string, IpcListener> = {
     fn(_, type: string) {
       return SaveDataSynchronizer.CONFIG.games
         .filter((g) => {
-          return g.category == type && g.wasRunning;
+          return g.category == type && g.pid;
         })
         .map((g) => {
           return g.name;
@@ -293,6 +294,12 @@ export const ipcListeners: Record<string, IpcListener> = {
     sync: false,
     fn() {
       shell.openExternal('https://buymeacoffee.com/emiliopg91');
+    }
+  },
+  'kill-app': {
+    sync: false,
+    fn(_, appName: string) {
+      GameHelper.kill(appName);
     }
   }
 };
