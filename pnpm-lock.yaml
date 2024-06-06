@@ -5,11 +5,11 @@ dependencies:
     specifier: ^2.0.34
     version: 2.0.34
   '@tser-framework/main':
-    specifier: ^2.0.134
-    version: 2.0.134(electron-builder-squirrel-windows@24.13.3)(vite@5.2.12)
+    specifier: ^2.0.136
+    version: 2.0.136(electron-builder-squirrel-windows@24.13.3)(vite@5.2.12)
   '@tser-framework/renderer':
-    specifier: ^2.0.58
-    version: 2.0.58(@popperjs/core@2.11.8)(@types/react@18.3.3)
+    specifier: ^2.0.60
+    version: 2.0.60(@popperjs/core@2.11.8)(@types/react@18.3.3)
   async-mutex:
     specifier: ^0.5.0
     version: 0.5.0
@@ -1235,8 +1235,8 @@ packages:
     resolution: {integrity: sha512-YcOfYaZElxkoqoiw3lPx2ofxychjbyQCyRKcEUsRA7dWLXZbVvkguF8+kQdBqTXk+nFCAHWjTLvCa45zDxzypA==}
     dev: false
 
-  /@tser-framework/main@2.0.134(electron-builder-squirrel-windows@24.13.3)(vite@5.2.12):
-    resolution: {integrity: sha512-PFGOXg+zRiD7F95fFyJ4MtTvqgfci5hGvySspExrpUwI7iDKG3Wlgnfb1+/JIl7AwwQlOJFUSLiEjOxBOTkJ7A==}
+  /@tser-framework/main@2.0.136(electron-builder-squirrel-windows@24.13.3)(vite@5.2.12):
+    resolution: {integrity: sha512-wZ9BxL2wPeHHLhEPgB3oBSDvJPYEdXjs3uBgYH5tfSJgGU3tf9rCPsWzNMKGMSLCAnvnEdLQ4G+0IqsE1/bqgA==}
     dependencies:
       '@tser-framework/commons': 2.0.34
       archiver: 7.0.1
@@ -1254,8 +1254,8 @@ packages:
       - vite
     dev: false
 
-  /@tser-framework/renderer@2.0.58(@popperjs/core@2.11.8)(@types/react@18.3.3):
-    resolution: {integrity: sha512-a408Q5uGnyefwWewGzjGTyb6RM2vo7E6+TO7wHTNnXWGuWVZoGNKP87XMGQiTRtgt6PTP/qOF4k44gAUJrGx3Q==}
+  /@tser-framework/renderer@2.0.60(@popperjs/core@2.11.8)(@types/react@18.3.3):
+    resolution: {integrity: sha512-gF52rGelvbaaRdMVXS2Fq/B/BZleSUobKr8dZ7eSxdlwHxurkkOXo0UtXH2nPnLfquyjcLZNKFhCi5EntFD1bw==}
     dependencies:
       '@tser-framework/commons': 2.0.34
       async-mutex: 0.5.0

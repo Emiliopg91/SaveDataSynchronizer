@@ -1,5 +1,5 @@
 import react from '@vitejs/plugin-react';
-import { defineConfig } from 'electron-vite';
+import { bytecodePlugin, defineConfig } from 'electron-vite';
 import fs from 'fs';
 import path, { resolve } from 'path';
 
@@ -24,10 +24,10 @@ console.info('HTMLS: ', htmls);
 
 export default defineConfig({
   main: {
-    plugins: []
+    plugins: [bytecodePlugin({ transformArrowFunctions: false })]
   },
   preload: {
-    plugins: []
+    plugins: [bytecodePlugin({ transformArrowFunctions: false })]
   },
   renderer: {
     resolve: {

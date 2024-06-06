@@ -95,7 +95,9 @@ export const exposed = {
   env: {
     LOG_LEVEL: process.env.LOG_LEVEL || DefaulLevel
   },
-  translations: TranslatorRenderer.buildTranslations(translations)
+  translations: process.env.LANG
+    ? TranslatorRenderer.buildTranslations(translations, process.env.LANG)
+    : TranslatorRenderer.buildTranslations(translations)
 };
 
 export type ExposedDefinition = typeof exposed;
