@@ -178,5 +178,9 @@
   "kill.now": {
     "es": "Detener",
     "en": "Stop"
+  },
+  "installing.update": {
+    "es": "Instalando actualizacion, por favor espere",
+    "en": "Installing update, please wait"
   }
 }

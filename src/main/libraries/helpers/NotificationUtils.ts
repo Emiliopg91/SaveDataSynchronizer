@@ -4,6 +4,9 @@ import { shell } from 'electron';
 import icon45 from '../../../../resources/icons/icon-45x45.png?asset&asarUnpack';
 
 export class NotificationUtils {
+  public static displayInstallingUpdate(): void {
+    Toaster.toast(TranslatorMain.translate('installing.update'), icon45);
+  }
   public static displayEntrySaved(icon: string | undefined): void {
     Toaster.toast(TranslatorMain.translate('entry.saved'), icon ? icon : icon45);
   }

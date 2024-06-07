@@ -7,6 +7,7 @@ import { autoUpdater } from 'electron-updater';
 import path from 'path';
 
 import { runBeforeReady, runWhenReady } from './applicationLogic';
+import { NotificationUtils } from './libraries/helpers/NotificationUtils';
 import { RCloneClient } from './libraries/helpers/RCloneClient';
 import {
   appConfig,
@@ -19,6 +20,7 @@ import {
 } from './setup';
 
 export let mainWindow: BrowserWindow | null = null;
+export let splashPromise: Promise<void> | undefined;
 const initTime = Date.now();
 let shownUpdate = false;
 
@@ -116,7 +118,7 @@ let shownUpdate = false;
       });
 
       if (appConfig.splashScreen) {
-        WindowHelper.createSplashScreen(
+        splashPromise = WindowHelper.createSplashScreen(
           {
             width: 500,
             height: 300,
@@ -201,6 +203,7 @@ let shownUpdate = false;
             .then((returnValue) => {
               if (returnValue.response === 0) {
                 RCloneClient.MUTEX.acquire().then((release) => {
+                  NotificationUtils.displayInstallingUpdate();
                   autoUpdater.quitAndInstall(true, true);
                   release();
                 });

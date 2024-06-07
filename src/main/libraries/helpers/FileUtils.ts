@@ -201,15 +201,17 @@ export class FileUtils {
           const relative = path.relative(targetRoot, dir);
           const src = path.resolve(sourceRoot, relative);
 
+          let action = FileTreeAction.CONTINUE;
           if (!FileHelper.exists(src)) {
             if (!dryRun) {
               FileHelper.delete(dir);
               LoggerMain.info("  (-) '" + relative + "'");
+              action = FileTreeAction.SKIP_SUBTREE;
             }
             count++;
           }
 
-          return FileTreeAction.CONTINUE;
+          return action;
         },
         undefined,
         (file: string): void => {

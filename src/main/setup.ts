@@ -283,6 +283,7 @@ export const ipcListeners: Record<string, IpcListener> = {
         .then((returnValue) => {
           if (returnValue.response === 0) {
             RCloneClient.MUTEX.acquire().then((release) => {
+              NotificationUtils.displayInstallingUpdate();
               autoUpdater.quitAndInstall();
               release();
             });

@@ -5,8 +5,8 @@ dependencies:
     specifier: ^2.0.34
     version: 2.0.34
   '@tser-framework/main':
-    specifier: ^2.0.136
-    version: 2.0.136(electron-builder-squirrel-windows@24.13.3)(vite@5.2.12)
+    specifier: ^2.0.138
+    version: 2.0.138(electron-builder-squirrel-windows@24.13.3)(vite@5.2.12)
   '@tser-framework/renderer':
     specifier: ^2.0.60
     version: 2.0.60(@popperjs/core@2.11.8)(@types/react@18.3.3)
@@ -1235,8 +1235,8 @@ packages:
     resolution: {integrity: sha512-YcOfYaZElxkoqoiw3lPx2ofxychjbyQCyRKcEUsRA7dWLXZbVvkguF8+kQdBqTXk+nFCAHWjTLvCa45zDxzypA==}
     dev: false
 
-  /@tser-framework/main@2.0.136(electron-builder-squirrel-windows@24.13.3)(vite@5.2.12):
-    resolution: {integrity: sha512-wZ9BxL2wPeHHLhEPgB3oBSDvJPYEdXjs3uBgYH5tfSJgGU3tf9rCPsWzNMKGMSLCAnvnEdLQ4G+0IqsE1/bqgA==}
+  /@tser-framework/main@2.0.138(electron-builder-squirrel-windows@24.13.3)(vite@5.2.12):
+    resolution: {integrity: sha512-Ui6jPLFmYsDIHFGV5DTGSjA71wVWf0lHLDHFOuKNAX8GPArGNSm+YGx1FjijF8YcdmjJAde0YPHsRBtvuR4K9Q==}
     dependencies:
       '@tser-framework/commons': 2.0.34
       archiver: 7.0.1
@@ -1939,7 +1939,7 @@ packages:
     hasBin: true
     dependencies:
       caniuse-lite: 1.0.30001629
-      electron-to-chromium: 1.4.792
+      electron-to-chromium: 1.4.794
       node-releases: 2.0.14
       update-browserslist-db: 1.0.16(browserslist@4.23.0)
 
@@ -2447,8 +2447,8 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
-  /electron-to-chromium@1.4.792:
-    resolution: {integrity: sha512-rkg5/N3L+Y844JyfgPUyuKK0Hk0efo3JNxUDKvz3HgP6EmN4rNGhr2D8boLsfTV/hGo7ZGAL8djw+jlg99zQyA==}
+  /electron-to-chromium@1.4.794:
+    resolution: {integrity: sha512-6FApLtsYhDCY0Vglq3AptsdxQ+PJLc6AxlAM0HjEihUAiOPPbkASEsq9gtxUeZY9o0sJIEa3WnF0vVH4VT4iug==}
 
   /electron-updater@6.2.1:
     resolution: {integrity: sha512-83eKIPW14qwZqUUM6wdsIRwVKZyjmHxQ4/8G+1C6iS5PdDt7b1umYQyj1/qPpH510GmHEQe4q0kCPe3qmb3a0Q==}

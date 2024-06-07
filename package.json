@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@tser-framework/commons": "^2.0.34",
-    "@tser-framework/main": "^2.0.136",
+    "@tser-framework/main": "^2.0.138",
     "@tser-framework/renderer": "^2.0.60",
     "async-mutex": "^0.5.0",
     "bootstrap": "^5.3.3",
