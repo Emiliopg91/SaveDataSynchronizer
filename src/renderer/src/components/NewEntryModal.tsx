@@ -8,6 +8,14 @@ export function NewEntryModal(): JSX.Element {
 
   const [game, setGame] = useState({});
   const [files, setFiles] = useState<Array<string>>([]);
+  const [visible, setVisible] = useState(true);
+
+  const handleClose = (): void => {
+    setVisible(false);
+    setTimeout(() => {
+      ctx.setShowCfgModal(false);
+    }, 300);
+  };
 
   const validateForm = (): boolean => {
     if (!game) return false;
@@ -42,12 +50,8 @@ export function NewEntryModal(): JSX.Element {
     }, 250);
   }, [game['localDir']]);
 
-  const handleClose = (): void => {
-    ctx.setShowAddModal(false);
-  };
-
   return (
-    <Modal show={true} onHide={handleClose} backdrop="static" keyboard={false}>
+    <Modal show={visible} onHide={handleClose} backdrop="static" keyboard={false}>
       <Modal.Header closeButton>
         <Modal.Title>{TranslatorRenderer.translate('add.new.entry')}</Modal.Title>
       </Modal.Header>

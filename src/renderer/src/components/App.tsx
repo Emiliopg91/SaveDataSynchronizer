@@ -1,5 +1,4 @@
 import { AppsContext } from '@renderer/contexts/AppsContext';
-import { Constants } from '@renderer/libraries/Constants';
 import {
   LoadScreen,
   Loading,
@@ -7,7 +6,7 @@ import {
   NavBarConfiguration,
   TranslatorRenderer
 } from '@tser-framework/renderer';
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { FaCog } from 'react-icons/fa';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
@@ -18,21 +17,23 @@ import { StatusBar } from './StatusBar';
 
 export function App(): JSX.Element {
   const ctx = useContext(AppsContext);
+  const [navBarCfgTop, setNavBarCfgTop] = useState<Array<NavBarConfiguration>>([]);
 
-  const navBarCfgTop: Array<NavBarConfiguration> = [
-    {
-      text: TranslatorRenderer.translate('games'),
-      link: Constants.ROUTE_GAMES
-    },
-    {
-      text: TranslatorRenderer.translate('emulators'),
-      link: Constants.ROUTE_EMULATORS
-    },
-    {
-      text: TranslatorRenderer.translate('launchers'),
-      link: Constants.ROUTE_LAUNCHERS
-    }
-  ];
+  useEffect(() => {
+    const newNavBarCfgTop: Array<NavBarConfiguration> = [];
+    ctx.categories.forEach((c) => {
+      let path = '/' + c.replace('game', '');
+      if (c != 'game') {
+        path += 's';
+      }
+      newNavBarCfgTop.push({
+        text: TranslatorRenderer.translate(c + 's'),
+        link: path
+      });
+    });
+    setNavBarCfgTop(newNavBarCfgTop);
+  }, [ctx.categories]);
+
   const navBarCfgBottom: Array<NavBarConfiguration> = [
     {
       text: TranslatorRenderer.translate('configuration'),
@@ -55,20 +56,29 @@ export function App(): JSX.Element {
   }, []);
 
   return (
-    <MemoryRouter>
-      <div>{JSON.stringify(ctx)}</div>
-      {ctx.showCfgModal && <ConfigurationModal />}
-      {ctx.showAddModal && <NewEntryModal />}
-      <Loading color="white" />
-      <NavBar top={navBarCfgTop} bottom={navBarCfgBottom} />
-      <div id="router">
-        <Routes>
-          <Route path={Constants.ROUTE_GAMES} element={<Games type="game" />} />
-          <Route path={Constants.ROUTE_EMULATORS} element={<Games type="emulator" />} />
-          <Route path={Constants.ROUTE_LAUNCHERS} element={<Games type="launcher" />} />
-        </Routes>
-      </div>
-      <StatusBar />
-    </MemoryRouter>
+    <>
+      <>
+        {' '}
+        <MemoryRouter>
+          <div>{JSON.stringify(ctx)}</div>
+          {ctx.showCfgModal && <ConfigurationModal />}
+          {ctx.showAddModal && <NewEntryModal />}
+          <Loading color="white" />
+          <NavBar top={navBarCfgTop} bottom={navBarCfgBottom} />
+          <div id="router">
+            <Routes>
+              {ctx.categories.map((c) => {
+                let path = '/' + c.replace('game', '');
+                if (c != 'game') {
+                  path += 's';
+                }
+                return <Route key={c} path={path} element={<Games type={c} />} />;
+              })}
+            </Routes>
+          </div>
+          <StatusBar />
+        </MemoryRouter>
+      </>
+    </>
   );
 }

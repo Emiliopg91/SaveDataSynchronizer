@@ -194,5 +194,17 @@
   "save.and.restart": {
     "es": "Guardar y reiniciar",
     "en": "Save and restart"
+  },
+  "autostart": {
+    "es": "Arrancar al iniciar sesion",
+    "en": "Start on login"
+  },
+  "global.config": {
+    "es": "Configuración global",
+    "en": "Global configuration"
+  },
+  "restore.defaults": {
+    "es": "Restaurar valores",
+    "en": "Restore values"
   }
 }

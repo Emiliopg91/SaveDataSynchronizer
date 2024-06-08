@@ -4,6 +4,8 @@ import { createContext, useEffect, useState } from 'react';
 interface ContextType {
   category: string;
   setCategory: (value: string) => void;
+  categories: Array<string>;
+  setCategories: (value: Array<string>) => void;
   showAddModal: boolean;
   setShowAddModal: (value: boolean) => void;
   showCfgModal: boolean;
@@ -19,6 +21,8 @@ interface ContextType {
 const defaultValue: ContextType = {
   category: '',
   setCategory: () => {},
+  categories: [],
+  setCategories: () => {},
   showAddModal: true,
   setShowAddModal: () => {},
   showCfgModal: true,
@@ -31,10 +35,13 @@ const defaultValue: ContextType = {
   setRunning: () => {}
 };
 
+const defaultCategories = ['game', 'emulator', 'launcher'];
+
 export const AppsContext = createContext(defaultValue);
 
 export function AppsProvider({ children }: { children: JSX.Element }): JSX.Element {
-  const [category, setCategory] = useState('');
+  const [categories, setCategories] = useState<Array<string>>(defaultCategories);
+  const [category, setCategory] = useState('game');
   const [showAddModal, setShowAddModal] = useState(false);
   const [showCfgModal, setShowCfgModal] = useState(false);
   const [pendingUpdate, setPendingUpdate] = useState(false);
@@ -62,6 +69,8 @@ export function AppsProvider({ children }: { children: JSX.Element }): JSX.Eleme
   return (
     <AppsContext.Provider
       value={{
+        categories,
+        setCategories,
         category,
         setCategory,
         showAddModal,

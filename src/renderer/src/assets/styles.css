@@ -16,6 +16,7 @@ body,
   height: 100%;
   margin: 0px;
   -webkit-user-select: none;
+  overflow-x: hidden;
 }
 
 #navBarWrapper {

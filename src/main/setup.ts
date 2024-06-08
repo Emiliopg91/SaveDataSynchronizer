@@ -4,6 +4,7 @@ import {
   DeepLinkBinding,
   FileHelper,
   IpcListener,
+  LoggerMain,
   ProtocolBinding,
   TranslatorMain,
   TrayBuilder,
@@ -308,6 +309,7 @@ export const ipcListeners: Record<string, IpcListener> = {
       const cfg = JSON.parse(
         JSON.stringify(ConfigurationHelper.configAsInterface<Configuration>())
       );
+      cfg['autostart'] = app.getLoginItemSettings({ path: app.getPath('exe') }).openAtLogin;
       delete cfg['games'];
       delete cfg['checkInterval'];
 
@@ -318,14 +320,22 @@ export const ipcListeners: Record<string, IpcListener> = {
     sync: true,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     fn(_, newCfg: any) {
+      LoggerMain.info('Saving new configuration\n', newCfg);
       const cfg = ConfigurationHelper.configAsInterface<Configuration>();
+      const restart = cfg.remote != newCfg['remote'];
+      app.setLoginItemSettings({
+        path: app.getPath('exe'),
+        openAtLogin: newCfg['autostart']
+      });
       Object.keys(newCfg).forEach((id) => {
-        if (newCfg[id]) {
+        if (newCfg[id] && id != 'autostart') {
           cfg[id] = newCfg[id];
         }
       });
-      app.relaunch();
-      app.quit();
+      if (restart) {
+        app.relaunch();
+        app.quit();
+      }
     }
   }
 };
