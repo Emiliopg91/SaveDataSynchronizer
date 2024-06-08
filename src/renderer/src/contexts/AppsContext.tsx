@@ -6,6 +6,8 @@ interface ContextType {
   setCategory: (value: string) => void;
   showAddModal: boolean;
   setShowAddModal: (value: boolean) => void;
+  showCfgModal: boolean;
+  setShowCfgModal: (value: boolean) => void;
   pendingUpdate: boolean;
   setPendingUpdate: (value: boolean) => void;
   syncing: boolean;
@@ -19,6 +21,8 @@ const defaultValue: ContextType = {
   setCategory: () => {},
   showAddModal: true,
   setShowAddModal: () => {},
+  showCfgModal: true,
+  setShowCfgModal: () => {},
   pendingUpdate: false,
   setPendingUpdate: () => {},
   syncing: false,
@@ -32,6 +36,7 @@ export const AppsContext = createContext(defaultValue);
 export function AppsProvider({ children }: { children: JSX.Element }): JSX.Element {
   const [category, setCategory] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showCfgModal, setShowCfgModal] = useState(false);
   const [pendingUpdate, setPendingUpdate] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [running, setRunning] = useState<Array<string>>([]);
@@ -66,7 +71,9 @@ export function AppsProvider({ children }: { children: JSX.Element }): JSX.Eleme
         syncing,
         setSyncing,
         running,
-        setRunning
+        setRunning,
+        showCfgModal,
+        setShowCfgModal
       }}
     >
       {children}

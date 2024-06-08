@@ -182,5 +182,17 @@
   "installing.update": {
     "es": "Instalando actualizacion, por favor espere",
     "en": "Installing update, please wait"
+  },
+  "configuration": {
+    "es": "Configuración",
+    "en": "Configuration"
+  },
+  "cloud.dir.name": {
+    "es": "Carpeta Cloud",
+    "en": "Cloud folder"
+  },
+  "save.and.restart": {
+    "es": "Guardar y reiniciar",
+    "en": "Save and restart"
   }
 }

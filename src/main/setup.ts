@@ -4,7 +4,6 @@ import {
   DeepLinkBinding,
   FileHelper,
   IpcListener,
-  LoggerMain,
   ProtocolBinding,
   TranslatorMain,
   TrayBuilder,
@@ -161,7 +160,7 @@ export const ipcListeners: Record<string, IpcListener> = {
         properties: ['openFile']
       });
       if (exe) {
-        LoggerMain.info('Selected executable ' + exe);
+        console.info('Selected executable ' + exe);
       }
       return exe ? exe[0] : '';
     }
@@ -175,7 +174,7 @@ export const ipcListeners: Record<string, IpcListener> = {
       });
 
       if (localDir) {
-        LoggerMain.info('Selected local dir ' + localDir);
+        console.info('Selected local dir ' + localDir);
       }
       return localDir ? localDir[0] : '';
     }
@@ -217,7 +216,7 @@ export const ipcListeners: Record<string, IpcListener> = {
   'delete-entry': {
     sync: true,
     async fn(_, name: string) {
-      LoggerMain.info("Looking for game '" + name + "' for deletion");
+      console.info("Looking for game '" + name + "' for deletion");
       const cfg: Configuration = ConfigurationHelper.configAsInterface<Configuration>();
       for (const i in cfg.games) {
         if (cfg.games[i].name == name) {
@@ -227,7 +226,7 @@ export const ipcListeners: Record<string, IpcListener> = {
                 try {
                   FileHelper.delete(SaveDataSynchronizer.CONFIG.games[i].icon as string);
                 } catch (e) {
-                  LoggerMain.error(
+                  console.error(
                     "Error deleting icon '" + SaveDataSynchronizer.CONFIG.games[i].icon + "'"
                   );
                 }
@@ -235,7 +234,7 @@ export const ipcListeners: Record<string, IpcListener> = {
             }
           }
           cfg.games.splice(Number(i), 1);
-          LoggerMain.info('Reloading application configuration');
+          console.info('Reloading application configuration');
           SaveDataSynchronizer.loadConfigFile();
           break;
         }
@@ -255,7 +254,7 @@ export const ipcListeners: Record<string, IpcListener> = {
       game.remoteDir = game.remoteDir.replaceAll(Constants.REMOTE_FOLDER, '');
       delete game['policy'];
 
-      LoggerMain.info('Saving to file:\n' + JSON.stringify(game, null, 2));
+      console.info('Saving to file:\n' + JSON.stringify(game, null, 2));
       ConfigurationHelper.configAsInterface<Configuration>().games.push(game);
       await SaveDataSynchronizer.loadConfigFile();
       for (const j in SaveDataSynchronizer.CONFIG.games) {
@@ -301,6 +300,32 @@ export const ipcListeners: Record<string, IpcListener> = {
     sync: false,
     fn(_, appName: string) {
       GameHelper.kill(appName);
+    }
+  },
+  'get-app-cfg': {
+    sync: true,
+    fn() {
+      const cfg = JSON.parse(
+        JSON.stringify(ConfigurationHelper.configAsInterface<Configuration>())
+      );
+      delete cfg['games'];
+      delete cfg['checkInterval'];
+
+      return cfg;
+    }
+  },
+  'save-app-cfg': {
+    sync: true,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    fn(_, newCfg: any) {
+      const cfg = ConfigurationHelper.configAsInterface<Configuration>();
+      Object.keys(newCfg).forEach((id) => {
+        if (newCfg[id]) {
+          cfg[id] = newCfg[id];
+        }
+      });
+      app.relaunch();
+      app.quit();
     }
   }
 };

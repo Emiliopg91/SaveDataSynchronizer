@@ -1,10 +1,4 @@
-import {
-  ConfigurationHelper,
-  FileHelper,
-  LoggerMain,
-  Powershell,
-  TranslatorMain
-} from '@tser-framework/main';
+import { ConfigurationHelper, FileHelper, Powershell, TranslatorMain } from '@tser-framework/main';
 import { Mutex } from 'async-mutex';
 import { BrowserWindow, app, dialog } from 'electron';
 import path from 'path';
@@ -56,100 +50,102 @@ export class SaveDataSynchronizer {
       createWindow();
       mainWindow?.show();
       mainWindow?.focus();
-      mainWindow?.on('ready-to-show', async () => {
-        const isFirstSync: boolean = await SaveDataSynchronizer.initializeRemote();
-        if (!isFirstSync) {
-          LoggerMain.info('');
-          await RCloneClient.remoteSync();
-          LoggerMain.info('');
-        }
-
-        let count = 0;
-        SaveDataSynchronizer.CONFIG.games.forEach((g) => {
-          try {
-            count += GameHelper.synchronize(g);
-          } catch (e) {
-            LoggerMain.error("Error syncing '" + g.name + "'", e);
+      mainWindow?.on('ready-to-show', () => {
+        setTimeout(async () => {
+          const isFirstSync: boolean = await SaveDataSynchronizer.initializeRemote();
+          if (!isFirstSync) {
+            console.info('');
+            await RCloneClient.remoteSync();
+            console.info('');
           }
-        });
 
-        if (count > 0) {
-          LoggerMain.info('');
-          await RCloneClient.localSync();
-        }
-
-        setInterval(() => {
-          SaveDataSynchronizer.MUTEX.acquire().then((release) => {
+          let count = 0;
+          SaveDataSynchronizer.CONFIG.games.forEach((g) => {
             try {
-              let command = 'Get-Process -ErrorAction SilentlyContinue -Name ';
-              SaveDataSynchronizer.CONFIG.games.forEach((g) => {
-                command += g.psProcess + ',';
-              });
-              if (command.endsWith(',')) {
-                command = command.substring(0, command.length - 1);
-              }
-              command += ' | Select-Object ProcessName,Id';
-
-              Powershell.runCommand(command).then((res: string) => {
-                let ab = false;
-                const processNames: Array<string> = [];
-                const processIds: Array<string> = [];
-                res.split('\r').forEach((line: string) => {
-                  if (line.includes('---')) {
-                    ab = true;
-                  } else if (ab) {
-                    if (line.trim().length > 0) {
-                      processNames.push(line.substring(0, line.indexOf(' ')).trim());
-                      processIds.push(line.substring(line.indexOf(' ')).trim());
-                    }
-                  }
-                });
-                SaveDataSynchronizer.CONFIG.games.forEach(async (g) => {
-                  let pid: string | undefined = undefined;
-                  if (processNames.indexOf(g.psProcess as string) > -1) {
-                    pid = processIds[processNames.indexOf(g.psProcess as string)];
-                  }
-
-                  const event: Event = GameHelper.getEvent(g, pid);
-                  let cnt = 0;
-                  switch (event) {
-                    case Event.STARTED:
-                      LoggerMain.info("STARTED '" + g.name + "' WITH PID " + pid);
-                      g.pid = pid;
-                      await GameHelper.suspend(g);
-                      NotificationUtils.displayDownloadingData(g.icon);
-                      await RCloneClient.remoteSync();
-                      GameHelper.download(g);
-                      await GameHelper.resume(g);
-                      GameHelper.touchSdsFile(g);
-                      LoggerMain.info('');
-                      break;
-                    case Event.STOPPED:
-                      LoggerMain.info("STOPPED '" + g.name + "'");
-                      NotificationUtils.displayUploadingData(g.icon);
-                      cnt = GameHelper.update(g);
-                      GameHelper.deleteSdsFile(g);
-                      LoggerMain.info('');
-                      if (cnt > 0) {
-                        await RCloneClient.localSync();
-                      }
-                      NotificationUtils.displayUploadFinished(g.icon);
-                      LoggerMain.info('');
-                      break;
-                  }
-                });
-              });
-            } finally {
-              release();
+              count += GameHelper.synchronize(g);
+            } catch (e) {
+              console.error("Error syncing '" + g.name + "'", e);
             }
           });
-        }, SaveDataSynchronizer.CONFIG.checkInterval);
 
-        NotificationUtils.displayReadyToPlay();
-        LoggerMain.info('');
-        LoggerMain.info('Ready!');
-        LoggerMain.info('');
-        SaveDataSynchronizer.READY = true;
+          if (count > 0) {
+            console.info('');
+            await RCloneClient.localSync();
+          }
+
+          setInterval(() => {
+            SaveDataSynchronizer.MUTEX.acquire().then((release) => {
+              try {
+                let command = 'Get-Process -ErrorAction SilentlyContinue -Name ';
+                SaveDataSynchronizer.CONFIG.games.forEach((g) => {
+                  command += g.psProcess + ',';
+                });
+                if (command.endsWith(',')) {
+                  command = command.substring(0, command.length - 1);
+                }
+                command += ' | Select-Object ProcessName,Id';
+
+                Powershell.runCommand(command).then((res: string) => {
+                  let ab = false;
+                  const processNames: Array<string> = [];
+                  const processIds: Array<string> = [];
+                  res.split('\r').forEach((line: string) => {
+                    if (line.includes('---')) {
+                      ab = true;
+                    } else if (ab) {
+                      if (line.trim().length > 0) {
+                        processNames.push(line.substring(0, line.indexOf(' ')).trim());
+                        processIds.push(line.substring(line.indexOf(' ')).trim());
+                      }
+                    }
+                  });
+                  SaveDataSynchronizer.CONFIG.games.forEach(async (g) => {
+                    let pid: string | undefined = undefined;
+                    if (processNames.indexOf(g.psProcess as string) > -1) {
+                      pid = processIds[processNames.indexOf(g.psProcess as string)];
+                    }
+
+                    const event: Event = GameHelper.getEvent(g, pid);
+                    let cnt = 0;
+                    switch (event) {
+                      case Event.STARTED:
+                        console.info("STARTED '" + g.name + "' WITH PID " + pid);
+                        g.pid = pid;
+                        await GameHelper.suspend(g);
+                        NotificationUtils.displayDownloadingData(g.icon);
+                        await RCloneClient.remoteSync();
+                        GameHelper.download(g);
+                        await GameHelper.resume(g);
+                        GameHelper.touchSdsFile(g);
+                        console.info('');
+                        break;
+                      case Event.STOPPED:
+                        console.info("STOPPED '" + g.name + "'");
+                        NotificationUtils.displayUploadingData(g.icon);
+                        cnt = GameHelper.update(g);
+                        GameHelper.deleteSdsFile(g);
+                        console.info('');
+                        if (cnt > 0) {
+                          await RCloneClient.localSync();
+                        }
+                        NotificationUtils.displayUploadFinished(g.icon);
+                        console.info('');
+                        break;
+                    }
+                  });
+                });
+              } finally {
+                release();
+              }
+            });
+          }, SaveDataSynchronizer.CONFIG.checkInterval);
+
+          NotificationUtils.displayReadyToPlay();
+          console.info('');
+          console.info('Ready!');
+          console.info('');
+          SaveDataSynchronizer.READY = true;
+        }, 250);
       });
     })();
   }
@@ -158,7 +154,7 @@ export class SaveDataSynchronizer {
     if (!FileHelper.exists(Constants.REMOTE_FOLDER)) {
       FileHelper.mkdir(Constants.REMOTE_FOLDER);
       await RCloneClient.remoteResync();
-      LoggerMain.info('');
+      console.info('');
       return true;
     }
     return false;
@@ -185,7 +181,7 @@ export class SaveDataSynchronizer {
           if (!SaveDataSynchronizer.CONFIG.games) {
             SaveDataSynchronizer.CONFIG.games = [];
           }
-          LoggerMain.info('Validating configuration');
+          console.info('Validating configuration');
           let allOk = true;
           for (let i = 0; i < SaveDataSynchronizer.CONFIG.games.length; i++) {
             try {
@@ -221,20 +217,20 @@ export class SaveDataSynchronizer {
                 allOk = false;
               }
             } catch (e) {
-              LoggerMain.error('Error on validations', e);
+              console.error('Error on validations', e);
               allOk = false;
             }
           }
 
           if (allOk) {
-            LoggerMain.addTab();
-            LoggerMain.info('Configured games: ', SaveDataSynchronizer.CONFIG.games.length);
-            LoggerMain.info('Check interval: ', SaveDataSynchronizer.CONFIG.checkInterval);
-            LoggerMain.removeTab();
-            LoggerMain.debug(JSON.stringify(SaveDataSynchronizer.CONFIG, null, 2));
+            console.addTab();
+            console.info('Configured games: ', SaveDataSynchronizer.CONFIG.games.length);
+            console.info('Check interval: ', SaveDataSynchronizer.CONFIG.checkInterval);
+            console.removeTab();
+            console.debug(JSON.stringify(SaveDataSynchronizer.CONFIG, null, 2));
           } else {
             SaveDataSynchronizer.CONFIG.games = [];
-            LoggerMain.info('Invalid configuration');
+            console.info('Invalid configuration');
           }
           resolve();
         } catch (e) {

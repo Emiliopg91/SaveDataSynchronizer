@@ -1,4 +1,4 @@
-import { LoggerMain, Toaster, TranslatorMain } from '@tser-framework/main';
+import { Toaster, TranslatorMain } from '@tser-framework/main';
 import { shell } from 'electron';
 
 import icon45 from '../../../../resources/icons/icon-45x45.png?asset&asarUnpack';
@@ -12,12 +12,12 @@ export class NotificationUtils {
   }
   public static displayAlreadyRunning(): void {
     Toaster.toast(TranslatorMain.translate('already.running'), icon45, () => {
-      shell.openExternal(LoggerMain.LOG_FILE);
+      shell.openExternal(console.logFile());
     });
   }
   public static displaySyncError(): void {
     Toaster.toast(TranslatorMain.translate('error.sync'), icon45, () => {
-      shell.openExternal(LoggerMain.LOG_FILE);
+      shell.openExternal(console.logFile());
     });
   }
   public static displayUploadFinished(icon: string | undefined): void {
@@ -37,7 +37,7 @@ export class NotificationUtils {
   }
   public static displayReadinessError(): void {
     Toaster.toast(TranslatorMain.translate('error.loading'), icon45, () => {
-      shell.openExternal(LoggerMain.LOG_FILE);
+      shell.openExternal(console.logFile());
     });
   }
   public static displayReadyToPlay(): void {

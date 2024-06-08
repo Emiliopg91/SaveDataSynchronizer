@@ -1,5 +1,5 @@
 import react from '@vitejs/plugin-react';
-import { bytecodePlugin, defineConfig } from 'electron-vite';
+import { bytecodePlugin, defineConfig, swcPlugin } from 'electron-vite';
 import fs from 'fs';
 import path, { resolve } from 'path';
 
@@ -24,10 +24,16 @@ console.info('HTMLS: ', htmls);
 
 export default defineConfig({
   main: {
-    plugins: [bytecodePlugin({ transformArrowFunctions: false })]
+    plugins: [
+      swcPlugin(),
+      bytecodePlugin({ transformArrowFunctions: false, protectedStrings: ['Associated deep-link'] })
+    ]
   },
   preload: {
-    plugins: [bytecodePlugin({ transformArrowFunctions: false })]
+    plugins: [
+      swcPlugin(),
+      bytecodePlugin({ transformArrowFunctions: false, protectedStrings: ['Associated deep-link'] })
+    ]
   },
   renderer: {
     resolve: {

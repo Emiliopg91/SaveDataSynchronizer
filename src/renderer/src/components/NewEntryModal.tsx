@@ -47,7 +47,7 @@ export function NewEntryModal(): JSX.Element {
   };
 
   return (
-    <Modal show={ctx.showAddModal} onHide={handleClose} backdrop="static" keyboard={false}>
+    <Modal show={true} onHide={handleClose} backdrop="static" keyboard={false}>
       <Modal.Header closeButton>
         <Modal.Title>{TranslatorRenderer.translate('add.new.entry')}</Modal.Title>
       </Modal.Header>

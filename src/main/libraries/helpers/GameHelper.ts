@@ -1,4 +1,4 @@
-import { FileHelper, LoggerMain, Powershell } from '@tser-framework/main';
+import { FileHelper, Powershell } from '@tser-framework/main';
 import { spawn } from 'child_process';
 import path from 'path';
 
@@ -94,7 +94,7 @@ export class GameHelper {
   public static update(game: Game, dryRun: boolean = false): number {
     let count = 0;
     if (!dryRun) {
-      LoggerMain.info('Updating', game.name);
+      console.info('Updating', game.name);
     }
     if (game.inclusions) {
       for (const inc in game.inclusions) {
@@ -130,7 +130,7 @@ export class GameHelper {
   }
   static download(game: Game): number {
     let count = 0;
-    LoggerMain.info('Downloading', game.name);
+    console.info('Downloading', game.name);
     if (game.inclusions) {
       for (const inc in game.inclusions) {
         const f = path.join(game.remoteDir, game.inclusions[inc]);

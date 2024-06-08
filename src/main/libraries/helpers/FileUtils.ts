@@ -1,4 +1,4 @@
-import { FileHelper, LoggerMain } from '@tser-framework/main';
+import { FileHelper } from '@tser-framework/main';
 import { FileTreeAction } from '@tser-framework/main/dist/implementations/FileHelper';
 import path from 'path';
 
@@ -110,7 +110,7 @@ export class FileUtils {
       if (FileHelper.exists(dst)) {
         if (!dryRun) {
           FileHelper.delete(dst);
-          LoggerMain.info("  (-) '" + relative + "'");
+          console.info("  (-) '" + relative + "'");
         }
         count++;
       }
@@ -118,13 +118,13 @@ export class FileUtils {
       if (!FileHelper.exists(dst)) {
         if (!dryRun) {
           FileHelper.copy(source, dst);
-          LoggerMain.info("  (+) '" + relative + "'");
+          console.info("  (+) '" + relative + "'");
         }
         count++;
       } else if (FileUtils.hasChanged(source, dst)) {
         if (!dryRun) {
           FileHelper.copy(source, dst);
-          LoggerMain.info("  (m) '" + relative + "'");
+          console.info("  (m) '" + relative + "'");
         }
         count++;
       }
@@ -152,7 +152,7 @@ export class FileUtils {
         if (!FileHelper.exists(dst)) {
           if (!dryRun) {
             FileHelper.mkdir(dst);
-            LoggerMain.info("  (+) '" + relative + "'");
+            console.info("  (+) '" + relative + "'");
           }
           count++;
         }
@@ -179,14 +179,14 @@ export class FileUtils {
             if (!dryRun) {
               FileHelper.copy(file, dst);
               FileHelper.setLastModified(dst, FileHelper.getLastModified(file));
-              LoggerMain.info("  (+) '" + relative + "'");
+              console.info("  (+) '" + relative + "'");
             }
             count++;
           } else if (FileUtils.hasChanged(file, dst)) {
             if (!dryRun) {
               FileHelper.copy(file, dst);
               FileHelper.setLastModified(dst, FileHelper.getLastModified(file));
-              LoggerMain.info("  (m) '" + relative + "'");
+              console.info("  (m) '" + relative + "'");
             }
             count++;
           }
@@ -205,7 +205,7 @@ export class FileUtils {
           if (!FileHelper.exists(src)) {
             if (!dryRun) {
               FileHelper.delete(dir);
-              LoggerMain.info("  (-) '" + relative + "'");
+              console.info("  (-) '" + relative + "'");
               action = FileTreeAction.SKIP_SUBTREE;
             }
             count++;
@@ -221,7 +221,7 @@ export class FileUtils {
           if (!FileHelper.exists(src)) {
             if (!dryRun) {
               FileHelper.delete(file);
-              LoggerMain.info("  (-) '" + relative + "'");
+              console.info("  (-) '" + relative + "'");
             }
             count++;
           }

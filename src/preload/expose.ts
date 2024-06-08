@@ -89,6 +89,14 @@ export const exposed = {
     },
     killApp(appName: string): void {
       ipcRenderer.send('kill-app', appName);
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    getAppConfig(): Promise<any> {
+      return ipcRenderer.invoke('get-app-cfg');
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    saveAppConfig(cfg: any): Promise<any> {
+      return ipcRenderer.invoke('save-app-cfg', cfg);
     }
   },
   app: {

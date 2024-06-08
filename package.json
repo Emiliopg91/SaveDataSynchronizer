@@ -1,6 +1,6 @@
 {
   "name": "SaveDataSynchronizer",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "An Electron application with React and TypeScript",
   "repository": "https://github.com/electron/fiddle",
   "main": "./out/main/index.js",
@@ -27,9 +27,9 @@
     "build:linux": "electron-vite build && electron-builder --linux"
   },
   "dependencies": {
-    "@tser-framework/commons": "^2.0.34",
-    "@tser-framework/main": "^2.0.138",
-    "@tser-framework/renderer": "^2.0.60",
+    "@tser-framework/commons": "^2.0.37",
+    "@tser-framework/main": "^2.0.147",
+    "@tser-framework/renderer": "^2.0.61",
     "async-mutex": "^0.5.0",
     "bootstrap": "^5.3.3",
     "electron-log": "^5.1.5",
@@ -49,6 +49,7 @@
     "@electron-toolkit/tsconfig": "^1.0.1",
     "@electron-toolkit/utils": "^3.0.0",
     "@rollup/plugin-commonjs": "^25.0.8",
+    "@swc/core": "^1.5.25",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/bootstrap": "^5.2.10",
     "@types/node": "^20.14.2",
@@ -63,7 +64,7 @@
     "eslint-plugin-react": "^7.34.2",
     "prettier": "3.2.5",
     "typescript": "^5.4.5",
-    "vite": "^5.2.12",
+    "vite": "^5.2.13",
     "vite-plugin-dynamic-import": "^1.5.0"
   },
   "extraResources": [

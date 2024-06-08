@@ -27,20 +27,20 @@ let shownUpdate = false;
 (async (): Promise<void> => {
   await LoggerMain.initialize();
 
-  LoggerMain.info('##################################################');
-  LoggerMain.info('#                  Started main                  #');
-  LoggerMain.info('##################################################');
-  LoggerMain.info('Running runBeforeReady');
-  LoggerMain.addTab();
+  console.system('##################################################');
+  console.system('#                  Started main                  #');
+  console.system('##################################################');
+  console.system('Running runBeforeReady');
+  console.addTab();
   await runBeforeReady();
-  LoggerMain.removeTab();
-  LoggerMain.info('Ended runBeforeReady');
+  console.removeTab();
+  console.system('Ended runBeforeReady');
   if (!app.requestSingleInstanceLock() && appConfig.singleInstance) {
-    LoggerMain.error('Application already running');
+    console.error('Application already running');
     app.quit();
   } else {
-    LoggerMain.info('Services registration');
-    LoggerMain.addTab();
+    console.system('Services registration');
+    console.addTab();
     Object.keys(ipcListeners).forEach((id) => {
       const listener = ipcListeners[id];
       if (listener.sync) {
@@ -48,7 +48,7 @@ let shownUpdate = false;
         ipcMain.handle(id, (event: IpcMainInvokeEvent, ...args: any): unknown => {
           return listener.fn(event, ...args);
         });
-        LoggerMain.info("Synchronous IPC '" + id + "'");
+        console.system("Synchronous IPC '" + id + "'");
       }
     });
     Object.keys(ipcListeners).forEach((id) => {
@@ -58,7 +58,7 @@ let shownUpdate = false;
         ipcMain.on(id, (event: IpcMainInvokeEvent, ...args: any): void => {
           listener.fn(event, ...args);
         });
-        LoggerMain.info("Asynchronous IPC '" + id + "'");
+        console.system("Asynchronous IPC '" + id + "'");
       }
     });
 
@@ -73,7 +73,7 @@ let shownUpdate = false;
 
       Object.keys(protocolBindings).forEach((id) => {
         protocol.handle(id, protocolBindings[id].handler);
-        LoggerMain.info("Registered protocol '" + id + "'");
+        console.system("Registered protocol '" + id + "'");
       });
 
       if (deepLinkBindings) {
@@ -85,11 +85,11 @@ let shownUpdate = false;
           } else {
             app.setAsDefaultProtocolClient(id);
           }
-          LoggerMain.info("Associated deep-link '" + id + "'");
+          console.system("Associated deep-link '" + id + "'");
         });
       }
-      LoggerMain.removeTab();
-      LoggerMain.info('Registration finished');
+      console.removeTab();
+      console.system('Registration finished');
 
       let menu: Menu | null = null;
       if (menuTemplate) {
@@ -140,16 +140,16 @@ let shownUpdate = false;
 
       app.on('quit', function () {
         const msg = ' Stopped main after ' + msToTime(Date.now() - initTime) + ' ';
-        LoggerMain.removeTab();
-        LoggerMain.info('##################################################');
-        LoggerMain.info(
+        console.removeTab();
+        console.system('##################################################');
+        console.system(
           '#' +
             ''.padEnd((48 - msg.length) / 2, ' ') +
             msg +
             ''.padEnd((48 - msg.length) / 2, ' ') +
             '#'
         );
-        LoggerMain.info('##################################################');
+        console.system('##################################################');
       });
 
       app.on('window-all-closed', () => {
@@ -223,8 +223,8 @@ let shownUpdate = false;
       });
       autoUpdater.checkForUpdates();
 
-      LoggerMain.info('Running runWhenReady');
-      LoggerMain.addTab();
+      console.system('Running runWhenReady');
+      console.addTab();
       runWhenReady();
     });
   }
