@@ -41,7 +41,7 @@ export const AppsContext = createContext(defaultValue);
 
 export function AppsProvider({ children }: { children: JSX.Element }): JSX.Element {
   const [categories, setCategories] = useState<Array<string>>(defaultCategories);
-  const [category, setCategory] = useState('game');
+  const [category, setCategory] = useState(defaultCategories[0]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showCfgModal, setShowCfgModal] = useState(false);
   const [pendingUpdate, setPendingUpdate] = useState(false);

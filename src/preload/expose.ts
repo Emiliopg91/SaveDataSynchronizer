@@ -7,7 +7,7 @@ import {
 import { TranslatorRenderer } from '@tser-framework/renderer';
 import { IpcRendererEvent, ipcRenderer } from 'electron';
 
-import { author, name } from '../../package.json';
+import { name, version } from '../../package.json';
 import translations from '../../translations.i18n.json';
 
 export const exposed = {
@@ -100,10 +100,11 @@ export const exposed = {
     }
   },
   app: {
-    name: name,
-    email: author.email
+    name,
+    version
   },
   env: {
+    IS_DEV: process.env.APP_DEV ? Boolean(process.env.APP_DEV.trim()) : false,
     LOG_LEVEL: process.env.LOG_LEVEL || DefaulLevel
   },
   translations: TranslatorRenderer.buildTranslations(translations)

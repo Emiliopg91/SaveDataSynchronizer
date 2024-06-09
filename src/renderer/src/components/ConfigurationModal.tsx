@@ -1,6 +1,6 @@
 import { AppsContext } from '@renderer/contexts/AppsContext';
 import { TranslatorRenderer } from '@tser-framework/renderer';
-import { useContext, useEffect, useRef, useState } from 'react';
+import { FormEvent, useContext, useEffect, useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 
 export function ConfigurationModal(): JSX.Element {
@@ -36,6 +36,27 @@ export function ConfigurationModal(): JSX.Element {
     });
   }, []);
 
+  const handleChangeAutostart = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    setCfg({ ...cfg, autostart: e.target.checked });
+  };
+
+  const handleChangeRemote = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    setCfg({ ...cfg, remote: e.target.value });
+  };
+
+  const onClickRestore = (): void => {
+    setCfg(def);
+  };
+
+  const onFormSubmit = async (event: FormEvent | MouseEvent): Promise<void> => {
+    event.preventDefault();
+    if (validateForm()) {
+      cfg['remote'] = cfg['remote'].trim();
+      await window.api.saveAppConfig(cfg);
+      ctx.setShowCfgModal(false);
+    }
+  };
+
   return (
     <>
       {cfg && (
@@ -44,7 +65,7 @@ export function ConfigurationModal(): JSX.Element {
             <Modal.Title>{TranslatorRenderer.translate('configuration')}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <Form>
+            <Form onSubmit={onFormSubmit}>
               <Form.Group className="mb-3" controlId="autostartup">
                 <Form.Label>
                   <b>{TranslatorRenderer.translate('global.config')}</b>
@@ -52,9 +73,7 @@ export function ConfigurationModal(): JSX.Element {
                 <Form.Check
                   label={TranslatorRenderer.translate('autostart')}
                   checked={cfg['autostart']}
-                  onChange={(e) => {
-                    setCfg({ ...cfg, autostart: e.target.checked });
-                  }}
+                  onChange={handleChangeAutostart}
                   style={{ marginLeft: 15 }}
                 />
               </Form.Group>
@@ -62,35 +81,15 @@ export function ConfigurationModal(): JSX.Element {
                 <Form.Label>
                   <b>{TranslatorRenderer.translate('cloud.dir.name')}</b>
                 </Form.Label>
-                <Form.Control
-                  value={cfg['remote']}
-                  type="text"
-                  onChange={(e) => {
-                    setCfg({ ...cfg, remote: e.target.value });
-                  }}
-                />
+                <Form.Control value={cfg['remote']} type="text" onChange={handleChangeRemote} />
               </Form.Group>
             </Form>
           </Modal.Body>
           <Modal.Footer>
-            <Button
-              variant="primary"
-              disabled={!validateForm()}
-              onClick={async () => {
-                setCfg(def);
-              }}
-            >
+            <Button variant="primary" disabled={!validateForm()} onClick={onClickRestore}>
               {TranslatorRenderer.translate('restore.defaults')}
             </Button>
-            <Button
-              variant="primary"
-              disabled={!validateForm()}
-              onClick={async () => {
-                cfg['remote'] = cfg['remote'].trim();
-                await window.api.saveAppConfig(cfg);
-                ctx.setShowCfgModal(false);
-              }}
-            >
+            <Button variant="primary" disabled={!validateForm()} onClick={onFormSubmit}>
               {TranslatorRenderer.translate(
                 cfg['remote'].trim() != def['remote'].trim() ? 'save.and.restart' : 'save'
               )}

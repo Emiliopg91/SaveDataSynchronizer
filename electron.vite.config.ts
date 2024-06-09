@@ -24,16 +24,10 @@ console.info('HTMLS: ', htmls);
 
 export default defineConfig({
   main: {
-    plugins: [
-      swcPlugin(),
-      bytecodePlugin({ transformArrowFunctions: false, protectedStrings: ['Associated deep-link'] })
-    ]
+    plugins: [swcPlugin(), bytecodePlugin({ transformArrowFunctions: false })]
   },
   preload: {
-    plugins: [
-      swcPlugin(),
-      bytecodePlugin({ transformArrowFunctions: false, protectedStrings: ['Associated deep-link'] })
-    ]
+    plugins: [swcPlugin(), bytecodePlugin({ transformArrowFunctions: false })]
   },
   renderer: {
     resolve: {

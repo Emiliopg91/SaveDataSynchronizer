@@ -16,14 +16,41 @@ export function Games({ type }: { type: string }): JSX.Element {
     setType(type);
   }, [type]);
 
+  const onChangeFilter = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    setFilter(event.target.value);
+  };
+
+  const onClickStop = (name: string): void => {
+    if (confirm(TranslatorRenderer.translate('sure.to.stop'))) {
+      window.api.killApp(name);
+    }
+  };
+
+  const onClickLaunch = (name: string): void => {
+    window.api.launch(name);
+  };
+
+  const onClickSync = (name: string): void => {
+    window.api.sync(name);
+  };
+
+  const onClickDelete = (name: string): void => {
+    if (confirm(TranslatorRenderer.translate('sure.to.remove'))) {
+      window.api.deleteEntry(name);
+      location.reload();
+    }
+  };
+
+  const onClickNewEntry = (): void => {
+    ctx.setShowAddModal(true);
+  };
+
   return (
     <>
       <Form.Control
         type="text"
         placeholder={TranslatorRenderer.translate('filter.entries')}
-        onChange={(event) => {
-          setFilter(event.target.value);
-        }}
+        onChange={onChangeFilter}
         style={{ marginBottom: 5 }}
       />
       <Container>
@@ -45,9 +72,7 @@ export function Games({ type }: { type: string }): JSX.Element {
                     className="btn"
                     title={TranslatorRenderer.translate('kill.now')}
                     onClick={() => {
-                      if (confirm(TranslatorRenderer.translate('sure.to.stop'))) {
-                        window.api.killApp(g.name);
-                      }
+                      onClickStop(g.name);
                     }}
                   >
                     <FaStop color="red" />
@@ -60,7 +85,7 @@ export function Games({ type }: { type: string }): JSX.Element {
                       className="btn"
                       title={TranslatorRenderer.translate('launch.now')}
                       onClick={() => {
-                        window.api.launch(g.name);
+                        onClickLaunch(g.name);
                       }}
                     >
                       <FaPlay color="green" />
@@ -70,9 +95,8 @@ export function Games({ type }: { type: string }): JSX.Element {
                       className="btn"
                       title={TranslatorRenderer.translate('sync.now')}
                       onClick={() => {
-                        window.api.sync(g.name);
+                        onClickSync(g.name);
                       }}
-                      disabled={ctx.syncing}
                     >
                       <FaSyncAlt color="blue" />
                     </button>
@@ -81,10 +105,7 @@ export function Games({ type }: { type: string }): JSX.Element {
                       className="btn"
                       title={TranslatorRenderer.translate('remove.entry')}
                       onClick={() => {
-                        if (confirm(TranslatorRenderer.translate('sure.to.remove'))) {
-                          window.api.deleteEntry(g.name);
-                          location.reload();
-                        }
+                        onClickDelete(g.name);
                       }}
                     >
                       <FaRegTrashAlt color="red" />
@@ -97,11 +118,7 @@ export function Games({ type }: { type: string }): JSX.Element {
         })}
         <Row>
           <Col sm={12} id="addNewEntryRow">
-            <span
-              onClick={() => {
-                ctx.setShowAddModal(true);
-              }}
-            >
+            <span onClick={onClickNewEntry}>
               <IoAddCircleOutline /> {TranslatorRenderer.translate('add.new.entry')}
             </span>
           </Col>

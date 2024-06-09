@@ -7,17 +7,27 @@ import {
   TranslatorRenderer
 } from '@tser-framework/renderer';
 import { useContext, useEffect, useState } from 'react';
-import { FaCog } from 'react-icons/fa';
+import { FaCoffee, FaCog, FaExclamation } from 'react-icons/fa';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
 import { ConfigurationModal } from './ConfigurationModal';
 import { Games } from './Games';
 import { NewEntryModal } from './NewEntryModal';
-import { StatusBar } from './StatusBar';
 
 export function App(): JSX.Element {
   const ctx = useContext(AppsContext);
   const [navBarCfgTop, setNavBarCfgTop] = useState<Array<NavBarConfiguration>>([]);
+  const [navBarCfgBottom, setNavBarCfgBottom] = useState<Array<NavBarConfiguration>>([]);
+
+  const onClickBuyMeACoffee = (): void => {
+    window.api.buyMeACoffee();
+  };
+  const onClickConfiguration = (): void => {
+    ctx.setShowCfgModal(true);
+  };
+  const onClickUpdate = (): void => {
+    window.api.triggerUpdate();
+  };
 
   useEffect(() => {
     const newNavBarCfgTop: Array<NavBarConfiguration> = [];
@@ -34,15 +44,29 @@ export function App(): JSX.Element {
     setNavBarCfgTop(newNavBarCfgTop);
   }, [ctx.categories]);
 
-  const navBarCfgBottom: Array<NavBarConfiguration> = [
-    {
-      text: TranslatorRenderer.translate('configuration'),
-      icon: <FaCog />,
-      onClick: (): void => {
-        ctx.setShowCfgModal(true);
+  useEffect(() => {
+    const newNavBarCfgBottom: Array<NavBarConfiguration> = [
+      {
+        text: TranslatorRenderer.translate('configuration'),
+        icon: <FaCog />,
+        onClick: onClickConfiguration
+      },
+      {
+        text: TranslatorRenderer.translate('make.a.donation'),
+        icon: <FaCoffee />,
+        onClick: onClickBuyMeACoffee
       }
+    ];
+    if (ctx.pendingUpdate) {
+      newNavBarCfgBottom.push({
+        text: TranslatorRenderer.translate('update.available'),
+        icon: <FaExclamation />,
+        id: 'pendingUpdate',
+        onClick: onClickUpdate
+      });
     }
-  ];
+    setNavBarCfgBottom(newNavBarCfgBottom);
+  }, [ctx.pendingUpdate]);
 
   useEffect(() => {
     const unsubscribe = window.api.syncInProgress((_, value) => {
@@ -60,7 +84,6 @@ export function App(): JSX.Element {
       <>
         {' '}
         <MemoryRouter>
-          <div>{JSON.stringify(ctx)}</div>
           {ctx.showCfgModal && <ConfigurationModal />}
           {ctx.showAddModal && <NewEntryModal />}
           <Loading color="white" />
@@ -76,7 +99,6 @@ export function App(): JSX.Element {
               })}
             </Routes>
           </div>
-          <StatusBar />
         </MemoryRouter>
       </>
     </>

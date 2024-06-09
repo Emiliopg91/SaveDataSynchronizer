@@ -40,9 +40,9 @@ export const windowConfig: WindowConfig = {
   zoom: false,
   icon: icon512,
   constructorOptions: {
-    width: 680,
-    minWidth: 680,
-    maxWidth: 680,
+    width: 760,
+    minWidth: 760,
+    maxWidth: 760,
     height: 760,
     minHeight: 760,
     maxHeight: 760,
@@ -50,7 +50,7 @@ export const windowConfig: WindowConfig = {
     fullscreenable: false,
     resizable: false,
     show: false,
-    title: app.getName() + ' v' + app.getVersion(),
+    title: app.getName(),
     autoHideMenuBar: false,
     ...(process.platform === 'linux' ? { icon512 } : {}),
     webPreferences: {

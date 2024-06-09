@@ -1,6 +1,6 @@
 import { AppsContext } from '@renderer/contexts/AppsContext';
 import { TranslatorRenderer } from '@tser-framework/renderer';
-import { useContext, useEffect, useState } from 'react';
+import { FormEvent, useContext, useEffect, useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 
 export function NewEntryModal(): JSX.Element {
@@ -50,32 +50,74 @@ export function NewEntryModal(): JSX.Element {
     }, 250);
   }, [game['localDir']]);
 
+  const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    setGame({ ...game, name: e.target.value });
+  };
+
+  const handleChangePolicy = (e: React.ChangeEvent<HTMLSelectElement>): void => {
+    setGame({ ...game, policy: e.target.value, inclusions: [], exclusions: [] });
+  };
+
+  const handleChangeInclusions = (e: React.ChangeEvent<HTMLSelectElement>): void => {
+    const arr: Array<string> = [];
+    for (const i in e.target.selectedOptions) {
+      if (e.target.selectedOptions[i].value) {
+        arr.push(e.target.selectedOptions[i].value);
+      }
+    }
+    setGame({ ...game, inclusions: arr });
+  };
+
+  const handleChangeExclusions = (e: React.ChangeEvent<HTMLSelectElement>): void => {
+    const arr: Array<string> = [];
+    for (const i in e.target.selectedOptions) {
+      if (e.target.selectedOptions[i].value) {
+        arr.push(e.target.selectedOptions[i].value);
+      }
+    }
+    setGame({ ...game, exclusions: arr });
+  };
+
+  const onClickExecutable = async (): Promise<void> => {
+    setGame({ ...game, executable: await window.api.exploreExecutable() });
+  };
+
+  const onClickLocal = async (): Promise<void> => {
+    setGame({ ...game, localDir: await window.api.exploreLocal() });
+  };
+
+  const onClickRemote = async (): Promise<void> => {
+    setGame({ ...game, remoteDir: await window.api.exploreRemote() });
+  };
+
+  const onFormSubmit = async (event: FormEvent | MouseEvent): Promise<void> => {
+    event.preventDefault();
+    if (validateForm() && confirm(TranslatorRenderer.translate('confirm.save'))) {
+      const entry = { ...game, category: ctx.category };
+      await window.api.saveEntry(entry);
+      setGame({});
+      setTimeout(() => {
+        ctx.setShowAddModal(false);
+        location.reload();
+      }, 250);
+    }
+  };
+
   return (
     <Modal show={visible} onHide={handleClose} backdrop="static" keyboard={false}>
       <Modal.Header closeButton>
         <Modal.Title>{TranslatorRenderer.translate('add.new.entry')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Form>
+        <Form onSubmit={onFormSubmit}>
           <Form.Group className="mb-3" controlId="gameName">
             <Form.Label>{TranslatorRenderer.translate('game.name')}</Form.Label>
-            <Form.Control
-              type="text"
-              onChange={(e) => {
-                setGame({ ...game, name: e.target.value });
-              }}
-            />
+            <Form.Control type="text" onChange={handleChangeName} />
           </Form.Group>
           <Form.Group className="mb-3" controlId="gameExecutable">
             <Form.Label>{TranslatorRenderer.translate('game.executable')}</Form.Label>
             <br />
-            <Button
-              onClick={async () => {
-                setGame({ ...game, executable: await window.api.exploreExecutable() });
-              }}
-            >
-              {TranslatorRenderer.translate('explore')}
-            </Button>
+            <Button onClick={onClickExecutable}>{TranslatorRenderer.translate('explore')}</Button>
             {game['executable'] && (
               <span style={{ marginLeft: 10 }}>
                 {(game['executable'] as string).substring(
@@ -87,13 +129,7 @@ export function NewEntryModal(): JSX.Element {
           <Form.Group className="mb-3" controlId="gameLocalDir">
             <Form.Label>{TranslatorRenderer.translate('game.local.dir')}</Form.Label>
             <br />
-            <Button
-              onClick={async () => {
-                setGame({ ...game, localDir: await window.api.exploreLocal() });
-              }}
-            >
-              {TranslatorRenderer.translate('explore')}
-            </Button>
+            <Button onClick={onClickLocal}>{TranslatorRenderer.translate('explore')}</Button>
             {game['localDir'] && (
               <span style={{ marginLeft: 10 }}>
                 {(game['localDir'] as string).substring(
@@ -105,12 +141,7 @@ export function NewEntryModal(): JSX.Element {
           {game['localDir'] && (
             <Form.Group className="mb-3" controlId="gamePolicy">
               <Form.Label>{TranslatorRenderer.translate('game.policy')}</Form.Label>{' '}
-              <Form.Select
-                required={true}
-                onChange={(e) => {
-                  setGame({ ...game, policy: e.target.value, inclusions: [], exclusions: [] });
-                }}
-              >
+              <Form.Select required={true} onChange={handleChangePolicy}>
                 <option value="0">{TranslatorRenderer.translate('game.include.all')}</option>
                 <option value="1">{TranslatorRenderer.translate('game.include.selected')}</option>
                 <option value="2">{TranslatorRenderer.translate('game.exclude.selected')}</option>
@@ -120,20 +151,7 @@ export function NewEntryModal(): JSX.Element {
           {game['policy'] == 1 && (
             <Form.Group className="mb-3" controlId="gameInclusion">
               <Form.Label>{TranslatorRenderer.translate('game.inclusions')}</Form.Label>{' '}
-              <Form.Select
-                multiple
-                required={true}
-                onChange={(e) => {
-                  const arr: Array<string> = [];
-                  for (const i in e.target.selectedOptions) {
-                    if (e.target.selectedOptions[i].value) {
-                      arr.push(e.target.selectedOptions[i].value);
-                    }
-                  }
-                  console.log(arr);
-                  setGame({ ...game, inclusions: arr });
-                }}
-              >
+              <Form.Select multiple required={true} onChange={handleChangeInclusions}>
                 {files.map((f) => {
                   return (
                     <option key={f} value={f}>
@@ -147,20 +165,7 @@ export function NewEntryModal(): JSX.Element {
           {game['policy'] == 2 && (
             <Form.Group className="mb-3" controlId="gameExclusion">
               <Form.Label>{TranslatorRenderer.translate('game.exclusions')}</Form.Label>{' '}
-              <Form.Select
-                multiple
-                required={true}
-                onChange={(e) => {
-                  const arr: Array<string> = [];
-                  for (const i in e.target.selectedOptions) {
-                    if (e.target.selectedOptions[i].value) {
-                      arr.push(e.target.selectedOptions[i].value);
-                    }
-                  }
-                  console.log(arr);
-                  setGame({ ...game, exclusions: arr });
-                }}
-              >
+              <Form.Select multiple required={true} onChange={handleChangeExclusions}>
                 {files.map((f) => {
                   return (
                     <option key={f} value={f}>
@@ -174,13 +179,7 @@ export function NewEntryModal(): JSX.Element {
           <Form.Group className="mb-3" controlId="gameRemoteDir">
             <Form.Label>{TranslatorRenderer.translate('game.remote.dir')}</Form.Label>
             <br />
-            <Button
-              onClick={async () => {
-                setGame({ ...game, remoteDir: await window.api.exploreRemote() });
-              }}
-            >
-              {TranslatorRenderer.translate('explore')}
-            </Button>
+            <Button onClick={onClickRemote}>{TranslatorRenderer.translate('explore')}</Button>
             {game['remoteDir'] && (
               <span style={{ marginLeft: 10 }}>
                 {(game['remoteDir'] as string).substring(
@@ -192,21 +191,7 @@ export function NewEntryModal(): JSX.Element {
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <Button
-          variant="primary"
-          disabled={!validateForm()}
-          onClick={async () => {
-            if (confirm(TranslatorRenderer.translate('confirm.save'))) {
-              const entry = { ...game, category: ctx.category };
-              await window.api.saveEntry(entry);
-              setGame({});
-              setTimeout(() => {
-                ctx.setShowAddModal(false);
-                location.reload();
-              }, 250);
-            }
-          }}
-        >
+        <Button variant="primary" disabled={!validateForm()} onClick={onFormSubmit}>
           {TranslatorRenderer.translate('save')}
         </Button>
       </Modal.Footer>
