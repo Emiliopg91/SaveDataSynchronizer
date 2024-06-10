@@ -8,6 +8,8 @@ import { FaRegTrashAlt, FaStop } from 'react-icons/fa';
 import { FaPlay } from 'react-icons/fa6';
 import { IoAddCircleOutline } from 'react-icons/io5';
 
+import '../styles/components/Games.css';
+
 export function Games({ type }: { type: string }): JSX.Element {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [apps, setType, setFilter] = useApp();

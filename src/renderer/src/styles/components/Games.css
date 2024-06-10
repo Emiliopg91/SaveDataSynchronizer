@@ -1,0 +1,15 @@
+.gameEntryRow:nth-child(odd) {
+  background-color: #00000008;
+}
+
+.gameEntryRow:hover {
+  background-color: #00000010;
+}
+
+#addNewEntryRow {
+  text-align: center;
+}
+
+#addNewEntryRow span:hover {
+  cursor: pointer;
+}

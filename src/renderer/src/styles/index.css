@@ -1,0 +1,19 @@
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0px;
+  -webkit-user-select: none;
+  overflow-x: hidden;
+}
+
+#pendingUpdate {
+  animation: blinker 2s linear infinite;
+  color: red;
+  font-weight: bold;
+}
+@keyframes blinker {
+  50% {
+    opacity: 0.1;
+  }
+}

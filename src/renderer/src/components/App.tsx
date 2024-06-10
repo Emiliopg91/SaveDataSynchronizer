@@ -1,14 +1,13 @@
 import { AppsContext } from '@renderer/contexts/AppsContext';
 import {
+  AppRouter,
   LoadScreen,
-  Loading,
-  NavBar,
   NavBarConfiguration,
+  RouteConfiguration,
   TranslatorRenderer
 } from '@tser-framework/renderer';
 import { useContext, useEffect, useState } from 'react';
 import { FaCoffee, FaCog, FaExclamation } from 'react-icons/fa';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
 import { ConfigurationModal } from './ConfigurationModal';
 import { Games } from './Games';
@@ -16,6 +15,7 @@ import { NewEntryModal } from './NewEntryModal';
 
 export function App(): JSX.Element {
   const ctx = useContext(AppsContext);
+  const [routes, setRoutes] = useState<Array<RouteConfiguration>>([]);
   const [navBarCfgTop, setNavBarCfgTop] = useState<Array<NavBarConfiguration>>([]);
   const [navBarCfgBottom, setNavBarCfgBottom] = useState<Array<NavBarConfiguration>>([]);
 
@@ -42,6 +42,15 @@ export function App(): JSX.Element {
       });
     });
     setNavBarCfgTop(newNavBarCfgTop);
+
+    const newRoutes: Array<RouteConfiguration> = ctx.categories.map((c) => {
+      let path = '/' + c.replace('game', '');
+      if (c != 'game') {
+        path += 's';
+      }
+      return { path, element: <Games type={c} /> };
+    });
+    setRoutes(newRoutes);
   }, [ctx.categories]);
 
   useEffect(() => {
@@ -81,26 +90,13 @@ export function App(): JSX.Element {
 
   return (
     <>
-      <>
-        {' '}
-        <MemoryRouter>
-          {ctx.showCfgModal && <ConfigurationModal />}
-          {ctx.showAddModal && <NewEntryModal />}
-          <Loading color="white" />
-          <NavBar top={navBarCfgTop} bottom={navBarCfgBottom} />
-          <div id="router">
-            <Routes>
-              {ctx.categories.map((c) => {
-                let path = '/' + c.replace('game', '');
-                if (c != 'game') {
-                  path += 's';
-                }
-                return <Route key={c} path={path} element={<Games type={c} />} />;
-              })}
-            </Routes>
-          </div>
-        </MemoryRouter>
-      </>
+      {ctx.showCfgModal && <ConfigurationModal />}
+      {ctx.showAddModal && <NewEntryModal />}
+      <AppRouter
+        navBarCfgTop={navBarCfgTop}
+        navBarCfgBottom={navBarCfgBottom}
+        routes={routes}
+      ></AppRouter>
     </>
   );
 }

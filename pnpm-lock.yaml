@@ -8,8 +8,8 @@ dependencies:
     specifier: ^2.0.147
     version: 2.0.147(@swc/core@1.5.25)(electron-builder-squirrel-windows@24.13.3)(vite@5.2.13)
   '@tser-framework/renderer':
-    specifier: ^2.0.62
-    version: 2.0.62(@popperjs/core@2.11.8)(@types/react@18.3.3)
+    specifier: ^2.0.65
+    version: 2.0.65(@popperjs/core@2.11.8)(@types/react@18.3.3)
   async-mutex:
     specifier: ^0.5.0
     version: 0.5.0
@@ -1369,8 +1369,8 @@ packages:
       - vite
     dev: false
 
-  /@tser-framework/renderer@2.0.62(@popperjs/core@2.11.8)(@types/react@18.3.3):
-    resolution: {integrity: sha512-MrJkTkS5fqGZgRC0bPFV1e2VZjSGWFXBYobltPVK/XJkEw+LbiisfgWb8Zc+N/2Vg7fBaWXyzuhSbCBryOeBqg==}
+  /@tser-framework/renderer@2.0.65(@popperjs/core@2.11.8)(@types/react@18.3.3):
+    resolution: {integrity: sha512-tQ95uJzwKd6Tc9gFZm+eD+IPrGWHhSEqGAhKLaUl0E7JslKxJMxLFKisC9lOhg/2a1FljZMtxcXuxD99uMlf2g==}
     dependencies:
       '@tser-framework/commons': 2.0.37
       async-mutex: 0.5.0
