@@ -3,6 +3,8 @@ import { TranslatorRenderer } from '@tser-framework/renderer';
 import { FormEvent, useContext, useEffect, useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 
+import '../styles/components/NewEntryModal.css';
+
 export function NewEntryModal(): JSX.Element {
   const ctx = useContext(AppsContext);
 
@@ -104,7 +106,13 @@ export function NewEntryModal(): JSX.Element {
   };
 
   return (
-    <Modal show={visible} onHide={handleClose} backdrop="static" keyboard={false}>
+    <Modal
+      id="newEntryModal"
+      show={visible}
+      onHide={handleClose}
+      backdrop="static"
+      keyboard={false}
+    >
       <Modal.Header closeButton>
         <Modal.Title>{TranslatorRenderer.translate('add.new.entry')}</Modal.Title>
       </Modal.Header>
@@ -119,7 +127,7 @@ export function NewEntryModal(): JSX.Element {
             <br />
             <Button onClick={onClickExecutable}>{TranslatorRenderer.translate('explore')}</Button>
             {game['executable'] && (
-              <span style={{ marginLeft: 10 }}>
+              <span id="executableLabel">
                 {(game['executable'] as string).substring(
                   (game['executable'] as string).lastIndexOf('\\') + 1
                 )}
@@ -131,7 +139,7 @@ export function NewEntryModal(): JSX.Element {
             <br />
             <Button onClick={onClickLocal}>{TranslatorRenderer.translate('explore')}</Button>
             {game['localDir'] && (
-              <span style={{ marginLeft: 10 }}>
+              <span id="localLabel">
                 {(game['localDir'] as string).substring(
                   (game['localDir'] as string).lastIndexOf('\\') + 1
                 )}
@@ -181,7 +189,7 @@ export function NewEntryModal(): JSX.Element {
             <br />
             <Button onClick={onClickRemote}>{TranslatorRenderer.translate('explore')}</Button>
             {game['remoteDir'] && (
-              <span style={{ marginLeft: 10 }}>
+              <span id="remoteLabel">
                 {(game['remoteDir'] as string).substring(
                   (game['remoteDir'] as string).lastIndexOf('\\') + 1
                 )}

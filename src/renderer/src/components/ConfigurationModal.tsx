@@ -3,6 +3,8 @@ import { TranslatorRenderer } from '@tser-framework/renderer';
 import { FormEvent, useContext, useEffect, useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 
+import '../styles/components/ConfigurationModal.css';
+
 export function ConfigurationModal(): JSX.Element {
   const ctx = useContext(AppsContext);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -60,7 +62,13 @@ export function ConfigurationModal(): JSX.Element {
   return (
     <>
       {cfg && (
-        <Modal show={visible} onHide={handleClose} backdrop="static" keyboard={false}>
+        <Modal
+          id="ConfigurationModal"
+          show={visible}
+          onHide={handleClose}
+          backdrop="static"
+          keyboard={false}
+        >
           <Modal.Header closeButton>
             <Modal.Title>{TranslatorRenderer.translate('configuration')}</Modal.Title>
           </Modal.Header>
@@ -71,10 +79,10 @@ export function ConfigurationModal(): JSX.Element {
                   <b>{TranslatorRenderer.translate('global.config')}</b>
                 </Form.Label>
                 <Form.Check
+                  id="autostartCheckbox"
                   label={TranslatorRenderer.translate('autostart')}
                   checked={cfg['autostart']}
                   onChange={handleChangeAutostart}
-                  style={{ marginLeft: 15 }}
                 />
               </Form.Group>
               <Form.Group className="mb-3" controlId="cloudDirName">

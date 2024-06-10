@@ -1,0 +1,15 @@
+#newEntryModal label {
+  font-weight: bold;
+}
+
+#newEntryModal #executableLabel {
+  margin-left: 10px;
+}
+
+#newEntryModal #localLabel {
+  margin-left: 10px;
+}
+
+#newEntryModal #remoteLabel {
+  margin-left: 10px;
+}
