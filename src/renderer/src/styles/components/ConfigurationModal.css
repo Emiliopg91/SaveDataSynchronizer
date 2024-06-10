@@ -1,0 +1,3 @@
+#ConfigurationModal div:has(> #autostartCheckbox) {
+  margin-left: 15px;
+}

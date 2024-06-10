@@ -48,26 +48,22 @@ export function Games({ type }: { type: string }): JSX.Element {
   };
 
   return (
-    <>
+    <div id="GameComponent">
       <Form.Control
         type="text"
         placeholder={TranslatorRenderer.translate('filter.entries')}
         onChange={onChangeFilter}
-        style={{ marginBottom: 5 }}
+        id="filter"
       />
       <Container>
         {apps.map((g, idx) => {
           return (
-            <Row className="gameEntryRow" key={idx} style={{ paddingBottom: 5 }}>
-              <Col sm={8} style={{ margin: 'auto' }}>
-                <img
-                  className="card-img-top"
-                  src={'local://' + g.icon?.replaceAll('\\', '/')}
-                  style={{ maxHeight: 45, maxWidth: 40, paddingTop: 5, marginRight: 10 }}
-                />
+            <Row className="gameEntryRow" key={idx}>
+              <Col className="gameEntryRowInfo" sm={8}>
+                <img className="card-img-top" src={'local://' + g.icon?.replaceAll('\\', '/')} />
                 <b>{g.name}</b>
               </Col>
-              <Col sm={4} style={{ paddingTop: 5, textAlign: 'right', margin: 'auto' }}>
+              <Col className="gameEntryRowControl" sm={4}>
                 {g['running'] && (
                   <button
                     type="button"
@@ -126,6 +122,6 @@ export function Games({ type }: { type: string }): JSX.Element {
           </Col>
         </Row>
       </Container>
-    </>
+    </div>
   );
 }
