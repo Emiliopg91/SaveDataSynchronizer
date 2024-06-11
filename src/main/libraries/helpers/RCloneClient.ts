@@ -1,7 +1,6 @@
-import { FileHelper } from '@tser-framework/main';
+import { File, FileHelper, LoggerMain } from '@tser-framework/main';
 import { Mutex } from 'async-mutex';
 import { spawn } from 'child_process';
-import path from 'path';
 
 import { mainWindow } from '../..';
 import { RCloneException } from '../exceptions/RCloneException';
@@ -10,6 +9,7 @@ import { Constants } from './Constants';
 import { NotificationUtils } from './NotificationUtils';
 
 export class RCloneClient {
+  private static LOGGER = new LoggerMain('RCloneClient');
   public static MUTEX: Mutex = new Mutex();
 
   public static RCLONE_BACKEND: string = 'backend';
@@ -32,7 +32,7 @@ export class RCloneClient {
     RCloneClient.COMMON_PROV_COMMAND_P2.push('--log-format');
     RCloneClient.COMMON_PROV_COMMAND_P2.push('other');
     RCloneClient.COMMON_PROV_COMMAND_P2.push('--log-file');
-    RCloneClient.COMMON_PROV_COMMAND_P2.push(console.logFile());
+    RCloneClient.COMMON_PROV_COMMAND_P2.push(LoggerMain.LOG_FILE);
     RCloneClient.COMMON_PROV_COMMAND_P2.push('-v');
 
     RCloneClient.ADDITIONAL_OPTIONS.push('--config');
@@ -40,7 +40,7 @@ export class RCloneClient {
     RCloneClient.ADDITIONAL_OPTIONS.push('--log-format');
     RCloneClient.ADDITIONAL_OPTIONS.push('other');
     RCloneClient.ADDITIONAL_OPTIONS.push('--log-file');
-    RCloneClient.ADDITIONAL_OPTIONS.push(console.logFile());
+    RCloneClient.ADDITIONAL_OPTIONS.push(LoggerMain.LOG_FILE);
     RCloneClient.ADDITIONAL_OPTIONS.push('-v');
 
     RCloneClient.COMMON_SYNC_COMMAND.push('--ignore-size');
@@ -75,7 +75,7 @@ export class RCloneClient {
   public static setupProvider(provider: string): Promise<void> {
     return new Promise<void>((resolve) => {
       RCloneClient.MUTEX.acquire().then(async (release) => {
-        console.info('Setting up "' + provider + '" as cloud provider');
+        RCloneClient.LOGGER.info('Setting up "' + provider + '" as cloud provider');
         const params = [
           ...RCloneClient.COMMON_PROV_COMMAND_P1,
           provider,
@@ -86,12 +86,12 @@ export class RCloneClient {
             if (retCode > 0) {
               throw new RCloneException('Error on setup');
             }
-            console.info('Setup up successful');
+            RCloneClient.LOGGER.info('Setup up successful');
             release();
             resolve();
           })
           .catch((e) => {
-            console.error('Error on setup', e);
+            RCloneClient.LOGGER.error('Error on setup', e);
             release();
             resolve();
           });
@@ -102,7 +102,7 @@ export class RCloneClient {
   public static localSync(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       RCloneClient.MUTEX.acquire().then(async (release) => {
-        console.info('Syncing with server');
+        RCloneClient.LOGGER.info('Syncing with server');
         RCloneClient.runRclone(RCloneClient.LOCAL_SYNC_COMMAND)
           .then((retCode) => {
             if (retCode > 0) {
@@ -119,7 +119,7 @@ export class RCloneClient {
                 })
                 .catch((e) => {
                   NotificationUtils.displaySyncError();
-                  console.error('Error on sync', e);
+                  RCloneClient.LOGGER.error('Error on sync', e);
                   release();
                   reject(e);
                 });
@@ -130,7 +130,7 @@ export class RCloneClient {
           })
           .catch((e) => {
             NotificationUtils.displaySyncError();
-            console.error('Error on sync', e);
+            RCloneClient.LOGGER.error('Error on sync', e);
             release();
             resolve();
           });
@@ -141,7 +141,7 @@ export class RCloneClient {
   public static remoteSync(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       RCloneClient.MUTEX.acquire().then(async (release) => {
-        console.info('Syncing with server');
+        RCloneClient.LOGGER.info('Syncing with server');
         RCloneClient.runRclone(RCloneClient.REMOTE_SYNC_COMMAND)
           .then((retCode) => {
             if (retCode > 0) {
@@ -158,7 +158,7 @@ export class RCloneClient {
                 })
                 .catch((e) => {
                   NotificationUtils.displaySyncError();
-                  console.error('Error on sync', e);
+                  RCloneClient.LOGGER.error('Error on sync', e);
                   release();
                   reject(e);
                 });
@@ -169,7 +169,7 @@ export class RCloneClient {
           })
           .catch((e) => {
             NotificationUtils.displaySyncError();
-            console.error('Error on sync', e);
+            RCloneClient.LOGGER.error('Error on sync', e);
             release();
             reject(e);
           });
@@ -180,7 +180,7 @@ export class RCloneClient {
   public static async remoteResync(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       RCloneClient.MUTEX.acquire().then(async (release) => {
-        console.info('Resyncing with server');
+        RCloneClient.LOGGER.info('Resyncing with server');
         RCloneClient.runRclone(RCloneClient.REMOTE_RESYNC_COMMAND)
           .then((retCode) => {
             if (retCode > 0) {
@@ -193,7 +193,7 @@ export class RCloneClient {
           })
           .catch((e) => {
             NotificationUtils.displaySyncError();
-            console.error('Error on resync', e);
+            RCloneClient.LOGGER.error('Error on resync', e);
             release();
             reject(e);
           });
@@ -217,7 +217,7 @@ export class RCloneClient {
 
         setTimeout(() => {
           try {
-            FileHelper.append(console.logFile(), '\n' + fullCommand.join(' ') + '\n\n');
+            FileHelper.append(LoggerMain.LOG_FILE, '\n' + fullCommand.join(' ') + '\n\n');
             const bin = fullCommand[0];
             fullCommand.shift();
             const params: Array<string> = fullCommand;
@@ -246,14 +246,14 @@ export class RCloneClient {
   }
   public static clearLockFiles(): void {
     let count = 0;
-    FileHelper.list(Constants.RCLONE_BYSINC_FOLDER).forEach((f) => {
-      if (f.endsWith('.lck')) {
-        FileHelper.delete(path.join(Constants.RCLONE_BYSINC_FOLDER, f));
+    new File({ file: Constants.RCLONE_BYSINC_FOLDER }).list().forEach((f) => {
+      if (f.getName().endsWith('.lck')) {
+        f.delete();
         count++;
       }
     });
     if (count > 0) {
-      console.info('Removed ' + count + ' lock files');
+      RCloneClient.LOGGER.info('Removed ' + count + ' lock files');
     }
   }
 }

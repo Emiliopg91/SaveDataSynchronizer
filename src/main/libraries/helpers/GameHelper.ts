@@ -1,4 +1,4 @@
-import { FileHelper, Powershell } from '@tser-framework/main';
+import { File, FileHelper, LoggerMain, Powershell } from '@tser-framework/main';
 import { spawn } from 'child_process';
 import path from 'path';
 
@@ -9,6 +9,8 @@ import { Constants } from './Constants';
 import { FileUtils } from './FileUtils';
 
 export class GameHelper {
+  private static LOGGER = new LoggerMain('GameHelper');
+
   public static kill(appName: string): void {
     SaveDataSynchronizer.CONFIG.games.forEach((g) => {
       if (g.name == appName && g.pid) {
@@ -18,14 +20,14 @@ export class GameHelper {
   }
   public static deleteSdsFile(g: Game): void {
     const sds = path.join(g.localDir, Constants.SDS_FILE_NAME);
-    if (FileHelper.exists(sds)) {
-      FileHelper.delete(sds);
+    if (new File({ file: sds }).exists()) {
+      new File({ file: sds }).delete();
     }
   }
   public static touchSdsFile(g: Game): void {
     const sds = path.join(g.localDir, Constants.SDS_FILE_NAME);
-    if (FileHelper.exists(sds)) {
-      FileHelper.delete(sds);
+    if (new File({ file: sds }).exists()) {
+      new File({ file: sds }).delete();
     }
     FileHelper.write(sds, '');
   }
@@ -94,12 +96,12 @@ export class GameHelper {
   public static update(game: Game, dryRun: boolean = false): number {
     let count = 0;
     if (!dryRun) {
-      console.info('Updating', game.name);
+      GameHelper.LOGGER.info('Updating', game.name);
     }
     if (game.inclusions) {
       for (const inc in game.inclusions) {
         const f = path.join(game.localDir, game.inclusions[inc]);
-        if (FileHelper.exists(f)) {
+        if (new File({ file: f }).exists()) {
           count += FileUtils.syncFile(f, game.localDir, game.remoteDir, dryRun);
         }
       }
@@ -114,8 +116,8 @@ export class GameHelper {
       FileUtils.getLastModifiedTime(game.localDir, game.inclusions, game.exclusions) >
         FileUtils.getLastModifiedTime(game.remoteDir, game.inclusions, game.exclusions)
     ) {
-      if (FileHelper.exists(game.remoteDir)) {
-        FileHelper.mkdir(game.remoteDir);
+      if (new File({ file: game.remoteDir }).exists()) {
+        new File({ file: game.remoteDir }).mkdir();
       }
       count += FileUtils.syncFolder(
         game.localDir,
@@ -130,11 +132,11 @@ export class GameHelper {
   }
   static download(game: Game): number {
     let count = 0;
-    console.info('Downloading', game.name);
+    GameHelper.LOGGER.info('Downloading', game.name);
     if (game.inclusions) {
       for (const inc in game.inclusions) {
         const f = path.join(game.remoteDir, game.inclusions[inc]);
-        if (FileHelper.exists(f)) {
+        if (new File({ file: f }).exists()) {
           count += FileUtils.syncFile(f, game.remoteDir, game.localDir, false);
         }
       }
@@ -149,8 +151,8 @@ export class GameHelper {
       FileUtils.getLastModifiedTime(game.localDir, game.inclusions, game.exclusions) <
         FileUtils.getLastModifiedTime(game.remoteDir, game.inclusions, game.exclusions)
     ) {
-      if (FileHelper.exists(game.localDir)) {
-        FileHelper.mkdir(game.localDir);
+      if (new File({ file: game.localDir }).exists()) {
+        new File({ file: game.localDir }).mkdir();
       }
       count += FileUtils.syncFolder(
         game.remoteDir,

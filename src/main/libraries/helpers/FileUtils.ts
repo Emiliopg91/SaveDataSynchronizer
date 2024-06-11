@@ -1,10 +1,11 @@
-import { FileHelper } from '@tser-framework/main';
-import { FileTreeAction } from '@tser-framework/main/dist/implementations/FileHelper';
+import { File, FileTreeAction, LoggerMain, Path } from '@tser-framework/main';
 import path from 'path';
 
 import { Constants } from './Constants';
 
 export class FileUtils {
+  private static LOGGER = new LoggerMain('FileUtils');
+
   public static isPendingSync(
     source: string,
     target: string,
@@ -12,15 +13,17 @@ export class FileUtils {
     targetRoot: string,
     exclusions: Array<string> | undefined
   ): boolean {
+    const sourcePath = new Path(sourceRoot);
+    const targetPath = new Path(targetRoot);
     let pending = false;
 
-    FileHelper.walkFileTree(
-      source,
-      (dir: string): FileTreeAction => {
-        const relative = path.relative(sourceRoot, dir);
-        const dst = path.resolve(targetRoot, relative);
+    File.walkFileTree(
+      new Path(source),
+      (dir: Path): FileTreeAction => {
+        const relative = sourcePath.relative(dir.getPath());
+        const dst = targetPath.resolve(relative.getPath());
 
-        if (!FileHelper.exists(dst)) {
+        if (!dst.toFile().exists()) {
           pending = true;
           return FileTreeAction.SKIP_SUBTREE;
         } else {
@@ -28,25 +31,25 @@ export class FileUtils {
         }
       },
       undefined,
-      (file: string): void => {
-        if (!exclusions || !exclusions.includes(FileHelper.getName(file))) {
-          const relative = path.relative(sourceRoot, file);
-          const dst = path.resolve(targetRoot, relative);
-          if (!FileHelper.exists(dst) || FileUtils.hasChanged(file, dst)) {
+      (file: Path): void => {
+        if (!exclusions || !exclusions.includes(file.toFile().getName())) {
+          const relative = sourcePath.relative(file.getPath());
+          const dst = targetPath.resolve(relative.getPath());
+          if (!dst.toFile().exists() || FileUtils.hasChanged(file, dst)) {
             pending = true;
           }
         }
       }
     );
 
-    if (FileHelper.exists(target)) {
-      FileHelper.walkFileTree(
-        target,
-        (dir: string): FileTreeAction => {
-          const relative = path.relative(targetRoot, dir);
-          const src = path.resolve(sourceRoot, relative);
+    if (new File({ file: target }).exists()) {
+      File.walkFileTree(
+        new Path(target),
+        (dir: Path): FileTreeAction => {
+          const relative = targetPath.relative(dir.getPath());
+          const src = sourcePath.resolve(relative.getPath());
 
-          if (!FileHelper.exists(src)) {
+          if (!src.toFile().exists()) {
             pending = true;
             return FileTreeAction.SKIP_SUBTREE;
           } else {
@@ -54,11 +57,11 @@ export class FileUtils {
           }
         },
         undefined,
-        (file: string): void => {
-          if (!exclusions || !exclusions.includes(FileHelper.getName(file))) {
-            const relative = path.relative(targetRoot, file);
-            const src = path.resolve(sourceRoot, relative);
-            if (!FileHelper.exists(src)) {
+        (file: Path): void => {
+          if (!exclusions || !exclusions.includes(file.toFile().getName())) {
+            const relative = targetPath.relative(file.getPath());
+            const src = sourcePath.resolve(relative.getPath());
+            if (!src.toFile().exists()) {
               pending = true;
             }
           }
@@ -74,25 +77,25 @@ export class FileUtils {
     inclusions: Array<string> | undefined,
     exclusions: Array<string> | undefined
   ): number {
-    if (FileHelper.isDirectory(folder)) {
+    if (new File({ file: folder }).isDirectory()) {
       let time = 0;
       if (inclusions && inclusions.length > 0) {
         for (const inc in inclusions) {
           const file = path.join(folder, inclusions[inc]);
-          if (FileHelper.exists(file)) {
-            time = Math.max(time, FileHelper.getLastModified(file));
+          if (new File({ file }).exists()) {
+            time = Math.max(time, new File({ file }).getLastModified());
           }
         }
       } else {
-        FileHelper.walkFileTree(folder, undefined, undefined, (pathF: string): void => {
-          if (!exclusions || !exclusions.includes(FileHelper.getName(pathF))) {
-            time = Math.max(time, FileHelper.getLastModified(pathF));
+        File.walkFileTree(new Path(folder), undefined, undefined, (pathF: Path): void => {
+          if (!exclusions || !exclusions.includes(pathF.toFile().getName())) {
+            time = Math.max(time, pathF.toFile().getLastModified());
           }
         });
       }
       return time / 1000;
     } else {
-      return FileHelper.getLastModified(folder) / 1000;
+      return new File({ file: folder }).getLastModified() / 1000;
     }
   }
 
@@ -102,29 +105,29 @@ export class FileUtils {
     targetRoot: string,
     dryRun: boolean
   ): number {
-    const relative = path.relative(sourceRoot, source);
-    const dst = path.resolve(targetRoot, relative);
+    const relative = new Path(sourceRoot).relative(source);
+    const dst = new Path(targetRoot).resolve(relative.getPath());
     let count = 0;
 
-    if (!FileHelper.exists(source)) {
-      if (FileHelper.exists(dst)) {
+    if (!new File({ file: source }).exists()) {
+      if (dst.toFile().exists()) {
         if (!dryRun) {
-          FileHelper.delete(dst);
-          console.info("  (-) '" + relative + "'");
+          dst.toFile().delete();
+          FileUtils.LOGGER.info("  (-) '" + relative + "'");
         }
         count++;
       }
     } else {
-      if (!FileHelper.exists(dst)) {
+      if (!dst.toFile().exists()) {
         if (!dryRun) {
-          FileHelper.copy(source, dst);
-          console.info("  (+) '" + relative + "'");
+          dst.toFile().copy(dst.toFile());
+          FileUtils.LOGGER.info("  (+) '" + relative + "'");
         }
         count++;
-      } else if (FileUtils.hasChanged(source, dst)) {
+      } else if (FileUtils.hasChanged(new Path(source), dst)) {
         if (!dryRun) {
-          FileHelper.copy(source, dst);
-          console.info("  (m) '" + relative + "'");
+          new File({ file: source }).copy(dst.toFile());
+          FileUtils.LOGGER.info("  (m) '" + relative + "'");
         }
         count++;
       }
@@ -143,50 +146,50 @@ export class FileUtils {
   ): number {
     let count = 0;
 
-    FileHelper.walkFileTree(
-      source,
-      (dir: string): FileTreeAction => {
-        const relative = path.relative(sourceRoot, dir);
-        const dst = path.resolve(targetRoot, relative);
+    File.walkFileTree(
+      new Path(source),
+      (dir: Path): FileTreeAction => {
+        const relative = new Path(sourceRoot).relative(dir.getPath());
+        const dst = new Path(targetRoot).resolve(relative.getPath());
 
-        if (!FileHelper.exists(dst)) {
+        if (!dst.toFile().exists()) {
           if (!dryRun) {
-            FileHelper.mkdir(dst);
-            console.info("  (+) '" + relative + "'");
+            dst.toFile().mkdir();
+            FileUtils.LOGGER.info("  (+) '" + relative + "'");
           }
           count++;
         }
 
         return FileTreeAction.CONTINUE;
       },
-      (dir: string): void => {
-        const relative = path.relative(sourceRoot, dir);
-        const dst = path.resolve(targetRoot, relative);
+      (dir: Path): void => {
+        const relative = new Path(sourceRoot).relative(dir.getPath());
+        const dst = new Path(targetRoot).resolve(relative.getPath());
 
         if (!dryRun) {
-          FileHelper.setLastModified(dst, FileHelper.getLastModified(dir));
+          dst.toFile().setLastModified(dir.toFile().getLastModified());
         }
       },
-      (file: string): void => {
+      (file: Path): void => {
         if (
-          Constants.SDS_FILE_NAME != FileHelper.getName(file) &&
-          (!exclusions || !exclusions.includes(FileHelper.getName(file)))
+          Constants.SDS_FILE_NAME != file.toFile().getName() &&
+          (!exclusions || !exclusions.includes(file.toFile().getName()))
         ) {
-          const relative = path.relative(sourceRoot, file);
-          const dst = path.resolve(targetRoot, relative);
+          const relative = new Path(sourceRoot).relative(file.getPath());
+          const dst = new Path(targetRoot).resolve(relative.getPath());
 
-          if (!FileHelper.exists(dst)) {
+          if (!dst.toFile().exists()) {
             if (!dryRun) {
-              FileHelper.copy(file, dst);
-              FileHelper.setLastModified(dst, FileHelper.getLastModified(file));
-              console.info("  (+) '" + relative + "'");
+              dst.toFile().copy(dst.toFile());
+              dst.toFile().setLastModified(file.toFile().getLastModified());
+              FileUtils.LOGGER.info("  (+) '" + relative + "'");
             }
             count++;
           } else if (FileUtils.hasChanged(file, dst)) {
             if (!dryRun) {
-              FileHelper.copy(file, dst);
-              FileHelper.setLastModified(dst, FileHelper.getLastModified(file));
-              console.info("  (m) '" + relative + "'");
+              file.toFile().copy(dst.toFile());
+              dst.toFile().setLastModified(file.toFile().getLastModified());
+              FileUtils.LOGGER.info("  (m) '" + relative + "'");
             }
             count++;
           }
@@ -194,18 +197,18 @@ export class FileUtils {
       }
     );
 
-    if (FileHelper.exists(target)) {
-      FileHelper.walkFileTree(
-        target,
-        (dir: string): FileTreeAction => {
-          const relative = path.relative(targetRoot, dir);
-          const src = path.resolve(sourceRoot, relative);
+    if (new File({ file: target }).exists()) {
+      File.walkFileTree(
+        new Path(target),
+        (dir: Path): FileTreeAction => {
+          const relative = new Path(targetRoot).relative(dir.getPath());
+          const src = new Path(sourceRoot).resolve(relative.getPath());
 
           let action = FileTreeAction.CONTINUE;
-          if (!FileHelper.exists(src)) {
+          if (!src.toFile().exists()) {
             if (!dryRun) {
-              FileHelper.delete(dir);
-              console.info("  (-) '" + relative + "'");
+              dir.toFile().delete();
+              FileUtils.LOGGER.info("  (-) '" + relative + "'");
               action = FileTreeAction.SKIP_SUBTREE;
             }
             count++;
@@ -214,14 +217,14 @@ export class FileUtils {
           return action;
         },
         undefined,
-        (file: string): void => {
-          const relative = path.relative(targetRoot, file);
-          const src = path.resolve(sourceRoot, relative);
+        (file: Path): void => {
+          const relative = new Path(targetRoot).relative(file.getPath());
+          const src = new Path(sourceRoot).resolve(relative.getPath());
 
-          if (!FileHelper.exists(src)) {
+          if (!src.toFile().exists()) {
             if (!dryRun) {
-              FileHelper.delete(file);
-              console.info("  (-) '" + relative + "'");
+              file.toFile().delete();
+              FileUtils.LOGGER.info("  (-) '" + relative + "'");
             }
             count++;
           }
@@ -232,7 +235,7 @@ export class FileUtils {
     return count;
   }
 
-  public static hasChanged(f1: string, f2: string): boolean {
-    return FileHelper.getLastModified(f1) != FileHelper.getLastModified(f2);
+  public static hasChanged(f1: Path, f2: Path): boolean {
+    return f1.toFile().getLastModified() != f2.toFile().getLastModified();
   }
 }

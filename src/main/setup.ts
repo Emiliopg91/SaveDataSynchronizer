@@ -2,7 +2,7 @@ import {
   AppConfig,
   ConfigurationHelper,
   DeepLinkBinding,
-  FileHelper,
+  File,
   IpcListener,
   LoggerMain,
   ProtocolBinding,
@@ -26,6 +26,8 @@ import { GameHelper } from './libraries/helpers/GameHelper';
 import { NotificationUtils } from './libraries/helpers/NotificationUtils';
 import { RCloneClient } from './libraries/helpers/RCloneClient';
 import { SaveDataSynchronizer } from './libraries/logic/SaveDataSynchronizer';
+
+const LOGGER = new LoggerMain('main/setup.ts');
 
 export const appConfig: AppConfig = {
   singleInstance: true,
@@ -183,9 +185,14 @@ export const ipcListeners: Record<string, IpcListener> = {
   'list-local': {
     sync: true,
     fn(_, localDir: string): Array<string> {
-      return FileHelper.list(localDir).filter((f) => {
-        return !FileHelper.isDirectory(path.join(localDir, f));
-      });
+      return new File({ file: localDir })
+        .list()
+        .filter((f) => {
+          return !f.isDirectory();
+        })
+        .map((f) => {
+          return f.getName();
+        });
     }
   },
   'explore-remote': {
@@ -225,7 +232,7 @@ export const ipcListeners: Record<string, IpcListener> = {
             if (SaveDataSynchronizer.CONFIG.games[j].name == cfg.games[i].name) {
               if (SaveDataSynchronizer.CONFIG.games[i].icon) {
                 try {
-                  FileHelper.delete(SaveDataSynchronizer.CONFIG.games[i].icon as string);
+                  new File({ file: SaveDataSynchronizer.CONFIG.games[i].icon as string }).delete();
                 } catch (e) {
                   console.error(
                     "Error deleting icon '" + SaveDataSynchronizer.CONFIG.games[i].icon + "'"
@@ -320,7 +327,7 @@ export const ipcListeners: Record<string, IpcListener> = {
     sync: true,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     fn(_, newCfg: any) {
-      LoggerMain.info('Saving new configuration\n', newCfg);
+      LOGGER.info('Saving new configuration\n', newCfg);
       const cfg = ConfigurationHelper.configAsInterface<Configuration>();
       const restart = cfg.remote != newCfg['remote'];
       app.setLoginItemSettings({

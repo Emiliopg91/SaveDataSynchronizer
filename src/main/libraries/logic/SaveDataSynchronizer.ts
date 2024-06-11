@@ -1,4 +1,11 @@
-import { ConfigurationHelper, FileHelper, Powershell, TranslatorMain } from '@tser-framework/main';
+import {
+  ConfigurationHelper,
+  File,
+  FileHelper,
+  LoggerMain,
+  Powershell,
+  TranslatorMain
+} from '@tser-framework/main';
 import { Mutex } from 'async-mutex';
 import { BrowserWindow, app, dialog } from 'electron';
 import path from 'path';
@@ -11,6 +18,7 @@ import { NotificationUtils } from '../helpers/NotificationUtils';
 import { RCloneClient } from '../helpers/RCloneClient';
 
 export class SaveDataSynchronizer {
+  private static LOGGER = new LoggerMain('SaveDataSynchronizer');
   public static MUTEX: Mutex = new Mutex();
   public static CONFIG: Configuration = {
     checkInterval: 500,
@@ -24,7 +32,7 @@ export class SaveDataSynchronizer {
       RCloneClient.initialize();
       await splashPromise;
 
-      if (!FileHelper.exists(Constants.RCLONE_CFG)) {
+      if (!new File({ file: Constants.RCLONE_CFG }).exists()) {
         FileHelper.write(Constants.RCLONE_CFG, '');
       }
       if (
@@ -54,9 +62,9 @@ export class SaveDataSynchronizer {
         setTimeout(async () => {
           const isFirstSync: boolean = await SaveDataSynchronizer.initializeRemote();
           if (!isFirstSync) {
-            console.info('');
+            SaveDataSynchronizer.LOGGER.info('');
             await RCloneClient.remoteSync();
-            console.info('');
+            SaveDataSynchronizer.LOGGER.info('');
           }
 
           let count = 0;
@@ -64,12 +72,12 @@ export class SaveDataSynchronizer {
             try {
               count += GameHelper.synchronize(g);
             } catch (e) {
-              console.error("Error syncing '" + g.name + "'", e);
+              SaveDataSynchronizer.LOGGER.error("Error syncing '" + g.name + "'", e);
             }
           });
 
           if (count > 0) {
-            console.info('');
+            SaveDataSynchronizer.LOGGER.info('');
             await RCloneClient.localSync();
           }
 
@@ -109,7 +117,9 @@ export class SaveDataSynchronizer {
                     let cnt = 0;
                     switch (event) {
                       case Event.STARTED:
-                        console.info("STARTED '" + g.name + "' WITH PID " + pid);
+                        SaveDataSynchronizer.LOGGER.info(
+                          "STARTED '" + g.name + "' WITH PID " + pid
+                        );
                         g.pid = pid;
                         await GameHelper.suspend(g);
                         NotificationUtils.displayDownloadingData(g.icon);
@@ -117,19 +127,19 @@ export class SaveDataSynchronizer {
                         GameHelper.download(g);
                         await GameHelper.resume(g);
                         GameHelper.touchSdsFile(g);
-                        console.info('');
+                        SaveDataSynchronizer.LOGGER.info('');
                         break;
                       case Event.STOPPED:
-                        console.info("STOPPED '" + g.name + "'");
+                        SaveDataSynchronizer.LOGGER.info("STOPPED '" + g.name + "'");
                         NotificationUtils.displayUploadingData(g.icon);
                         cnt = GameHelper.update(g);
                         GameHelper.deleteSdsFile(g);
-                        console.info('');
+                        SaveDataSynchronizer.LOGGER.info('');
                         if (cnt > 0) {
                           await RCloneClient.localSync();
                         }
                         NotificationUtils.displayUploadFinished(g.icon);
-                        console.info('');
+                        SaveDataSynchronizer.LOGGER.info('');
                         break;
                     }
                   });
@@ -141,9 +151,9 @@ export class SaveDataSynchronizer {
           }, SaveDataSynchronizer.CONFIG.checkInterval);
 
           NotificationUtils.displayReadyToPlay();
-          console.info('');
-          console.info('Ready!');
-          console.info('');
+          SaveDataSynchronizer.LOGGER.info('');
+          SaveDataSynchronizer.LOGGER.info('Ready!');
+          SaveDataSynchronizer.LOGGER.info('');
           SaveDataSynchronizer.READY = true;
         }, 250);
       });
@@ -151,10 +161,10 @@ export class SaveDataSynchronizer {
   }
 
   private static async initializeRemote(): Promise<boolean> {
-    if (!FileHelper.exists(Constants.REMOTE_FOLDER)) {
-      FileHelper.mkdir(Constants.REMOTE_FOLDER);
+    if (!new File({ file: Constants.REMOTE_FOLDER }).exists()) {
+      new File({ file: Constants.REMOTE_FOLDER }).mkdir();
       await RCloneClient.remoteResync();
-      console.info('');
+      SaveDataSynchronizer.LOGGER.info('');
       return true;
     }
     return false;
@@ -181,21 +191,20 @@ export class SaveDataSynchronizer {
           if (!SaveDataSynchronizer.CONFIG.games) {
             SaveDataSynchronizer.CONFIG.games = [];
           }
-          console.info('Validating configuration');
+          SaveDataSynchronizer.LOGGER.info('Validating configuration');
           let allOk = true;
           for (let i = 0; i < SaveDataSynchronizer.CONFIG.games.length; i++) {
             try {
               const game = SaveDataSynchronizer.CONFIG.games[i];
-              if (FileHelper.exists(game.executable)) {
-                if (!FileHelper.exists(game.localDir)) {
-                  FileHelper.mkdir(game.localDir);
+              if (new File({ file: game.executable }).exists()) {
+                if (!new File({ file: game.localDir }).exists()) {
+                  new File({ file: game.localDir }).mkdir();
                 }
                 game.remoteDir = Constants.REMOTE_FOLDER + game.remoteDir;
-                if (!FileHelper.exists(game.remoteDir)) {
-                  FileHelper.mkdir(game.remoteDir);
-                  FileHelper.setLastModified(
-                    game.remoteDir,
-                    FileHelper.getLastModified(game.localDir)
+                if (!new File({ file: game.remoteDir }).exists()) {
+                  new File({ file: game.remoteDir }).mkdir();
+                  new File({ file: game.remoteDir }).setLastModified(
+                    new File({ file: game.localDir }).getLastModified()
                   );
                 }
 
@@ -210,27 +219,33 @@ export class SaveDataSynchronizer {
                 game.psProcess = game.process.substring(0, game.process.lastIndexOf('.'));
 
                 game.icon = path.join(Constants.ICONS_FOLDER, (game.psProcess as string) + '.ico');
-                if (!FileHelper.exists(game.icon)) {
+                if (!new File({ file: game.icon }).exists()) {
                   await GameHelper.generateIcon(game);
                 }
               } else {
                 allOk = false;
               }
             } catch (e) {
-              console.error('Error on validations', e);
+              SaveDataSynchronizer.LOGGER.error('Error on validations', e);
               allOk = false;
             }
           }
 
           if (allOk) {
-            console.addTab();
-            console.info('Configured games: ', SaveDataSynchronizer.CONFIG.games.length);
-            console.info('Check interval: ', SaveDataSynchronizer.CONFIG.checkInterval);
-            console.removeTab();
-            console.debug(JSON.stringify(SaveDataSynchronizer.CONFIG, null, 2));
+            LoggerMain.addTab();
+            SaveDataSynchronizer.LOGGER.info(
+              'Configured games: ',
+              SaveDataSynchronizer.CONFIG.games.length
+            );
+            SaveDataSynchronizer.LOGGER.info(
+              'Check interval: ',
+              SaveDataSynchronizer.CONFIG.checkInterval
+            );
+            LoggerMain.removeTab();
+            SaveDataSynchronizer.LOGGER.debug(JSON.stringify(SaveDataSynchronizer.CONFIG, null, 2));
           } else {
             SaveDataSynchronizer.CONFIG.games = [];
-            console.info('Invalid configuration');
+            SaveDataSynchronizer.LOGGER.info('Invalid configuration');
           }
           resolve();
         } catch (e) {

@@ -35,7 +35,7 @@ const defaultValue: ContextType = {
   setRunning: () => {}
 };
 
-const defaultCategories = ['game', 'emulator', 'launcher'];
+const defaultCategories = ['game', 'emulator'];
 
 export const AppsContext = createContext(defaultValue);
 

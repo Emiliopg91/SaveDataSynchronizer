@@ -1,4 +1,4 @@
-import { ConfigurationHelper, FileHelper, Powershell, TranslatorMain } from '@tser-framework/main';
+import { ConfigurationHelper, File, Powershell, TranslatorMain } from '@tser-framework/main';
 
 import pssuspendExe from '../../resources/dist/pssuspend.exe?asset';
 import rcloneExe from '../../resources/dist/rclone.exe?asset';
@@ -16,20 +16,20 @@ export async function runWhenReady(): Promise<void> {
   NotificationUtils.displayStarting();
   await Powershell.initialize();
 
-  if (!FileHelper.exists(Constants.DIST_FOLDER)) {
-    FileHelper.mkdir(Constants.DIST_FOLDER);
+  if (!new File({ file: Constants.DIST_FOLDER }).exists()) {
+    new File({ file: Constants.DIST_FOLDER }).mkdir();
   }
 
-  if (!FileHelper.exists(Constants.ICONS_FOLDER)) {
-    FileHelper.mkdir(Constants.ICONS_FOLDER);
+  if (!new File({ file: Constants.ICONS_FOLDER }).exists()) {
+    new File({ file: Constants.ICONS_FOLDER }).mkdir();
   }
 
-  if (!FileHelper.exists(Constants.RCLONE_EXE)) {
-    FileHelper.copy(rcloneExe, Constants.RCLONE_EXE);
+  if (!new File({ file: Constants.RCLONE_EXE }).exists()) {
+    new File({ file: Constants.RCLONE_EXE }).copy(new File({ file: rcloneExe }));
   }
 
-  if (!FileHelper.exists(Constants.PSSUSPEND_EXE)) {
-    FileHelper.copy(pssuspendExe, Constants.PSSUSPEND_EXE);
+  if (!new File({ file: Constants.PSSUSPEND_EXE }).exists()) {
+    new File({ file: Constants.PSSUSPEND_EXE }).copy(new File({ file: pssuspendExe }));
   }
 
   SaveDataSynchronizer.main();

@@ -1,6 +1,12 @@
 import { electronApp, is } from '@electron-toolkit/utils';
-import { JsonUtils } from '@tser-framework/commons';
-import { LoggerMain, TranslatorMain, WindowHelper } from '@tser-framework/main';
+import { JsonUtils, LogLevel } from '@tser-framework/commons';
+import {
+  AppUpdater,
+  DateUtils,
+  LoggerMain,
+  TranslatorMain,
+  WindowHelper
+} from '@tser-framework/main';
 import { BrowserWindow, IpcMainInvokeEvent, Menu, app, dialog, ipcMain, protocol } from 'electron';
 import log from 'electron-log/main';
 import { autoUpdater } from 'electron-updater';
@@ -21,26 +27,28 @@ import {
 
 export let mainWindow: BrowserWindow | null = null;
 export let splashPromise: Promise<void> | undefined;
+
+const LOGGER = new LoggerMain('main/index.ts');
 const initTime = Date.now();
 let shownUpdate = false;
 
 (async (): Promise<void> => {
   await LoggerMain.initialize();
 
-  console.system('##################################################');
-  console.system('#                  Started main                  #');
-  console.system('##################################################');
-  console.system('Running runBeforeReady');
-  console.addTab();
+  LOGGER.system('##################################################');
+  LOGGER.system('#                  Started main                  #');
+  LOGGER.system('##################################################');
+  LOGGER.system('Running runBeforeReady');
+  LoggerMain.addTab();
   await runBeforeReady();
-  console.removeTab();
-  console.system('Ended runBeforeReady');
+  LoggerMain.removeTab();
+  LOGGER.system('Ended runBeforeReady');
   if (!app.requestSingleInstanceLock() && appConfig.singleInstance) {
-    console.error('Application already running');
+    LOGGER.error('Application already running');
     app.quit();
   } else {
-    console.system('Services registration');
-    console.addTab();
+    LOGGER.system('Services registration');
+    LoggerMain.addTab();
     Object.keys(ipcListeners).forEach((id) => {
       const listener = ipcListeners[id];
       if (listener.sync) {
@@ -48,7 +56,7 @@ let shownUpdate = false;
         ipcMain.handle(id, (event: IpcMainInvokeEvent, ...args: any): unknown => {
           return listener.fn(event, ...args);
         });
-        console.system("Synchronous IPC '" + id + "'");
+        LOGGER.system("Synchronous IPC '" + id + "'");
       }
     });
     Object.keys(ipcListeners).forEach((id) => {
@@ -58,7 +66,7 @@ let shownUpdate = false;
         ipcMain.on(id, (event: IpcMainInvokeEvent, ...args: any): void => {
           listener.fn(event, ...args);
         });
-        console.system("Asynchronous IPC '" + id + "'");
+        LOGGER.system("Asynchronous IPC '" + id + "'");
       }
     });
 
@@ -73,7 +81,7 @@ let shownUpdate = false;
 
       Object.keys(protocolBindings).forEach((id) => {
         protocol.handle(id, protocolBindings[id].handler);
-        console.system("Registered protocol '" + id + "'");
+        LOGGER.system("Registered protocol '" + id + "'");
       });
 
       if (deepLinkBindings) {
@@ -85,11 +93,11 @@ let shownUpdate = false;
           } else {
             app.setAsDefaultProtocolClient(id);
           }
-          console.system("Associated deep-link '" + id + "'");
+          LOGGER.system("Associated deep-link '" + id + "'");
         });
       }
-      console.removeTab();
-      console.system('Registration finished');
+      LoggerMain.removeTab();
+      LOGGER.system('Registration finished');
 
       let menu: Menu | null = null;
       if (menuTemplate) {
@@ -140,16 +148,16 @@ let shownUpdate = false;
 
       app.on('quit', function () {
         const msg = ' Stopped main after ' + msToTime(Date.now() - initTime) + ' ';
-        console.removeTab();
-        console.system('##################################################');
-        console.system(
+        LoggerMain.removeTab();
+        LOGGER.system('##################################################');
+        LOGGER.system(
           '#' +
             ''.padEnd((48 - msg.length) / 2, ' ') +
             msg +
             ''.padEnd((48 - msg.length) / 2, ' ') +
             '#'
         );
-        console.system('##################################################');
+        LOGGER.system('##################################################');
       });
 
       app.on('window-all-closed', () => {
@@ -181,12 +189,8 @@ let shownUpdate = false;
         }
       });
 
-      autoUpdater.logger = log;
-      autoUpdater.autoDownload = true;
-      autoUpdater.disableWebInstaller = true;
-      autoUpdater.forceDevUpdateConfig = true;
-      autoUpdater.disableDifferentialDownload = true;
-      autoUpdater.on('update-downloaded', (): void => {
+      const appUpdater = new AppUpdater();
+      appUpdater.on('update-downloaded', (): void => {
         if (!shownUpdate) {
           dialog
             .showMessageBox({
@@ -204,7 +208,7 @@ let shownUpdate = false;
               if (returnValue.response === 0) {
                 RCloneClient.MUTEX.acquire().then((release) => {
                   NotificationUtils.displayInstallingUpdate();
-                  autoUpdater.quitAndInstall(true, true);
+                  appUpdater.quitAndInstall(true, true);
                   release();
                 });
               } else {
@@ -217,14 +221,23 @@ let shownUpdate = false;
         }
       });
       autoUpdater.on('update-not-available', (): void => {
-        setTimeout(async () => {
-          await autoUpdater.checkForUpdates();
-        }, 3600000);
+        setTimeout(
+          async () => {
+            await autoUpdater.checkForUpdates();
+          },
+          24 * 60 * 60 * 1000
+        );
+        LoggerMain.log(
+          LogLevel.INFO,
+          'electron',
+          'Next update check: ' +
+            DateUtils.dateToFormattedString(new Date(new Date().getTime() + 24 * 60 * 60 * 1000))
+        );
       });
       autoUpdater.checkForUpdates();
 
-      console.system('Running runWhenReady');
-      console.addTab();
+      LOGGER.system('Running runWhenReady');
+      LoggerMain.addTab();
       runWhenReady();
     });
   }
