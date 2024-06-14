@@ -20,6 +20,7 @@ function findFile(fileName: string, dir: string): Array<string> {
   return result;
 }
 const htmls: Array<string> = findFile('.html', 'src/renderer');
+
 console.info('HTMLS: ', htmls);
 
 export default defineConfig({

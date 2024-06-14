@@ -112,22 +112,22 @@ export class FileUtils {
     if (!new File({ file: source }).exists()) {
       if (dst.toFile().exists()) {
         if (!dryRun) {
-          dst.toFile().delete();
           FileUtils.LOGGER.info("  (-) '" + relative + "'");
+          dst.toFile().delete();
         }
         count++;
       }
     } else {
       if (!dst.toFile().exists()) {
         if (!dryRun) {
-          dst.toFile().copy(dst.toFile());
           FileUtils.LOGGER.info("  (+) '" + relative + "'");
+          new File({ file: source }).copy(dst.toFile());
         }
         count++;
       } else if (FileUtils.hasChanged(new Path(source), dst)) {
         if (!dryRun) {
-          new File({ file: source }).copy(dst.toFile());
           FileUtils.LOGGER.info("  (m) '" + relative + "'");
+          new File({ file: source }).copy(dst.toFile());
         }
         count++;
       }
@@ -154,8 +154,8 @@ export class FileUtils {
 
         if (!dst.toFile().exists()) {
           if (!dryRun) {
-            dst.toFile().mkdir();
             FileUtils.LOGGER.info("  (+) '" + relative + "'");
+            dst.toFile().mkdir();
           }
           count++;
         }
@@ -180,16 +180,16 @@ export class FileUtils {
 
           if (!dst.toFile().exists()) {
             if (!dryRun) {
-              dst.toFile().copy(dst.toFile());
-              dst.toFile().setLastModified(file.toFile().getLastModified());
               FileUtils.LOGGER.info("  (+) '" + relative + "'");
+              file.toFile().copy(dst.toFile());
+              dst.toFile().setLastModified(file.toFile().getLastModified());
             }
             count++;
           } else if (FileUtils.hasChanged(file, dst)) {
             if (!dryRun) {
+              FileUtils.LOGGER.info("  (m) '" + relative + "'");
               file.toFile().copy(dst.toFile());
               dst.toFile().setLastModified(file.toFile().getLastModified());
-              FileUtils.LOGGER.info("  (m) '" + relative + "'");
             }
             count++;
           }
@@ -207,8 +207,8 @@ export class FileUtils {
           let action = FileTreeAction.CONTINUE;
           if (!src.toFile().exists()) {
             if (!dryRun) {
-              dir.toFile().delete();
               FileUtils.LOGGER.info("  (-) '" + relative + "'");
+              dir.toFile().delete();
               action = FileTreeAction.SKIP_SUBTREE;
             }
             count++;
@@ -223,8 +223,8 @@ export class FileUtils {
 
           if (!src.toFile().exists()) {
             if (!dryRun) {
-              file.toFile().delete();
               FileUtils.LOGGER.info("  (-) '" + relative + "'");
+              file.toFile().delete();
             }
             count++;
           }

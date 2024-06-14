@@ -108,7 +108,14 @@ export class RCloneClient {
             if (retCode > 0) {
               RCloneClient.runRclone(RCloneClient.LOCAL_RESYNC_COMMAND)
                 .then((retCode) => {
-                  if (retCode > 0) {
+                  if (retCode) {
+                    if (retCode > 0) {
+                      release();
+                      reject();
+                      NotificationUtils.displaySyncError();
+                      throw new RCloneException('Error on sync');
+                    }
+                  } else {
                     release();
                     reject();
                     NotificationUtils.displaySyncError();

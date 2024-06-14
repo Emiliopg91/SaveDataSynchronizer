@@ -1,4 +1,4 @@
-import { contextBridge } from 'electron';
+import { contextBridge } from 'electron/renderer';
 
 import { exposed } from './expose';
 

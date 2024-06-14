@@ -206,5 +206,9 @@
   "restore.defaults": {
     "es": "Restaurar valores",
     "en": "Restore values"
+  },
+  "bigpicture": {
+    "es": "Iniciar Steam Big Picture al arrancar",
+    "en": "Start Steam Big Picture on boot"
   }
 }

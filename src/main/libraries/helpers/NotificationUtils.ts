@@ -1,5 +1,5 @@
 import { LoggerMain, Toaster, TranslatorMain } from '@tser-framework/main';
-import { shell } from 'electron';
+import { shell } from 'electron/common';
 
 import icon45 from '../../../../resources/icons/icon-45x45.png?asset&asarUnpack';
 

@@ -7,7 +7,8 @@ import {
   TranslatorMain
 } from '@tser-framework/main';
 import { Mutex } from 'async-mutex';
-import { BrowserWindow, app, dialog } from 'electron';
+import { shell } from 'electron';
+import { BrowserWindow, app, dialog } from 'electron/main';
 import path from 'path';
 
 import { createWindow, mainWindow, splashPromise } from '../..';
@@ -23,6 +24,7 @@ export class SaveDataSynchronizer {
   public static CONFIG: Configuration = {
     checkInterval: 500,
     remote: app.getName().toLowerCase(),
+    bigpicture: false,
     games: []
   };
   public static READY = false;
@@ -54,6 +56,11 @@ export class SaveDataSynchronizer {
         await RCloneClient.setupProvider(prov);
       }
       await SaveDataSynchronizer.loadConfigFile();
+      if (SaveDataSynchronizer.CONFIG.bigpicture) {
+        SaveDataSynchronizer.LOGGER.info('');
+        SaveDataSynchronizer.LOGGER.info('Launching Steam Big Picture');
+        shell.openExternal('steam://open/bigpicture');
+      }
 
       createWindow();
       mainWindow?.show();

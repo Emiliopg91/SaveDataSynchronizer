@@ -1,15 +1,15 @@
 import { electronApp, is } from '@electron-toolkit/utils';
-import { JsonUtils, LogLevel } from '@tser-framework/commons';
+import { JsonUtils } from '@tser-framework/commons';
+import { AppUpdater, LoggerMain, TranslatorMain, WindowHelper } from '@tser-framework/main';
 import {
-  AppUpdater,
-  DateUtils,
-  LoggerMain,
-  TranslatorMain,
-  WindowHelper
-} from '@tser-framework/main';
-import { BrowserWindow, IpcMainInvokeEvent, Menu, app, dialog, ipcMain, protocol } from 'electron';
-import log from 'electron-log/main';
-import { autoUpdater } from 'electron-updater';
+  BrowserWindow,
+  IpcMainInvokeEvent,
+  Menu,
+  app,
+  dialog,
+  ipcMain,
+  protocol
+} from 'electron/main';
 import path from 'path';
 
 import { runBeforeReady, runWhenReady } from './applicationLogic';
@@ -47,28 +47,23 @@ let shownUpdate = false;
     LOGGER.error('Application already running');
     app.quit();
   } else {
-    LOGGER.system('Services registration');
-    LoggerMain.addTab();
-    Object.keys(ipcListeners).forEach((id) => {
-      const listener = ipcListeners[id];
-      if (listener.sync) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ipcMain.handle(id, (event: IpcMainInvokeEvent, ...args: any): unknown => {
-          return listener.fn(event, ...args);
+    if (ipcListeners && Object.keys(ipcListeners).length > 0) {
+      LOGGER.system('Services registration');
+      LoggerMain.addTab();
+      Object.keys(ipcListeners)
+        .sort((a, b) => {
+          return a.localeCompare(b);
+        })
+        .forEach((id) => {
+          const listener = ipcListeners[id];
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          ipcMain.handle(id, (event: IpcMainInvokeEvent, ...args: any): unknown => {
+            return listener.fn(event, ...args);
+          });
+          LOGGER.system(id);
         });
-        LOGGER.system("Synchronous IPC '" + id + "'");
-      }
-    });
-    Object.keys(ipcListeners).forEach((id) => {
-      const listener = ipcListeners[id];
-      if (!listener.sync) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ipcMain.on(id, (event: IpcMainInvokeEvent, ...args: any): void => {
-          listener.fn(event, ...args);
-        });
-        LOGGER.system("Asynchronous IPC '" + id + "'");
-      }
-    });
+      LoggerMain.removeTab();
+    }
 
     Object.keys(protocolBindings).forEach((id) => {
       protocol.registerSchemesAsPrivileged([
@@ -79,12 +74,19 @@ let shownUpdate = false;
     app.whenReady().then(async () => {
       electronApp.setAppUserModelId(app.getName());
 
-      Object.keys(protocolBindings).forEach((id) => {
-        protocol.handle(id, protocolBindings[id].handler);
-        LOGGER.system("Registered protocol '" + id + "'");
-      });
+      if (protocolBindings && Object.keys(protocolBindings).length > 0) {
+        LOGGER.system('HTTP protocol registration');
+        LoggerMain.addTab();
+        Object.keys(protocolBindings).forEach((id) => {
+          protocol.handle(id, protocolBindings[id].handler);
+          LOGGER.system(id);
+        });
+        LoggerMain.removeTab();
+      }
 
-      if (deepLinkBindings) {
+      if (deepLinkBindings && Object.keys(deepLinkBindings).length > 0) {
+        LOGGER.system('Deep link registration');
+        LoggerMain.addTab();
         Object.keys(deepLinkBindings).forEach((id) => {
           if (process.defaultApp) {
             if (process.argv.length >= 2) {
@@ -93,7 +95,8 @@ let shownUpdate = false;
           } else {
             app.setAsDefaultProtocolClient(id);
           }
-          LOGGER.system("Associated deep-link '" + id + "'");
+          LOGGER.system(id);
+          LoggerMain.removeTab();
         });
       }
       LoggerMain.removeTab();
@@ -189,8 +192,7 @@ let shownUpdate = false;
         }
       });
 
-      const appUpdater = new AppUpdater();
-      appUpdater.on('update-downloaded', (): void => {
+      const appUpdater = new AppUpdater(24 * 60 * 60 * 1000, (): void => {
         if (!shownUpdate) {
           dialog
             .showMessageBox({
@@ -212,29 +214,16 @@ let shownUpdate = false;
                   release();
                 });
               } else {
-                setInterval(() => {
-                  mainWindow?.webContents?.send('listen-update', true);
-                }, 1000);
+                if (!shownUpdate) {
+                  setInterval(() => {
+                    mainWindow?.webContents?.send('listen-update', true);
+                  }, 1000);
+                }
               }
+              shownUpdate = true;
             });
-          shownUpdate = true;
         }
       });
-      autoUpdater.on('update-not-available', (): void => {
-        setTimeout(
-          async () => {
-            await autoUpdater.checkForUpdates();
-          },
-          24 * 60 * 60 * 1000
-        );
-        LoggerMain.log(
-          LogLevel.INFO,
-          'electron',
-          'Next update check: ' +
-            DateUtils.dateToFormattedString(new Date(new Date().getTime() + 24 * 60 * 60 * 1000))
-        );
-      });
-      autoUpdater.checkForUpdates();
 
       LOGGER.system('Running runWhenReady');
       LoggerMain.addTab();

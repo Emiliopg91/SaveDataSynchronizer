@@ -42,6 +42,10 @@ export function ConfigurationModal(): JSX.Element {
     setCfg({ ...cfg, autostart: e.target.checked });
   };
 
+  const handleChangeBigPicture = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    setCfg({ ...cfg, bigpicture: e.target.checked });
+  };
+
   const handleChangeRemote = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setCfg({ ...cfg, remote: e.target.value });
   };
@@ -84,6 +88,15 @@ export function ConfigurationModal(): JSX.Element {
                   checked={cfg['autostart']}
                   onChange={handleChangeAutostart}
                 />
+                {cfg['steampresent'] != 'NA' && (
+                  <Form.Check
+                    id="bigPictureCheckbox"
+                    label={TranslatorRenderer.translate('bigpicture')}
+                    checked={cfg['bigpicture'] && String(cfg['bigpicture']) == 'true'}
+                    onChange={handleChangeBigPicture}
+                  />
+                )}
+                <div>{JSON.stringify(cfg)}</div>
               </Form.Group>
               <Form.Group className="mb-3" controlId="cloudDirName">
                 <Form.Label>

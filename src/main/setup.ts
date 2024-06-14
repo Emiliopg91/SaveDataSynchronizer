@@ -5,6 +5,7 @@ import {
   File,
   IpcListener,
   LoggerMain,
+  OSHelper,
   ProtocolBinding,
   TranslatorMain,
   TrayBuilder,
@@ -12,8 +13,15 @@ import {
   defaultIpcListeners,
   defaultProtocolBindings
 } from '@tser-framework/main';
-import { BrowserWindow, MenuItemConstructorOptions, app, dialog, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
+import { shell } from 'electron/common';
+import {
+  BrowserWindow,
+  LoginItemSettingsOptions,
+  MenuItemConstructorOptions,
+  app,
+  dialog
+} from 'electron/main';
 import path from 'path';
 
 import { mainWindow } from '.';
@@ -28,6 +36,7 @@ import { RCloneClient } from './libraries/helpers/RCloneClient';
 import { SaveDataSynchronizer } from './libraries/logic/SaveDataSynchronizer';
 
 const LOGGER = new LoggerMain('main/setup.ts');
+const sdsStartupDefinition: LoginItemSettingsOptions = { path: app.getPath('exe') };
 
 export const appConfig: AppConfig = {
   singleInstance: true,
@@ -316,7 +325,20 @@ export const ipcListeners: Record<string, IpcListener> = {
       const cfg = JSON.parse(
         JSON.stringify(ConfigurationHelper.configAsInterface<Configuration>())
       );
-      cfg['autostart'] = app.getLoginItemSettings({ path: app.getPath('exe') }).openAtLogin;
+      cfg['steampresent'] = new File({
+        file: 'Steam.lnk',
+        parent: path.join(
+          OSHelper.getHome(),
+          'AppData',
+          'Roaming',
+          'Microsoft',
+          'Windows',
+          'Start Menu',
+          'Programs',
+          'Steam'
+        )
+      }).exists();
+      cfg['autostart'] = app.getLoginItemSettings(sdsStartupDefinition).openAtLogin;
       delete cfg['games'];
       delete cfg['checkInterval'];
 
@@ -327,15 +349,15 @@ export const ipcListeners: Record<string, IpcListener> = {
     sync: true,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     fn(_, newCfg: any) {
-      LOGGER.info('Saving new configuration\n', newCfg);
+      LOGGER.info('Saving new configuration', newCfg);
       const cfg = ConfigurationHelper.configAsInterface<Configuration>();
       const restart = cfg.remote != newCfg['remote'];
       app.setLoginItemSettings({
-        path: app.getPath('exe'),
+        ...sdsStartupDefinition,
         openAtLogin: newCfg['autostart']
       });
       Object.keys(newCfg).forEach((id) => {
-        if (newCfg[id] && id != 'autostart') {
+        if (newCfg[id] && id != 'autostart' && id != 'steampresent') {
           cfg[id] = newCfg[id];
         }
       });
