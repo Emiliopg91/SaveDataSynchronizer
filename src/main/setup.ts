@@ -357,7 +357,7 @@ export const ipcListeners: Record<string, IpcListener> = {
         openAtLogin: newCfg['autostart']
       });
       Object.keys(newCfg).forEach((id) => {
-        if (newCfg[id] && id != 'autostart' && id != 'steampresent') {
+        if (id != 'autostart' && id != 'steampresent') {
           cfg[id] = newCfg[id];
         }
       });
