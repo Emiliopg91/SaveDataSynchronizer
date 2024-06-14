@@ -96,7 +96,6 @@ export function ConfigurationModal(): JSX.Element {
                     onChange={handleChangeBigPicture}
                   />
                 )}
-                <div>{JSON.stringify(cfg)}</div>
               </Form.Group>
               <Form.Group className="mb-3" controlId="cloudDirName">
                 <Form.Label>
