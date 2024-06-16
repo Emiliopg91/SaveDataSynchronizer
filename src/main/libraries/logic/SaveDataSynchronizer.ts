@@ -3,10 +3,12 @@ import {
   File,
   FileHelper,
   LoggerMain,
+  OSHelper,
   Powershell,
   TranslatorMain
 } from '@tser-framework/main';
 import { Mutex } from 'async-mutex';
+import { spawn } from 'child_process';
 import { shell } from 'electron';
 import { BrowserWindow, app, dialog } from 'electron/main';
 import path from 'path';
@@ -59,7 +61,24 @@ export class SaveDataSynchronizer {
       if (SaveDataSynchronizer.CONFIG.bigpicture) {
         SaveDataSynchronizer.LOGGER.info('');
         SaveDataSynchronizer.LOGGER.info('Launching Steam Big Picture');
-        shell.openExternal('steam://open/bigpicture');
+        const steamPath = new File({
+          file: 'Steam.lnk',
+          parent: path.join(
+            OSHelper.getHome(),
+            'AppData',
+            'Roaming',
+            'Microsoft',
+            'Windows',
+            'Start Menu',
+            'Programs',
+            'Steam'
+          )
+        });
+        spawn(shell.readShortcutLink(steamPath.getAbsolutePath()).target, [
+          '/wait',
+          '/b',
+          'steam://open/bigpicture'
+        ]);
       }
 
       createWindow();
