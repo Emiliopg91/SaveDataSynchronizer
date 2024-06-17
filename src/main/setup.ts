@@ -15,13 +15,7 @@ import {
 } from '@tser-framework/main';
 import { autoUpdater } from 'electron-updater';
 import { shell } from 'electron/common';
-import {
-  BrowserWindow,
-  LoginItemSettingsOptions,
-  MenuItemConstructorOptions,
-  app,
-  dialog
-} from 'electron/main';
+import { BrowserWindow, MenuItemConstructorOptions, Settings, app, dialog } from 'electron/main';
 import path from 'path';
 
 import { mainWindow } from '.';
@@ -36,7 +30,7 @@ import { RCloneClient } from './libraries/helpers/RCloneClient';
 import { SaveDataSynchronizer } from './libraries/logic/SaveDataSynchronizer';
 
 const LOGGER = new LoggerMain('main/setup.ts');
-const sdsStartupDefinition: LoginItemSettingsOptions = { path: app.getPath('exe') };
+const sdsStartupDefinition: Settings = { path: app.getPath('exe') };
 
 export const appConfig: AppConfig = {
   singleInstance: true,
@@ -61,7 +55,7 @@ export const windowConfig: WindowConfig = {
     fullscreenable: false,
     resizable: false,
     show: false,
-    title: app.getName(),
+    title: app.getName() + ' v' + app.getVersion(),
     autoHideMenuBar: false,
     ...(process.platform === 'linux' ? { icon512 } : {}),
     webPreferences: {
