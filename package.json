@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@tser-framework/commons": "^2.0.37",
-    "@tser-framework/main": "^2.0.177",
+    "@tser-framework/main": "^2.0.178",
     "@tser-framework/renderer": "^2.0.66",
     "async-mutex": "^0.5.0",
     "bootstrap": "^5.3.3",
@@ -52,7 +52,7 @@
     "@swc/core": "^1.6.1",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/bootstrap": "^5.2.10",
-    "@types/node": "^20.14.2",
+    "@types/node": "^20.14.3",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",

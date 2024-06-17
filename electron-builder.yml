@@ -42,5 +42,5 @@ npmRebuild: false
 publish:
   provider: github
   owner: Emiliopg91
-  repo: SaveDataSynchronizer-Releases
+  repo: DesktopSaveDataSynchronizer
   updaterCacheDirName: SaveDataSynchronizer
