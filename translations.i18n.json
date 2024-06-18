@@ -207,8 +207,19 @@
     "es": "Restaurar valores",
     "en": "Restore values"
   },
-  "bigpicture": {
+  "startup.bigpicture": {
     "es": "Iniciar Steam Big Picture al arrancar",
     "en": "Start Steam Big Picture on boot"
+  },
+  "steam": {
+    "en": "Steam"
+  },
+  "launch.big.picture": {
+    "es": "Lanzar Big Picture",
+    "en": "Launch Big Picture"
+  },
+  "minimized": {
+    "es": "Iniciar minimizado",
+    "en": "Start minimized"
   }
 }

@@ -5,7 +5,6 @@ import {
   File,
   IpcListener,
   LoggerMain,
-  OSHelper,
   ProtocolBinding,
   TranslatorMain,
   TrayBuilder,
@@ -27,6 +26,7 @@ import { Constants } from './libraries/helpers/Constants';
 import { GameHelper } from './libraries/helpers/GameHelper';
 import { NotificationUtils } from './libraries/helpers/NotificationUtils';
 import { RCloneClient } from './libraries/helpers/RCloneClient';
+import { Launchers } from './libraries/logic/Launchers';
 import { SaveDataSynchronizer } from './libraries/logic/SaveDataSynchronizer';
 
 const LOGGER = new LoggerMain('main/setup.ts');
@@ -319,20 +319,10 @@ export const ipcListeners: Record<string, IpcListener> = {
       const cfg = JSON.parse(
         JSON.stringify(ConfigurationHelper.configAsInterface<Configuration>())
       );
-      cfg['steampresent'] = new File({
-        file: 'Steam.lnk',
-        parent: path.join(
-          OSHelper.getHome(),
-          'AppData',
-          'Roaming',
-          'Microsoft',
-          'Windows',
-          'Start Menu',
-          'Programs',
-          'Steam'
-        )
-      }).exists();
       cfg['autostart'] = app.getLoginItemSettings(sdsStartupDefinition).openAtLogin;
+      if (!cfg['minimized']) {
+        cfg['minimized'] = false;
+      }
       delete cfg['games'];
       delete cfg['checkInterval'];
 
@@ -351,7 +341,7 @@ export const ipcListeners: Record<string, IpcListener> = {
         openAtLogin: newCfg['autostart']
       });
       Object.keys(newCfg).forEach((id) => {
-        if (id != 'autostart' && id != 'steampresent') {
+        if (id != 'autostart') {
           cfg[id] = newCfg[id];
         }
       });
@@ -359,6 +349,32 @@ export const ipcListeners: Record<string, IpcListener> = {
         app.relaunch();
         app.quit();
       }
+    }
+  },
+  'get-launchers': {
+    sync: true,
+    fn() {
+      return {
+        steam: Launchers.isSteamInstalled()
+      };
+    }
+  },
+  'get-icon-path': {
+    sync: true,
+    fn() {
+      return Constants.ICONS_FOLDER;
+    }
+  },
+  'launch-steam': {
+    sync: false,
+    fn() {
+      Launchers.launchSteam();
+    }
+  },
+  'launch-steam-bp': {
+    sync: false,
+    fn() {
+      Launchers.launchSteamBigPicture();
     }
   }
 };

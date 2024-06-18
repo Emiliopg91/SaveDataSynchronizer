@@ -5,34 +5,30 @@ interface ContextType {
   category: string;
   setCategory: (value: string) => void;
   categories: Array<string>;
-  setCategories: (value: Array<string>) => void;
   showAddModal: boolean;
   setShowAddModal: (value: boolean) => void;
   showCfgModal: boolean;
   setShowCfgModal: (value: boolean) => void;
   pendingUpdate: boolean;
-  setPendingUpdate: (value: boolean) => void;
   syncing: boolean;
-  setSyncing: (value: boolean) => void;
   running: Array<string>;
-  setRunning: (value: Array<string>) => void;
+  launchers: Array<string>;
+  iconPath: string;
 }
 
 const defaultValue: ContextType = {
   category: '',
   setCategory: () => {},
   categories: [],
-  setCategories: () => {},
   showAddModal: true,
   setShowAddModal: () => {},
   showCfgModal: true,
   setShowCfgModal: () => {},
   pendingUpdate: false,
-  setPendingUpdate: () => {},
   syncing: false,
-  setSyncing: () => {},
   running: [],
-  setRunning: () => {}
+  launchers: [],
+  iconPath: ''
 };
 
 const defaultCategories = ['game', 'emulator'];
@@ -40,12 +36,14 @@ const defaultCategories = ['game', 'emulator'];
 export const AppsContext = createContext(defaultValue);
 
 export function AppsProvider({ children }: { children: JSX.Element }): JSX.Element {
-  const [categories, setCategories] = useState<Array<string>>(defaultCategories);
+  const [categories /*, setCategories*/] = useState<Array<string>>(defaultCategories);
+  const [iconPath, setIconPath] = useState<string>('');
+  const [launchers, setLaunchers] = useState<Array<string>>(defaultCategories);
   const [category, setCategory] = useState(defaultCategories[0]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showCfgModal, setShowCfgModal] = useState(false);
   const [pendingUpdate, setPendingUpdate] = useState(false);
-  const [syncing, setSyncing] = useState(false);
+  const [syncing /*setSyncing*/] = useState(false);
   const [running, setRunning] = useState<Array<string>>([]);
 
   useEffect(() => {
@@ -59,6 +57,19 @@ export function AppsProvider({ children }: { children: JSX.Element }): JSX.Eleme
       }
       setRunning(newRunning);
     });
+    window.api.getLaunchers().then((resp) => {
+      const launchers: Array<string> = [];
+      Object.keys(resp).forEach((id) => {
+        if (resp[id]) {
+          launchers.push(id);
+        }
+      });
+      setLaunchers(launchers);
+    });
+
+    window.api.getIconPath().then((resp) => {
+      setIconPath(resp);
+    });
 
     return (): void => {
       unsubscribe1();
@@ -70,19 +81,17 @@ export function AppsProvider({ children }: { children: JSX.Element }): JSX.Eleme
     <AppsContext.Provider
       value={{
         categories,
-        setCategories,
         category,
         setCategory,
         showAddModal,
         setShowAddModal,
         pendingUpdate,
-        setPendingUpdate,
         syncing,
-        setSyncing,
         running,
-        setRunning,
         showCfgModal,
-        setShowCfgModal
+        setShowCfgModal,
+        launchers,
+        iconPath
       }}
     >
       {children}

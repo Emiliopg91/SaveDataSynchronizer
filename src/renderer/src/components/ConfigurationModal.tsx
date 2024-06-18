@@ -42,6 +42,10 @@ export function ConfigurationModal(): JSX.Element {
     setCfg({ ...cfg, autostart: e.target.checked });
   };
 
+  const handleChangeMinimized = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    setCfg({ ...cfg, minimized: e.target.checked });
+  };
+
   const handleChangeBigPicture = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setCfg({ ...cfg, bigpicture: e.target.checked });
   };
@@ -87,16 +91,29 @@ export function ConfigurationModal(): JSX.Element {
                   label={TranslatorRenderer.translate('autostart')}
                   checked={cfg['autostart']}
                   onChange={handleChangeAutostart}
+                />{' '}
+                <Form.Check
+                  id="minimizedCheckbox"
+                  label={TranslatorRenderer.translate('minimized')}
+                  checked={cfg['minimized']}
+                  onChange={handleChangeMinimized}
                 />
-                {cfg['steampresent'] != 'NA' && (
-                  <Form.Check
-                    id="bigPictureCheckbox"
-                    label={TranslatorRenderer.translate('bigpicture')}
-                    checked={cfg['bigpicture'] && String(cfg['bigpicture']) == 'true'}
-                    onChange={handleChangeBigPicture}
-                  />
-                )}
               </Form.Group>
+              {ctx.launchers.length > 0 && (
+                <Form.Group className="mb-3" controlId="launchers">
+                  <Form.Label>
+                    <b>{TranslatorRenderer.translate('launchers')}</b>
+                  </Form.Label>
+                  {ctx.launchers.includes('steam') && (
+                    <Form.Check
+                      id="bigPictureCheckbox"
+                      label={TranslatorRenderer.translate('startup.bigpicture')}
+                      checked={cfg['bigpicture'] && String(cfg['bigpicture']) == 'true'}
+                      onChange={handleChangeBigPicture}
+                    />
+                  )}
+                </Form.Group>
+              )}
               <Form.Group className="mb-3" controlId="cloudDirName">
                 <Form.Label>
                   <b>{TranslatorRenderer.translate('cloud.dir.name')}</b>

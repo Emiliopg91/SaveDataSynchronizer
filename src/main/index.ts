@@ -56,10 +56,17 @@ let shownUpdate = false;
         })
         .forEach((id) => {
           const listener = ipcListeners[id];
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          ipcMain.handle(id, (event: IpcMainInvokeEvent, ...args: any): unknown => {
-            return listener.fn(event, ...args);
-          });
+          if (ipcListeners[id].sync) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ipcMain.handle(id, (event: IpcMainInvokeEvent, ...args: any): unknown => {
+              return listener.fn(event, ...args);
+            });
+          } else {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ipcMain.on(id, (event: IpcMainInvokeEvent, ...args: any): void => {
+              listener.fn(event, ...args);
+            });
+          }
           LOGGER.system(id);
         });
       LoggerMain.removeTab();

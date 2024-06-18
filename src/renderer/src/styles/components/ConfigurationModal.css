@@ -2,6 +2,10 @@
   margin-left: 15px;
 }
 
+#ConfigurationModal div:has(> #minimizedCheckbox) {
+  margin-left: 15px;
+}
+
 #ConfigurationModal div:has(> #bigPictureCheckbox) {
   margin-left: 15px;
 }

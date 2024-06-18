@@ -59,7 +59,7 @@ devDependencies:
     version: 1.0.1(@types/node@20.14.3)
   '@electron-toolkit/utils':
     specifier: ^3.0.0
-    version: 3.0.0(electron@31.0.1)
+    version: 3.0.0(electron@28.3.3)
   '@rollup/plugin-commonjs':
     specifier: ^26.0.1
     version: 26.0.1
@@ -88,8 +88,8 @@ devDependencies:
     specifier: ^8.2.2
     version: 8.2.2
   electron:
-    specifier: ^31.0.1
-    version: 31.0.1
+    specifier: ^28.3.3
+    version: 28.3.3
   electron-builder:
     specifier: ^24.13.3
     version: 24.13.3(electron-builder-squirrel-windows@24.13.3)
@@ -424,12 +424,12 @@ packages:
       '@types/node': 20.14.3
     dev: true
 
-  /@electron-toolkit/utils@3.0.0(electron@31.0.1):
+  /@electron-toolkit/utils@3.0.0(electron@28.3.3):
     resolution: {integrity: sha512-GaXHDhiT7KCvMJjXdp/QqpYinq69T/Pdl49Z1XLf8mKGf63dnsODMWyrmIjEQ0z/vG7dO8qF3fvmI6Eb2lUNZA==}
     peerDependencies:
       electron: '>=13.0.0'
     dependencies:
-      electron: 31.0.1
+      electron: 28.3.3
     dev: true
 
   /@electron/asar@3.2.10:
@@ -1460,7 +1460,6 @@ packages:
     resolution: {integrity: sha512-n+WiqynRake4DDX2tPh4NTxu4dA7BgmsaGKMRc/htuPZBi7w9FkVgSOWU/+92vVEYMz3QOWUr2AwHev9X2XiTg==}
     dependencies:
       undici-types: 5.26.5
-    dev: false
 
   /@types/node@20.14.3:
     resolution: {integrity: sha512-Nuzqa6WAxeGnve6SXqiPAM9rA++VQs+iLZ1DDd56y0gdvygSZlQvZuvdFPR3yLqkVxPu4WrO02iDEyH1g+wazw==}
@@ -2617,20 +2616,6 @@ packages:
       extract-zip: 2.0.1
     transitivePeerDependencies:
       - supports-color
-    dev: false
-
-  /electron@31.0.1:
-    resolution: {integrity: sha512-2eBcp4iqLkTsml6mMq+iqrS5u3kJ/2mpOLP7Mj7lo0uNK3OyfNqRS9z1ArsHjBF2/HV250Te/O9nKrwQRTX/+g==}
-    engines: {node: '>= 12.20.55'}
-    hasBin: true
-    requiresBuild: true
-    dependencies:
-      '@electron/get': 2.0.3
-      '@types/node': 20.14.3
-      extract-zip: 2.0.1
-    transitivePeerDependencies:
-      - supports-color
-    dev: true
 
   /emoji-regex@8.0.0:
     resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}

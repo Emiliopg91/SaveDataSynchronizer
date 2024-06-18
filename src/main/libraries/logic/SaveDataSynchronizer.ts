@@ -3,13 +3,10 @@ import {
   File,
   FileHelper,
   LoggerMain,
-  OSHelper,
   Powershell,
   TranslatorMain
 } from '@tser-framework/main';
 import { Mutex } from 'async-mutex';
-import { spawn } from 'child_process';
-import { shell } from 'electron';
 import { BrowserWindow, app, dialog } from 'electron/main';
 import path from 'path';
 
@@ -19,6 +16,7 @@ import { Constants } from '../helpers/Constants';
 import { Event, GameHelper } from '../helpers/GameHelper';
 import { NotificationUtils } from '../helpers/NotificationUtils';
 import { RCloneClient } from '../helpers/RCloneClient';
+import { Launchers } from './Launchers';
 
 export class SaveDataSynchronizer {
   private static LOGGER = new LoggerMain('SaveDataSynchronizer');
@@ -26,6 +24,7 @@ export class SaveDataSynchronizer {
   public static CONFIG: Configuration = {
     checkInterval: 500,
     remote: app.getName().toLowerCase(),
+    minimized: false,
     bigpicture: false,
     games: []
   };
@@ -58,27 +57,11 @@ export class SaveDataSynchronizer {
         await RCloneClient.setupProvider(prov);
       }
       await SaveDataSynchronizer.loadConfigFile();
+      await Launchers.generateIcons();
+
       if (SaveDataSynchronizer.CONFIG.bigpicture) {
         SaveDataSynchronizer.LOGGER.info('');
-        SaveDataSynchronizer.LOGGER.info('Launching Steam Big Picture');
-        const steamPath = new File({
-          file: 'Steam.lnk',
-          parent: path.join(
-            OSHelper.getHome(),
-            'AppData',
-            'Roaming',
-            'Microsoft',
-            'Windows',
-            'Start Menu',
-            'Programs',
-            'Steam'
-          )
-        });
-        spawn(shell.readShortcutLink(steamPath.getAbsolutePath()).target, [
-          '/wait',
-          '/b',
-          'steam://open/bigpicture'
-        ]);
+        Launchers.launchSteamBigPicture();
       }
 
       createWindow();
@@ -86,6 +69,9 @@ export class SaveDataSynchronizer {
       mainWindow?.focus();
       mainWindow?.on('ready-to-show', () => {
         setTimeout(async () => {
+          if (SaveDataSynchronizer.CONFIG.minimized) {
+            mainWindow?.close();
+          }
           const isFirstSync: boolean = await SaveDataSynchronizer.initializeRemote();
           if (!isFirstSync) {
             SaveDataSynchronizer.LOGGER.info('');
