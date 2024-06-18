@@ -42,6 +42,10 @@ export function ConfigurationModal(): JSX.Element {
     setCfg({ ...cfg, autostart: e.target.checked });
   };
 
+  const handleChangeMinimized = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    setCfg({ ...cfg, minimized: e.target.checked });
+  };
+
   const handleChangeBigPicture = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setCfg({ ...cfg, bigpicture: e.target.checked });
   };
@@ -87,6 +91,12 @@ export function ConfigurationModal(): JSX.Element {
                   label={TranslatorRenderer.translate('autostart')}
                   checked={cfg['autostart']}
                   onChange={handleChangeAutostart}
+                />{' '}
+                <Form.Check
+                  id="minimizedCheckbox"
+                  label={TranslatorRenderer.translate('minimized')}
+                  checked={cfg['minimized']}
+                  onChange={handleChangeMinimized}
                 />
               </Form.Group>
               {ctx.launchers.length > 0 && (

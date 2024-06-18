@@ -217,5 +217,9 @@
   "launch.big.picture": {
     "es": "Lanzar Big Picture",
     "en": "Launch Big Picture"
+  },
+  "minimized": {
+    "es": "Iniciar minimizado",
+    "en": "Start minimized"
   }
 }

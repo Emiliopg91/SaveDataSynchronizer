@@ -320,6 +320,9 @@ export const ipcListeners: Record<string, IpcListener> = {
         JSON.stringify(ConfigurationHelper.configAsInterface<Configuration>())
       );
       cfg['autostart'] = app.getLoginItemSettings(sdsStartupDefinition).openAtLogin;
+      if (!cfg['minimized']) {
+        cfg['minimized'] = false;
+      }
       delete cfg['games'];
       delete cfg['checkInterval'];
 

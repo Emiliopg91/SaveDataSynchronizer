@@ -24,6 +24,7 @@ export class SaveDataSynchronizer {
   public static CONFIG: Configuration = {
     checkInterval: 500,
     remote: app.getName().toLowerCase(),
+    minimized: false,
     bigpicture: false,
     games: []
   };
@@ -68,6 +69,9 @@ export class SaveDataSynchronizer {
       mainWindow?.focus();
       mainWindow?.on('ready-to-show', () => {
         setTimeout(async () => {
+          if (SaveDataSynchronizer.CONFIG.minimized) {
+            mainWindow?.close();
+          }
           const isFirstSync: boolean = await SaveDataSynchronizer.initializeRemote();
           if (!isFirstSync) {
             SaveDataSynchronizer.LOGGER.info('');
