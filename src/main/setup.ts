@@ -355,7 +355,8 @@ export const ipcListeners: Record<string, IpcListener> = {
     sync: true,
     fn() {
       return {
-        steam: Launchers.isSteamInstalled()
+        steam: Launchers.isSteamInstalled(),
+        gog: Launchers.isGOGInstalled()
       };
     }
   },
@@ -375,6 +376,12 @@ export const ipcListeners: Record<string, IpcListener> = {
     sync: false,
     fn() {
       Launchers.launchSteamBigPicture();
+    }
+  },
+  'launch-gog': {
+    sync: false,
+    fn() {
+      Launchers.launchGOG();
     }
   }
 };

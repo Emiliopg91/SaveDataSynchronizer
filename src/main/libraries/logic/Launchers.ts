@@ -10,6 +10,11 @@ import { GameHelper } from '../helpers/GameHelper';
 export class Launchers {
   private static LOGGER = new LoggerMain('Launchers');
 
+  private static GOG_START_ENTRY = new File({
+    file: 'GalaxyClient.exe',
+    parent: path.join('C:', 'Program Files (x86)', 'GOG Galaxy')
+  });
+
   private static STEAM_START_ENTRY = new File({
     file: 'Steam.lnk',
     parent: path.join(
@@ -30,6 +35,7 @@ export class Launchers {
     const launchers: Record<string, string> = {};
     if (Launchers.isSteamInstalled()) {
       launchers['Steam'] = Launchers.getSteamPath();
+      launchers['GOG-GALAXY'] = Launchers.getGOGPath();
     }
     for (const id in launchers) {
       const g: Game = {
@@ -38,9 +44,33 @@ export class Launchers {
         localDir: '',
         remoteDir: '',
         executable: launchers[id],
-        icon: path.join(Constants.ICONS_FOLDER, id + '.ico')
+        icon: path.join(Constants.ICONS_FOLDER, 'Launcher-' + id + '.ico')
       };
       await GameHelper.generateIcon(g);
+    }
+  }
+
+  public static isGOGInstalled(): boolean {
+    return Launchers.GOG_START_ENTRY.exists();
+  }
+
+  public static getGOGPath(): string {
+    if (Launchers.GOG_START_ENTRY.exists()) {
+      return Launchers.GOG_START_ENTRY.getAbsolutePath();
+    } else {
+      Launchers.LOGGER.error('No GOG installation found');
+      return '';
+    }
+  }
+
+  public static launchGOG(): void {
+    if (Launchers.GOG_START_ENTRY.exists()) {
+      Launchers.LOGGER.info('Launching GOG Galaxy');
+      (async (): Promise<void> => {
+        spawn(Launchers.getGOGPath());
+      })();
+    } else {
+      Launchers.LOGGER.error('No GOG Galaxy installation found');
     }
   }
 

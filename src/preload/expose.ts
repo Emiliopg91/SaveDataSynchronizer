@@ -105,6 +105,9 @@ export const exposed = {
     getIconPath(): Promise<string> {
       return ipcRenderer.invoke('get-icon-path');
     },
+    launchGog(): void {
+      ipcRenderer.send('launch-gog');
+    },
     launchSteam(): void {
       ipcRenderer.send('launch-steam');
     },

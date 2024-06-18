@@ -221,5 +221,8 @@
   "minimized": {
     "es": "Iniciar minimizado",
     "en": "Start minimized"
+  },
+  "gog.galaxy": {
+    "en": "GOG Galaxy"
   }
 }
