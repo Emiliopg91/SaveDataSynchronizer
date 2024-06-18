@@ -5,7 +5,6 @@ import {
   File,
   IpcListener,
   LoggerMain,
-  OSHelper,
   ProtocolBinding,
   TranslatorMain,
   TrayBuilder,

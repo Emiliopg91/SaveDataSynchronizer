@@ -36,14 +36,14 @@ const defaultCategories = ['game', 'emulator'];
 export const AppsContext = createContext(defaultValue);
 
 export function AppsProvider({ children }: { children: JSX.Element }): JSX.Element {
-  const [categories, setCategories] = useState<Array<string>>(defaultCategories);
+  const [categories /*, setCategories*/] = useState<Array<string>>(defaultCategories);
   const [iconPath, setIconPath] = useState<string>('');
   const [launchers, setLaunchers] = useState<Array<string>>(defaultCategories);
   const [category, setCategory] = useState(defaultCategories[0]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showCfgModal, setShowCfgModal] = useState(false);
   const [pendingUpdate, setPendingUpdate] = useState(false);
-  const [syncing, setSyncing] = useState(false);
+  const [syncing /*setSyncing*/] = useState(false);
   const [running, setRunning] = useState<Array<string>>([]);
 
   useEffect(() => {
