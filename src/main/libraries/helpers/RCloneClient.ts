@@ -1,6 +1,7 @@
 import { File, FileHelper, LoggerMain } from '@tser-framework/main';
 import { Mutex } from 'async-mutex';
 import { spawn } from 'child_process';
+import dns from 'dns';
 
 import { mainWindow } from '../..';
 import { RCloneException } from '../exceptions/RCloneException';
@@ -13,6 +14,7 @@ export class RCloneClient {
   public static MUTEX: Mutex = new Mutex();
 
   public static RCLONE_BACKEND: string = 'backend';
+  public static CONNECTED: boolean = true;
 
   private static COMMON_PROV_COMMAND_P1: Array<string> = [];
   private static COMMON_PROV_COMMAND_P2: Array<string> = [];
@@ -209,45 +211,56 @@ export class RCloneClient {
   }
 
   private static runRclone(command: Array<string>): Promise<number> {
-    RCloneClient.clearLockFiles();
     return new Promise<number>((resolve, reject) => {
-      try {
-        const newCommand: Array<string> = [];
-        for (const i in command) {
-          newCommand.push(command[i].replace('{remote}', SaveDataSynchronizer.CONFIG.remote));
-        }
-
-        mainWindow?.webContents.send('sync-in-progress', true);
-        const fullCommand: Array<string> = [];
-        fullCommand.push(Constants.RCLONE_EXE);
-        fullCommand.push(...newCommand);
-
-        setTimeout(() => {
-          try {
-            FileHelper.append(LoggerMain.LOG_FILE, '\n' + fullCommand.join(' ') + '\n\n');
-            const bin = fullCommand[0];
-            fullCommand.shift();
-            const params: Array<string> = fullCommand;
-
-            const subProcess = spawn(bin, params);
-            subProcess.stderr.on('data', (data) => {
-              mainWindow?.webContents.send('sync-in-progress', false);
-              reject(data);
-            });
-            subProcess.on('close', (code) => {
-              setTimeout(() => {
-                mainWindow?.webContents.send('sync-in-progress', false);
-                resolve(code as number);
-              }, 100);
-            });
-          } catch (e) {
-            mainWindow?.webContents.send('sync-in-progress', false);
-            reject(new RCloneException(String(e)));
+      if (RCloneClient.CONNECTED) {
+        RCloneClient.clearLockFiles();
+        const t0 = Date.now();
+        try {
+          const newCommand: Array<string> = [];
+          for (const i in command) {
+            newCommand.push(command[i].replace('{remote}', SaveDataSynchronizer.CONFIG.remote));
           }
-        }, 100);
-      } catch (e) {
-        mainWindow?.webContents.send('sync-in-progress', false);
-        reject(new RCloneException(String(e)));
+
+          mainWindow?.webContents.send('sync-in-progress', true);
+          const fullCommand: Array<string> = [];
+          fullCommand.push(Constants.RCLONE_EXE);
+          fullCommand.push(...newCommand);
+
+          setTimeout(() => {
+            try {
+              FileHelper.append(LoggerMain.LOG_FILE, '\n' + fullCommand.join(' ') + '\n\n');
+              const bin = fullCommand[0];
+              fullCommand.shift();
+              const params: Array<string> = fullCommand;
+
+              const subProcess = spawn(bin, params);
+              subProcess.stderr.on('data', (data) => {
+                mainWindow?.webContents.send('sync-in-progress', false);
+                reject(data);
+              });
+              subProcess.on('close', (code) => {
+                RCloneClient.LOGGER.info(
+                  'Command finished after ' +
+                    (Date.now() - t0) / 1000 +
+                    ' seconds with result ' +
+                    code
+                );
+                setTimeout(() => {
+                  mainWindow?.webContents.send('sync-in-progress', false);
+                  resolve(code as number);
+                }, 100);
+              });
+            } catch (e) {
+              mainWindow?.webContents.send('sync-in-progress', false);
+              reject(new RCloneException(String(e)));
+            }
+          }, 100);
+        } catch (e) {
+          mainWindow?.webContents.send('sync-in-progress', false);
+          reject(new RCloneException(String(e)));
+        }
+      } else {
+        reject(new RCloneException('No network connection'));
       }
     });
   }

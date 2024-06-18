@@ -110,6 +110,9 @@ export const exposed = {
     },
     launchSteamBP(): void {
       ipcRenderer.send('launch-steam-bp');
+    },
+    networkStatus(status: boolean): void {
+      ipcRenderer.send('network-status', status);
     }
   },
   app: {

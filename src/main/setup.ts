@@ -12,6 +12,7 @@ import {
   defaultIpcListeners,
   defaultProtocolBindings
 } from '@tser-framework/main';
+import { Mutex } from 'async-mutex';
 import { autoUpdater } from 'electron-updater';
 import { shell } from 'electron/common';
 import { BrowserWindow, MenuItemConstructorOptions, Settings, app, dialog } from 'electron/main';
@@ -31,6 +32,9 @@ import { SaveDataSynchronizer } from './libraries/logic/SaveDataSynchronizer';
 
 const LOGGER = new LoggerMain('main/setup.ts');
 const sdsStartupDefinition: Settings = { path: app.getPath('exe') };
+
+let connectedToInet = false;
+const mutex: Mutex = new Mutex();
 
 export const appConfig: AppConfig = {
   singleInstance: true,
@@ -375,6 +379,23 @@ export const ipcListeners: Record<string, IpcListener> = {
     sync: false,
     fn() {
       Launchers.launchSteamBigPicture();
+    }
+  },
+  'network-status': {
+    sync: false,
+    fn(_, connected: boolean) {
+      mutex.acquire().then((release) => {
+        if (String(connected) != String(connectedToInet)) {
+          new LoggerMain('NetworkStatus').info(
+            connected ? 'Connected to Internet' : 'Disconnected to Internet'
+          );
+        }
+
+        connectedToInet = connected;
+        RCloneClient.CONNECTED = connected;
+
+        release();
+      });
     }
   }
 };

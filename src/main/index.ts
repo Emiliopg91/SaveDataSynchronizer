@@ -170,9 +170,10 @@ let shownUpdate = false;
         LOGGER.system('##################################################');
       });
 
-      app.on('window-all-closed', () => {
+      app.on('window-all-closed', (e) => {
+        e.preventDefault();
         if (windowConfig.closeToTray) {
-          mainWindow = null;
+          mainWindow?.hide();
         } else {
           app.quit();
         }
@@ -275,7 +276,12 @@ function configureShortcutEvents(window: Electron.BrowserWindow): void {
 }
 
 export async function createWindow(): Promise<BrowserWindow> {
-  return (mainWindow = WindowHelper.createMainWindow(windowConfig));
+  mainWindow = WindowHelper.createMainWindow(windowConfig);
+  mainWindow.on('close', (e) => {
+    e.preventDefault();
+    mainWindow?.hide();
+  });
+  return mainWindow;
 }
 
 function msToTime(duration): string {
