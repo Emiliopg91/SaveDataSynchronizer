@@ -11,6 +11,7 @@ import { FaCoffee, FaCog, FaExclamation } from 'react-icons/fa';
 
 import { ConfigurationModal } from './ConfigurationModal';
 import { Games } from './Games';
+import { Launchers } from './Launchers';
 import { NewEntryModal } from './NewEntryModal';
 
 export function App(): JSX.Element {
@@ -41,6 +42,12 @@ export function App(): JSX.Element {
         link: path
       });
     });
+    if (ctx.launchers.length > 0) {
+      newNavBarCfgTop.push({
+        text: TranslatorRenderer.translate('launchers'),
+        link: '/launchers'
+      });
+    }
     setNavBarCfgTop(newNavBarCfgTop);
 
     const newRoutes: Array<RouteConfiguration> = ctx.categories.map((c) => {
@@ -50,6 +57,9 @@ export function App(): JSX.Element {
       }
       return { path, element: <Games type={c} /> };
     });
+    if (ctx.launchers.length > 0) {
+      newRoutes.push({ path: '/launchers', element: <Launchers /> });
+    }
     setRoutes(newRoutes);
   }, [ctx.categories]);
 
