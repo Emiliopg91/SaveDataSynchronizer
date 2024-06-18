@@ -97,6 +97,19 @@ export const exposed = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     saveAppConfig(cfg: any): Promise<any> {
       return ipcRenderer.invoke('save-app-cfg', cfg);
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    getLaunchers(): Promise<Record<string, boolean>> {
+      return ipcRenderer.invoke('get-launchers');
+    },
+    getIconPath(): Promise<string> {
+      return ipcRenderer.invoke('get-icon-path');
+    },
+    launchSteam(): void {
+      ipcRenderer.send('launch-steam');
+    },
+    launchSteamBP(): void {
+      ipcRenderer.send('launch-steam-bp');
     }
   },
   app: {

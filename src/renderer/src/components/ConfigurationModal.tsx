@@ -88,15 +88,22 @@ export function ConfigurationModal(): JSX.Element {
                   checked={cfg['autostart']}
                   onChange={handleChangeAutostart}
                 />
-                {cfg['steampresent'] != 'NA' && (
-                  <Form.Check
-                    id="bigPictureCheckbox"
-                    label={TranslatorRenderer.translate('bigpicture')}
-                    checked={cfg['bigpicture'] && String(cfg['bigpicture']) == 'true'}
-                    onChange={handleChangeBigPicture}
-                  />
-                )}
               </Form.Group>
+              {ctx.launchers.length > 0 && (
+                <Form.Group className="mb-3" controlId="launchers">
+                  <Form.Label>
+                    <b>{TranslatorRenderer.translate('launchers')}</b>
+                  </Form.Label>
+                  {ctx.launchers.includes('steam') && (
+                    <Form.Check
+                      id="bigPictureCheckbox"
+                      label={TranslatorRenderer.translate('startup.bigpicture')}
+                      checked={cfg['bigpicture'] && String(cfg['bigpicture']) == 'true'}
+                      onChange={handleChangeBigPicture}
+                    />
+                  )}
+                </Form.Group>
+              )}
               <Form.Group className="mb-3" controlId="cloudDirName">
                 <Form.Label>
                   <b>{TranslatorRenderer.translate('cloud.dir.name')}</b>
