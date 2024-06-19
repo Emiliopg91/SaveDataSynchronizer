@@ -221,5 +221,9 @@
   "minimized": {
     "es": "Iniciar minimizado",
     "en": "Start minimized"
+  },
+  "report.issue": {
+    "es": "Reportar bug",
+    "en": "Report bug"
   }
 }
