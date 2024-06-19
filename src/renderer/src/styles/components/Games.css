@@ -15,7 +15,7 @@
 }
 
 #GameComponent .gameEntryRow {
-  padding-bottom: 5px;
+  padding-bottom: 0.313em;
 }
 
 #GameComponent .gameEntryRowInfo {
@@ -23,18 +23,18 @@
 }
 
 #GameComponent .gameEntryRowInfo > img {
-  max-height: 45px;
-  max-width: 40px;
-  padding-top: 5px;
+  max-height: 2.813em;
+  max-width: 2.5em;
+  padding-top: 0.313em;
   margin-right: 10px;
 }
 
 #GameComponent .gameEntryRowControl {
-  padding-top: 5px;
+  padding-top: 0.313em;
   text-align: right;
   margin: auto;
 }
 
 #GameComponent #filter {
-  margin-bottom: 5px;
+  margin-bottom: 0.313em;
 }
