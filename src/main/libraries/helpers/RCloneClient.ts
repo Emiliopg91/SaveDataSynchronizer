@@ -1,7 +1,6 @@
 import { File, FileHelper, LoggerMain } from '@tser-framework/main';
 import { Mutex } from 'async-mutex';
 import { spawn } from 'child_process';
-import dns from 'dns';
 
 import { mainWindow } from '../..';
 import { RCloneException } from '../exceptions/RCloneException';
