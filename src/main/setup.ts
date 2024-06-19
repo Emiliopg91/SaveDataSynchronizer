@@ -19,6 +19,7 @@ import { BrowserWindow, MenuItemConstructorOptions, Settings, app, dialog } from
 import path from 'path';
 
 import { mainWindow } from '.';
+import { issues } from '../../package.json';
 import icon45 from '../../resources/icons/icon-45x45.png?asset';
 import icon512 from '../../resources/icons/icon-512x512.png?asset';
 import { Configuration } from './libraries/dtos/Configuration';
@@ -381,6 +382,12 @@ export const ipcListeners: Record<string, IpcListener> = {
       Launchers.launchSteamBigPicture();
     }
   },
+  'report-bug': {
+    sync: false,
+    fn() {
+      shell.openExternal(issues);
+    }
+  },
   'network-status': {
     sync: false,
     fn(_, connected: boolean) {
@@ -399,7 +406,6 @@ export const ipcListeners: Record<string, IpcListener> = {
     }
   }
 };
-
 export const protocolBindings: Record<string, ProtocolBinding> = {
   ...defaultProtocolBindings
 };

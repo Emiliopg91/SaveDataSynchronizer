@@ -113,6 +113,9 @@ export const exposed = {
     },
     networkStatus(status: boolean): void {
       ipcRenderer.send('network-status', status);
+    },
+    reportBug(): void {
+      ipcRenderer.send('report-bug', status);
     }
   },
   app: {

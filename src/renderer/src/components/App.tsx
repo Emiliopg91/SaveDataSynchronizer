@@ -7,7 +7,7 @@ import {
   TranslatorRenderer
 } from '@tser-framework/renderer';
 import { useContext, useEffect, useState } from 'react';
-import { FaCoffee, FaCog, FaExclamation } from 'react-icons/fa';
+import { FaBug, FaCoffee, FaCog, FaExclamation } from 'react-icons/fa';
 
 import { ConfigurationModal } from './ConfigurationModal';
 import { Games } from './Games';
@@ -28,6 +28,9 @@ export function App(): JSX.Element {
   };
   const onClickUpdate = (): void => {
     window.api.triggerUpdate();
+  };
+  const onClickReportBug = (): void => {
+    window.api.reportBug();
   };
 
   useEffect(() => {
@@ -74,6 +77,11 @@ export function App(): JSX.Element {
         text: TranslatorRenderer.translate('make.a.donation'),
         icon: <FaCoffee />,
         onClick: onClickBuyMeACoffee
+      },
+      {
+        text: TranslatorRenderer.translate('report.issue'),
+        icon: <FaBug />,
+        onClick: onClickReportBug
       }
     ];
     if (ctx.pendingUpdate) {
