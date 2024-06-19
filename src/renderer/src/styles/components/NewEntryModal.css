@@ -3,13 +3,13 @@
 }
 
 #newEntryModal #executableLabel {
-  margin-left: 10px;
+  margin-left: 0.625em;
 }
 
 #newEntryModal #localLabel {
-  margin-left: 10px;
+  margin-left: 0.625em;
 }
 
 #newEntryModal #remoteLabel {
-  margin-left: 10px;
+  margin-left: 0.625em;
 }

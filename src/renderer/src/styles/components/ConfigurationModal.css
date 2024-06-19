@@ -1,11 +1,11 @@
 #ConfigurationModal div:has(> #autostartCheckbox) {
-  margin-left: 15px;
+  margin-left: 0.938em;
 }
 
 #ConfigurationModal div:has(> #minimizedCheckbox) {
-  margin-left: 15px;
+  margin-left: 0.938em;
 }
 
 #ConfigurationModal div:has(> #bigPictureCheckbox) {
-  margin-left: 15px;
+  margin-left: 0.938em;
 }
