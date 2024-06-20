@@ -88,16 +88,18 @@ export function Games({ type }: { type: string }): JSX.Element {
                     >
                       <FaPlay color="green" />
                     </button>
-                    <button
-                      type="button"
-                      className="btn"
-                      title={TranslatorRenderer.translate('sync.now')}
-                      onClick={() => {
-                        onClickSync(g.name);
-                      }}
-                    >
-                      <FaSyncAlt color="blue" />
-                    </button>
+                    {ctx.connected && (
+                      <button
+                        type="button"
+                        className="btn"
+                        title={TranslatorRenderer.translate('sync.now')}
+                        onClick={() => {
+                          onClickSync(g.name);
+                        }}
+                      >
+                        <FaSyncAlt color="blue" />
+                      </button>
+                    )}
                     <button
                       type="button"
                       className="btn"

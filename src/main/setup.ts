@@ -12,12 +12,14 @@ import {
   defaultIpcListeners,
   defaultProtocolBindings
 } from '@tser-framework/main';
+import { Mutex } from 'async-mutex';
 import { autoUpdater } from 'electron-updater';
 import { shell } from 'electron/common';
 import { BrowserWindow, MenuItemConstructorOptions, Settings, app, dialog } from 'electron/main';
 import path from 'path';
 
 import { mainWindow } from '.';
+import { issues } from '../../package.json';
 import icon45 from '../../resources/icons/icon-45x45.png?asset';
 import icon512 from '../../resources/icons/icon-512x512.png?asset';
 import { Configuration } from './libraries/dtos/Configuration';
@@ -31,6 +33,9 @@ import { SaveDataSynchronizer } from './libraries/logic/SaveDataSynchronizer';
 
 const LOGGER = new LoggerMain('main/setup.ts');
 const sdsStartupDefinition: Settings = { path: app.getPath('exe') };
+
+let connectedToInet = false;
+const mutex: Mutex = new Mutex();
 
 export const appConfig: AppConfig = {
   singleInstance: true,
@@ -383,9 +388,31 @@ export const ipcListeners: Record<string, IpcListener> = {
     fn() {
       Launchers.launchGOG();
     }
+  },
+  'report-bug': {
+    sync: false,
+    fn() {
+      shell.openExternal(issues);
+    }
+  },
+  'network-status': {
+    sync: false,
+    fn(_, connected: boolean) {
+      mutex.acquire().then((release) => {
+        if (String(connected) != String(connectedToInet)) {
+          new LoggerMain('NetworkStatus').info(
+            connected ? 'Connected to Internet' : 'Disconnected to Internet'
+          );
+        }
+
+        connectedToInet = connected;
+        RCloneClient.CONNECTED = connected;
+
+        release();
+      });
+    }
   }
 };
-
 export const protocolBindings: Record<string, ProtocolBinding> = {
   ...defaultProtocolBindings
 };

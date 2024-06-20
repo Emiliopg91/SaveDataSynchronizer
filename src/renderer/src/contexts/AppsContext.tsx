@@ -11,6 +11,7 @@ interface ContextType {
   setShowCfgModal: (value: boolean) => void;
   pendingUpdate: boolean;
   syncing: boolean;
+  connected: boolean;
   running: Array<string>;
   launchers: Array<string>;
   iconPath: string;
@@ -26,6 +27,7 @@ const defaultValue: ContextType = {
   setShowCfgModal: () => {},
   pendingUpdate: false,
   syncing: false,
+  connected: false,
   running: [],
   launchers: [],
   iconPath: ''
@@ -44,9 +46,24 @@ export function AppsProvider({ children }: { children: JSX.Element }): JSX.Eleme
   const [showCfgModal, setShowCfgModal] = useState(false);
   const [pendingUpdate, setPendingUpdate] = useState(false);
   const [syncing /*setSyncing*/] = useState(false);
+  const [connected, setConnected] = useState(false);
   const [running, setRunning] = useState<Array<string>>([]);
 
+  const handleNetworkChange = (): void => {
+    const connected =
+      typeof navigator !== 'undefined' && typeof navigator.onLine === 'boolean'
+        ? navigator.onLine
+        : true;
+
+    setConnected(connected);
+    window.api.networkStatus(connected);
+  };
+
   useEffect(() => {
+    window.addEventListener('online', handleNetworkChange);
+    window.addEventListener('offline', handleNetworkChange);
+    handleNetworkChange();
+
     const unsubscribe1 = window.api.listenUpdate((_, pending) => {
       setPendingUpdate(pending);
     });
@@ -74,6 +91,8 @@ export function AppsProvider({ children }: { children: JSX.Element }): JSX.Eleme
     return (): void => {
       unsubscribe1();
       unsubscribe2();
+      window.removeEventListener('online', handleNetworkChange);
+      window.removeEventListener('offline', handleNetworkChange);
     };
   }, []);
 
@@ -91,7 +110,8 @@ export function AppsProvider({ children }: { children: JSX.Element }): JSX.Eleme
         showCfgModal,
         setShowCfgModal,
         launchers,
-        iconPath
+        iconPath,
+        connected
       }}
     >
       {children}

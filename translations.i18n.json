@@ -224,5 +224,9 @@
   },
   "gog.galaxy": {
     "en": "GOG Galaxy"
+  },
+  "report.issue": {
+    "es": "Reportar bug",
+    "en": "Report bug"
   }
 }
