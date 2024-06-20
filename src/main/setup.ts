@@ -57,6 +57,7 @@ export const windowConfig: WindowConfig = {
     minHeight: 760,
     maxHeight: 760,
     maximizable: false,
+    closable: false,
     fullscreenable: false,
     resizable: false,
     show: false,
@@ -78,9 +79,8 @@ export const trayBuilder: TrayBuilder | undefined = TrayBuilder.builder(icon45)
     {
       label: 'exit',
       click(): void {
-        RCloneClient.MUTEX.acquire().then((release) => {
-          app.quit();
-          release();
+        RCloneClient.MUTEX.acquire().then(() => {
+          process.exit();
         });
       }
     }
