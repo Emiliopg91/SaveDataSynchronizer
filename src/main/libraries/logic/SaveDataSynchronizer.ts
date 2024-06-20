@@ -70,7 +70,7 @@ export class SaveDataSynchronizer {
       mainWindow?.on('ready-to-show', () => {
         setTimeout(async () => {
           if (SaveDataSynchronizer.CONFIG.minimized) {
-            mainWindow?.close();
+            mainWindow?.hide();
           }
           const isFirstSync: boolean = await SaveDataSynchronizer.initializeRemote();
           if (!isFirstSync) {

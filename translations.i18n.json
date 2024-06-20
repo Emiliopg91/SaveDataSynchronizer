@@ -219,8 +219,8 @@
     "en": "Launch Big Picture"
   },
   "minimized": {
-    "es": "Iniciar minimizado",
-    "en": "Start minimized"
+    "es": "Iniciar en barra de tareas",
+    "en": "Start on tray"
   },
   "report.issue": {
     "es": "Reportar bug",

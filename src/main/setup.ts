@@ -57,7 +57,6 @@ export const windowConfig: WindowConfig = {
     minHeight: 760,
     maxHeight: 760,
     maximizable: false,
-    closable: false,
     fullscreenable: false,
     resizable: false,
     show: false,
@@ -74,7 +73,7 @@ export const windowConfig: WindowConfig = {
 export const menuTemplate: Array<MenuItemConstructorOptions> | undefined = undefined;
 
 export const trayBuilder: TrayBuilder | undefined = TrayBuilder.builder(icon45)
-  .withToolTip(app.name)
+  .withToolTip(app.name + ' v' + app.getVersion())
   .withMenu([
     {
       label: 'exit',
