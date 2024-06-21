@@ -20,9 +20,36 @@ export function Launchers(): JSX.Element {
     window.api.launchSteamBP();
   };
 
+  const onClickLaunchEpic = (): void => {
+    window.api.launchEpic();
+  };
+
   return (
     <div id="LaunchersComponent">
       <Container>
+        {ctx.launchers.includes('epic') && (
+          <Row className="gameEntryRow">
+            <Col className="gameEntryRowInfo" sm={6}>
+              <img
+                className="card-img-top"
+                src={'local://' + ctx.iconPath?.replaceAll('\\', '/') + '/Launcher-Epic.ico'}
+              />
+              <b>{TranslatorRenderer.translate('epic')}</b>
+            </Col>
+            <Col className="gameEntryRowControl" sm={6}>
+              <button
+                type="button"
+                className="btn"
+                title={TranslatorRenderer.translate('launch.now')}
+                onClick={() => {
+                  onClickLaunchEpic();
+                }}
+              >
+                <b>{TranslatorRenderer.translate('launch.now')}</b>
+              </button>
+            </Col>
+          </Row>
+        )}
         {ctx.launchers.includes('gog') && (
           <Row className="gameEntryRow">
             <Col className="gameEntryRowInfo" sm={6}>

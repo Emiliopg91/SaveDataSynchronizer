@@ -114,6 +114,9 @@ export const exposed = {
     launchSteamBP(): void {
       ipcRenderer.send('launch-steam-bp');
     },
+    launchEpic(): void {
+      ipcRenderer.send('launch-epic');
+    },
     networkStatus(status: boolean): void {
       ipcRenderer.send('network-status', status);
     },

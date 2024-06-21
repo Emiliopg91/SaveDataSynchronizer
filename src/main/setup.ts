@@ -360,7 +360,8 @@ export const ipcListeners: Record<string, IpcListener> = {
     fn() {
       return {
         steam: Launchers.isSteamInstalled(),
-        gog: Launchers.isGOGInstalled()
+        gog: Launchers.isGOGInstalled(),
+        epic: Launchers.isEpicInstalled()
       };
     }
   },
@@ -386,6 +387,12 @@ export const ipcListeners: Record<string, IpcListener> = {
     sync: false,
     fn() {
       Launchers.launchGOG();
+    }
+  },
+  'launch-epic': {
+    sync: false,
+    fn() {
+      Launchers.launchEpic();
     }
   },
   'report-bug': {

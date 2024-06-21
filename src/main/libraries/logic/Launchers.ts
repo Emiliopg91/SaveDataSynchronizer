@@ -10,14 +10,25 @@ import { GameHelper } from '../helpers/GameHelper';
 export class Launchers {
   private static LOGGER = new LoggerMain('Launchers');
 
+  private static EPIC_START_ENTRY = new File({
+    file: path.join(
+      'C:',
+      'Program Files (x86)',
+      'Epic Games',
+      'Launcher',
+      'Portal',
+      'Binaries',
+      'Win32',
+      'EpicGamesLauncher.exe'
+    )
+  });
+
   private static GOG_START_ENTRY = new File({
-    file: 'GalaxyClient.exe',
-    parent: path.join('C:', 'Program Files (x86)', 'GOG Galaxy')
+    file: path.join('C:', 'Program Files (x86)', 'GOG Galaxy', 'GalaxyClient.exe')
   });
 
   private static STEAM_START_ENTRY = new File({
-    file: 'Steam.lnk',
-    parent: path.join(
+    file: path.join(
       OSHelper.getHome(),
       'AppData',
       'Roaming',
@@ -25,7 +36,8 @@ export class Launchers {
       'Windows',
       'Start Menu',
       'Programs',
-      'Steam'
+      'Steam',
+      'Steam.lnk'
     )
   });
 
@@ -36,6 +48,7 @@ export class Launchers {
     if (Launchers.isSteamInstalled()) {
       launchers['Steam'] = Launchers.getSteamPath();
       launchers['GOG-GALAXY'] = Launchers.getGOGPath();
+      launchers['Epic'] = Launchers.getEpicPath();
     }
     for (const id in launchers) {
       const g: Game = {
@@ -47,6 +60,30 @@ export class Launchers {
         icon: path.join(Constants.ICONS_FOLDER, 'Launcher-' + id + '.ico')
       };
       await GameHelper.generateIcon(g);
+    }
+  }
+
+  public static isEpicInstalled(): boolean {
+    return Launchers.EPIC_START_ENTRY.exists();
+  }
+
+  public static getEpicPath(): string {
+    if (Launchers.EPIC_START_ENTRY.exists()) {
+      return Launchers.EPIC_START_ENTRY.getAbsolutePath();
+    } else {
+      Launchers.LOGGER.error('No Epic installation found');
+      return '';
+    }
+  }
+
+  public static launchEpic(): void {
+    if (Launchers.EPIC_START_ENTRY.exists()) {
+      Launchers.LOGGER.info('Launching Epic');
+      (async (): Promise<void> => {
+        spawn(Launchers.getEpicPath());
+      })();
+    } else {
+      Launchers.LOGGER.error('No Epic installation found');
     }
   }
 

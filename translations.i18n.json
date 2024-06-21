@@ -225,6 +225,9 @@
   "gog.galaxy": {
     "en": "GOG Galaxy"
   },
+  "epic": {
+    "en": "Epic Launcher"
+  },
   "report.issue": {
     "es": "Reportar bug",
     "en": "Report bug"
