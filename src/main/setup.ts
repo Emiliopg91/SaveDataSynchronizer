@@ -73,14 +73,13 @@ export const windowConfig: WindowConfig = {
 export const menuTemplate: Array<MenuItemConstructorOptions> | undefined = undefined;
 
 export const trayBuilder: TrayBuilder | undefined = TrayBuilder.builder(icon45)
-  .withToolTip(app.name)
+  .withToolTip(app.name + ' v' + app.getVersion())
   .withMenu([
     {
       label: 'exit',
       click(): void {
-        RCloneClient.MUTEX.acquire().then((release) => {
-          app.quit();
-          release();
+        RCloneClient.MUTEX.acquire().then(() => {
+          process.exit();
         });
       }
     }
