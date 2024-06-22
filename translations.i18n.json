@@ -228,6 +228,9 @@
   "epic": {
     "en": "Epic Launcher"
   },
+  "ubisoft": {
+    "en": "Ubisoft Connect"
+  },
   "report.issue": {
     "es": "Reportar bug",
     "en": "Report bug"

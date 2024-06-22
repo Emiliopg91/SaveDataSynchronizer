@@ -24,6 +24,10 @@ export function Launchers(): JSX.Element {
     window.api.launchEpic();
   };
 
+  const onClickLaunchUbisoft = (): void => {
+    window.api.launchUbisoft();
+  };
+
   return (
     <div id="LaunchersComponent">
       <Container>
@@ -102,6 +106,29 @@ export function Launchers(): JSX.Element {
                 }}
               >
                 <b>{TranslatorRenderer.translate('launch.big.picture')}</b>
+              </button>
+            </Col>
+          </Row>
+        )}
+        {ctx.launchers.includes('ubisoft') && (
+          <Row className="gameEntryRow">
+            <Col className="gameEntryRowInfo" sm={6}>
+              <img
+                className="card-img-top"
+                src={'local://' + ctx.iconPath?.replaceAll('\\', '/') + '/Launcher-Ubisoft.ico'}
+              />
+              <b>{TranslatorRenderer.translate('ubisoft')}</b>
+            </Col>
+            <Col className="gameEntryRowControl" sm={6}>
+              <button
+                type="button"
+                className="btn"
+                title={TranslatorRenderer.translate('launch.now')}
+                onClick={() => {
+                  onClickLaunchUbisoft();
+                }}
+              >
+                <b>{TranslatorRenderer.translate('launch.now')}</b>
               </button>
             </Col>
           </Row>

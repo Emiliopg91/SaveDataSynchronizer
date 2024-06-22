@@ -27,6 +27,16 @@ export class Launchers {
     file: path.join('C:', 'Program Files (x86)', 'GOG Galaxy', 'GalaxyClient.exe')
   });
 
+  private static UBISOFT_START_ENTRY = new File({
+    file: path.join(
+      'C:',
+      'Program Files (x86)',
+      'Ubisoft',
+      'Ubisoft Game Launcher',
+      'UbisoftConnect.exe'
+    )
+  });
+
   private static STEAM_START_ENTRY = new File({
     file: path.join(
       OSHelper.getHome(),
@@ -49,6 +59,7 @@ export class Launchers {
       launchers['Steam'] = Launchers.getSteamPath();
       launchers['GOG-GALAXY'] = Launchers.getGOGPath();
       launchers['Epic'] = Launchers.getEpicPath();
+      launchers['Ubisoft'] = Launchers.getUbisoftPath();
     }
     for (const id in launchers) {
       const g: Game = {
@@ -60,6 +71,30 @@ export class Launchers {
         icon: path.join(Constants.ICONS_FOLDER, 'Launcher-' + id + '.ico')
       };
       await GameHelper.generateIcon(g);
+    }
+  }
+
+  public static isUbisoftInstalled(): boolean {
+    return Launchers.UBISOFT_START_ENTRY.exists();
+  }
+
+  public static getUbisoftPath(): string {
+    if (Launchers.UBISOFT_START_ENTRY.exists()) {
+      return Launchers.UBISOFT_START_ENTRY.getAbsolutePath();
+    } else {
+      Launchers.LOGGER.error('No Epic installation found');
+      return '';
+    }
+  }
+
+  public static launchUbisoft(): void {
+    if (Launchers.UBISOFT_START_ENTRY.exists()) {
+      Launchers.LOGGER.info('Launching Ubisoft');
+      (async (): Promise<void> => {
+        spawn(Launchers.getUbisoftPath());
+      })();
+    } else {
+      Launchers.LOGGER.error('No Ubisoft installation found');
     }
   }
 

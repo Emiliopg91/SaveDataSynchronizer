@@ -117,6 +117,9 @@ export const exposed = {
     launchEpic(): void {
       ipcRenderer.send('launch-epic');
     },
+    launchUbisoft(): void {
+      ipcRenderer.send('launch-ubisoft');
+    },
     networkStatus(status: boolean): void {
       ipcRenderer.send('network-status', status);
     },
