@@ -170,10 +170,9 @@ let shownUpdate = false;
         LOGGER.system('##################################################');
       });
 
-      app.on('window-all-closed', (e) => {
-        e.preventDefault();
+      app.on('window-all-closed', () => {
         if (windowConfig.closeToTray) {
-          mainWindow?.hide();
+          mainWindow = null;
         } else {
           app.quit();
         }
@@ -224,7 +223,11 @@ let shownUpdate = false;
               } else {
                 if (!shownUpdate) {
                   setInterval(() => {
-                    mainWindow?.webContents?.send('listen-update', true);
+                    try {
+                      mainWindow?.webContents?.send('listen-update', true);
+                    } catch (e) {
+                      //do nothing
+                    }
                   }, 1000);
                 }
               }
@@ -277,10 +280,6 @@ function configureShortcutEvents(window: Electron.BrowserWindow): void {
 
 export async function createWindow(): Promise<BrowserWindow> {
   mainWindow = WindowHelper.createMainWindow(windowConfig);
-  mainWindow.on('close', (e) => {
-    e.preventDefault();
-    mainWindow?.hide();
-  });
   return mainWindow;
 }
 

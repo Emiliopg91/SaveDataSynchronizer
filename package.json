@@ -1,6 +1,6 @@
 {
   "name": "SaveDataSynchronizer",
-  "version": "1.1.0",
+  "version": "1.2.1",
   "description": "Application made for gamers to sync your savedata between multiple devices using cloud storage",
   "repository": "https://github.com/Emiliopg91/SaveDataSynchronizer",
   "issues": "https://github.com/Emiliopg91/SaveDataSynchronizer/issues",
@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@tser-framework/commons": "^2.0.37",
-    "@tser-framework/main": "^2.0.179",
+    "@tser-framework/main": "^2.0.180",
     "@tser-framework/renderer": "^2.0.66",
     "async-mutex": "^0.5.0",
     "bootstrap": "^5.3.3",
