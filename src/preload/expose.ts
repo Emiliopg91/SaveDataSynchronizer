@@ -105,11 +105,23 @@ export const exposed = {
     getIconPath(): Promise<string> {
       return ipcRenderer.invoke('get-icon-path');
     },
+    launchGog(): void {
+      ipcRenderer.send('launch-gog');
+    },
     launchSteam(): void {
       ipcRenderer.send('launch-steam');
     },
     launchSteamBP(): void {
       ipcRenderer.send('launch-steam-bp');
+    },
+    launchEpic(): void {
+      ipcRenderer.send('launch-epic');
+    },
+    launchUbisoft(): void {
+      ipcRenderer.send('launch-ubisoft');
+    },
+    launchEa(): void {
+      ipcRenderer.send('launch-ea');
     },
     networkStatus(status: boolean): void {
       ipcRenderer.send('network-status', status);

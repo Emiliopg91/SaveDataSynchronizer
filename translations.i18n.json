@@ -222,6 +222,18 @@
     "es": "Iniciar en barra de tareas",
     "en": "Start on tray"
   },
+  "gog.galaxy": {
+    "en": "GOG Galaxy"
+  },
+  "epic": {
+    "en": "Epic Launcher"
+  },
+  "ubisoft": {
+    "en": "Ubisoft Connect"
+  },
+  "ea": {
+    "en": "EA"
+  },
   "report.issue": {
     "es": "Reportar bug",
     "en": "Report bug"
