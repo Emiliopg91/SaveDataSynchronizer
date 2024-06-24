@@ -13,12 +13,11 @@ import {
   defaultProtocolBindings
 } from '@tser-framework/main';
 import { Mutex } from 'async-mutex';
-import { autoUpdater } from 'electron-updater';
 import { shell } from 'electron/common';
 import { BrowserWindow, MenuItemConstructorOptions, Settings, app, dialog } from 'electron/main';
 import path from 'path';
 
-import { mainWindow } from '.';
+import { appUpdater, mainWindow } from '.';
 import { issues } from '../../package.json';
 import icon45 from '../../resources/icons/icon-45x45.png?asset';
 import icon512 from '../../resources/icons/icon-512x512.png?asset';
@@ -298,7 +297,7 @@ export const ipcListeners: Record<string, IpcListener> = {
           if (returnValue.response === 0) {
             RCloneClient.MUTEX.acquire().then((release) => {
               NotificationUtils.displayInstallingUpdate();
-              autoUpdater.quitAndInstall();
+              appUpdater?.quitAndInstall();
               release();
             });
           }

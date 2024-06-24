@@ -27,6 +27,7 @@ import {
 
 export let mainWindow: BrowserWindow | null = null;
 export let splashPromise: Promise<void> | undefined;
+export let appUpdater: AppUpdater | undefined = undefined;
 
 const LOGGER = new LoggerMain('main/index.ts');
 const initTime = Date.now();
@@ -199,7 +200,7 @@ let shownUpdate = false;
         }
       });
 
-      const appUpdater = new AppUpdater(24 * 60 * 60 * 1000, (): void => {
+      appUpdater = new AppUpdater(24 * 60 * 60 * 1000, (): void => {
         if (!shownUpdate) {
           dialog
             .showMessageBox({
@@ -217,7 +218,7 @@ let shownUpdate = false;
               if (returnValue.response === 0) {
                 RCloneClient.MUTEX.acquire().then((release) => {
                   NotificationUtils.displayInstallingUpdate();
-                  appUpdater.quitAndInstall(true, true);
+                  appUpdater?.quitAndInstall(true, true);
                   release();
                 });
               } else {

@@ -16,18 +16,6 @@ dependencies:
   bootstrap:
     specifier: ^5.3.3
     version: 5.3.3(@popperjs/core@2.11.8)
-  electron-log:
-    specifier: ^5.1.5
-    version: 5.1.5
-  electron-prompt:
-    specifier: ^1.7.0
-    version: 1.7.0
-  electron-updater:
-    specifier: ^6.2.1
-    version: 6.2.1
-  primereact:
-    specifier: ^10.6.6
-    version: 10.6.6(@types/react@18.3.3)(react-dom@18.3.1)(react@18.3.1)
   react:
     specifier: ^18.3.1
     version: 18.3.1
@@ -43,9 +31,6 @@ dependencies:
   react-router-dom:
     specifier: ^6.23.1
     version: 6.23.1(react-dom@18.3.1)(react@18.3.1)
-  systeminformation:
-    specifier: ^5.22.11
-    version: 5.22.11
 
 devDependencies:
   '@electron-toolkit/eslint-config-prettier':
@@ -2364,10 +2349,6 @@ packages:
     engines: {node: '>= 14'}
     dev: false
 
-  /electron-prompt@1.7.0:
-    resolution: {integrity: sha512-IfqJYEgcRO6NuyPROo8AtdkAiZ6N9I1lQEf4dJAkPuhV5YgOHdmLqZJf6OXumZJfzrjpzCM5jHeYOrhGdgbnEA==}
-    dev: false
-
   /electron-publish@24.13.1:
     resolution: {integrity: sha512-2ZgdEqJ8e9D17Hwp5LEq5mLQPjqU3lv/IALvgp+4W8VeNhryfGhYEQC/PgDPMrnWUp+l60Ou5SJLsu+k4mhQ8A==}
     dependencies:
@@ -4581,13 +4562,6 @@ packages:
       '@pkgr/core': 0.1.1
       tslib: 2.6.3
     dev: true
-
-  /systeminformation@5.22.11:
-    resolution: {integrity: sha512-aLws5yi4KCHTb0BVvbodQY5bY8eW4asMRDTxTW46hqw9lGjACX6TlLdJrkdoHYRB0qs+MekqEq1zG7WDnWE8Ug==}
-    engines: {node: '>=8.0.0'}
-    os: [darwin, linux, win32, freebsd, openbsd, netbsd, sunos, android]
-    hasBin: true
-    dev: false
 
   /tar-stream@2.2.0:
     resolution: {integrity: sha512-ujeqbceABgwMZxEJnk2HDY2DlnUZ+9oEcb1KzTVfYHio0UE6dG71n60d8D2I4qNvleWrrXpmjpt7vZeF1LnMZQ==}
