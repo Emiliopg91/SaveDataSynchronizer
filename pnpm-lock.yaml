@@ -5,8 +5,8 @@ dependencies:
     specifier: ^2.0.37
     version: 2.0.37
   '@tser-framework/main':
-    specifier: ^2.0.179
-    version: 2.0.179(@swc/core@1.6.5)(electron-builder-squirrel-windows@24.13.3)(vite@5.3.1)
+    specifier: ^2.0.180
+    version: 2.0.180(@swc/core@1.6.5)(electron-builder-squirrel-windows@24.13.3)(vite@5.3.1)
   '@tser-framework/renderer':
     specifier: ^2.0.66
     version: 2.0.66(@popperjs/core@2.11.8)(@types/react@18.3.3)
@@ -1168,8 +1168,8 @@ packages:
     resolution: {integrity: sha512-iQHpcQCRlpPe5aTU4ZgvHl8VReTSNjPEeoRuzTCbrO/8uy5DGJ5u4mpajWEynzdpwf7nzCqbrZpisMJYzDFsPw==}
     dev: false
 
-  /@tser-framework/main@2.0.179(@swc/core@1.6.5)(electron-builder-squirrel-windows@24.13.3)(vite@5.3.1):
-    resolution: {integrity: sha512-5Lsf07UCoWowyLcMlv8DHpmD5PYAcRifsAL4VPws+2WGcF6EQhjFCMthzVITrez+gryQlGeJClXMrgsUF2VixA==}
+  /@tser-framework/main@2.0.180(@swc/core@1.6.5)(electron-builder-squirrel-windows@24.13.3)(vite@5.3.1):
+    resolution: {integrity: sha512-63IQr33+ZPRQsjxvvUWKVHyolUJkOJlXJvQ92biPPfbIHff08Wre3AMJ8WiIZTZsNvzEZQXBrTYsipOYXCmRRw==}
     dependencies:
       '@tser-framework/commons': 2.0.37
       archiver: 7.0.1
