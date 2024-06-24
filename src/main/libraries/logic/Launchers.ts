@@ -10,9 +10,46 @@ import { GameHelper } from '../helpers/GameHelper';
 export class Launchers {
   private static LOGGER = new LoggerMain('Launchers');
 
+  private static EPIC_START_ENTRY = new File({
+    file: path.join(
+      'C:',
+      'Program Files (x86)',
+      'Epic Games',
+      'Launcher',
+      'Portal',
+      'Binaries',
+      'Win32',
+      'EpicGamesLauncher.exe'
+    )
+  });
+
+  private static GOG_START_ENTRY = new File({
+    file: path.join('C:', 'Program Files (x86)', 'GOG Galaxy', 'GalaxyClient.exe')
+  });
+
+  private static EA_START_ENTRY = new File({
+    file: path.join(
+      'C:',
+      'Program Files',
+      'Electronic Arts',
+      'EA Desktop',
+      'EA Desktop',
+      'EALauncher.exe'
+    )
+  });
+
+  private static UBISOFT_START_ENTRY = new File({
+    file: path.join(
+      'C:',
+      'Program Files (x86)',
+      'Ubisoft',
+      'Ubisoft Game Launcher',
+      'UbisoftConnect.exe'
+    )
+  });
+
   private static STEAM_START_ENTRY = new File({
-    file: 'Steam.lnk',
-    parent: path.join(
+    file: path.join(
       OSHelper.getHome(),
       'AppData',
       'Roaming',
@@ -20,7 +57,8 @@ export class Launchers {
       'Windows',
       'Start Menu',
       'Programs',
-      'Steam'
+      'Steam',
+      'Steam.lnk'
     )
   });
 
@@ -30,6 +68,10 @@ export class Launchers {
     const launchers: Record<string, string> = {};
     if (Launchers.isSteamInstalled()) {
       launchers['Steam'] = Launchers.getSteamPath();
+      launchers['GOG-GALAXY'] = Launchers.getGOGPath();
+      launchers['Epic'] = Launchers.getEpicPath();
+      launchers['Ubisoft'] = Launchers.getUbisoftPath();
+      launchers['EA'] = Launchers.getEaPath();
     }
     for (const id in launchers) {
       const g: Game = {
@@ -38,9 +80,105 @@ export class Launchers {
         localDir: '',
         remoteDir: '',
         executable: launchers[id],
-        icon: path.join(Constants.ICONS_FOLDER, id + '.ico')
+        icon: path.join(Constants.ICONS_FOLDER, 'Launcher-' + id + '.ico')
       };
       await GameHelper.generateIcon(g);
+    }
+  }
+
+  public static isEaInstalled(): boolean {
+    return Launchers.EA_START_ENTRY.exists();
+  }
+
+  public static getEaPath(): string {
+    if (Launchers.EA_START_ENTRY.exists()) {
+      return Launchers.EA_START_ENTRY.getAbsolutePath();
+    } else {
+      Launchers.LOGGER.error('No EA installation found');
+      return '';
+    }
+  }
+
+  public static launchEa(): void {
+    if (Launchers.EA_START_ENTRY.exists()) {
+      Launchers.LOGGER.info('Launching EA');
+      (async (): Promise<void> => {
+        spawn(Launchers.getEaPath());
+      })();
+    } else {
+      Launchers.LOGGER.error('No EA installation found');
+    }
+  }
+
+  public static isUbisoftInstalled(): boolean {
+    return Launchers.UBISOFT_START_ENTRY.exists();
+  }
+
+  public static getUbisoftPath(): string {
+    if (Launchers.UBISOFT_START_ENTRY.exists()) {
+      return Launchers.UBISOFT_START_ENTRY.getAbsolutePath();
+    } else {
+      Launchers.LOGGER.error('No Epic installation found');
+      return '';
+    }
+  }
+
+  public static launchUbisoft(): void {
+    if (Launchers.UBISOFT_START_ENTRY.exists()) {
+      Launchers.LOGGER.info('Launching Ubisoft');
+      (async (): Promise<void> => {
+        spawn(Launchers.getUbisoftPath());
+      })();
+    } else {
+      Launchers.LOGGER.error('No Ubisoft installation found');
+    }
+  }
+
+  public static isEpicInstalled(): boolean {
+    return Launchers.EPIC_START_ENTRY.exists();
+  }
+
+  public static getEpicPath(): string {
+    if (Launchers.EPIC_START_ENTRY.exists()) {
+      return Launchers.EPIC_START_ENTRY.getAbsolutePath();
+    } else {
+      Launchers.LOGGER.error('No Epic installation found');
+      return '';
+    }
+  }
+
+  public static launchEpic(): void {
+    if (Launchers.EPIC_START_ENTRY.exists()) {
+      Launchers.LOGGER.info('Launching Epic');
+      (async (): Promise<void> => {
+        spawn(Launchers.getEpicPath());
+      })();
+    } else {
+      Launchers.LOGGER.error('No Epic installation found');
+    }
+  }
+
+  public static isGOGInstalled(): boolean {
+    return Launchers.GOG_START_ENTRY.exists();
+  }
+
+  public static getGOGPath(): string {
+    if (Launchers.GOG_START_ENTRY.exists()) {
+      return Launchers.GOG_START_ENTRY.getAbsolutePath();
+    } else {
+      Launchers.LOGGER.error('No GOG installation found');
+      return '';
+    }
+  }
+
+  public static launchGOG(): void {
+    if (Launchers.GOG_START_ENTRY.exists()) {
+      Launchers.LOGGER.info('Launching GOG Galaxy');
+      (async (): Promise<void> => {
+        spawn(Launchers.getGOGPath());
+      })();
+    } else {
+      Launchers.LOGGER.error('No GOG Galaxy installation found');
     }
   }
 
