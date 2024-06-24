@@ -120,6 +120,9 @@ export const exposed = {
     launchUbisoft(): void {
       ipcRenderer.send('launch-ubisoft');
     },
+    launchEa(): void {
+      ipcRenderer.send('launch-ea');
+    },
     networkStatus(status: boolean): void {
       ipcRenderer.send('network-status', status);
     },

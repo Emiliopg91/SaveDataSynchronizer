@@ -27,6 +27,17 @@ export class Launchers {
     file: path.join('C:', 'Program Files (x86)', 'GOG Galaxy', 'GalaxyClient.exe')
   });
 
+  private static EA_START_ENTRY = new File({
+    file: path.join(
+      'C:',
+      'Program Files',
+      'Electronic Arts',
+      'EA Desktop',
+      'EA Desktop',
+      'EALauncher.exe'
+    )
+  });
+
   private static UBISOFT_START_ENTRY = new File({
     file: path.join(
       'C:',
@@ -60,6 +71,7 @@ export class Launchers {
       launchers['GOG-GALAXY'] = Launchers.getGOGPath();
       launchers['Epic'] = Launchers.getEpicPath();
       launchers['Ubisoft'] = Launchers.getUbisoftPath();
+      launchers['EA'] = Launchers.getEaPath();
     }
     for (const id in launchers) {
       const g: Game = {
@@ -71,6 +83,30 @@ export class Launchers {
         icon: path.join(Constants.ICONS_FOLDER, 'Launcher-' + id + '.ico')
       };
       await GameHelper.generateIcon(g);
+    }
+  }
+
+  public static isEaInstalled(): boolean {
+    return Launchers.EA_START_ENTRY.exists();
+  }
+
+  public static getEaPath(): string {
+    if (Launchers.EA_START_ENTRY.exists()) {
+      return Launchers.EA_START_ENTRY.getAbsolutePath();
+    } else {
+      Launchers.LOGGER.error('No EA installation found');
+      return '';
+    }
+  }
+
+  public static launchEa(): void {
+    if (Launchers.EA_START_ENTRY.exists()) {
+      Launchers.LOGGER.info('Launching EA');
+      (async (): Promise<void> => {
+        spawn(Launchers.getEaPath());
+      })();
+    } else {
+      Launchers.LOGGER.error('No EA installation found');
     }
   }
 

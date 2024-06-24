@@ -28,9 +28,36 @@ export function Launchers(): JSX.Element {
     window.api.launchUbisoft();
   };
 
+  const onClickLaunchEa = (): void => {
+    window.api.launchEa();
+  };
+
   return (
     <div id="LaunchersComponent">
       <Container>
+        {ctx.launchers.includes('ea') && (
+          <Row className="gameEntryRow">
+            <Col className="gameEntryRowInfo" sm={6}>
+              <img
+                className="card-img-top"
+                src={'local://' + ctx.iconPath?.replaceAll('\\', '/') + '/Launcher-EA.ico'}
+              />
+              <b>{TranslatorRenderer.translate('ea')}</b>
+            </Col>
+            <Col className="gameEntryRowControl" sm={6}>
+              <button
+                type="button"
+                className="btn"
+                title={TranslatorRenderer.translate('launch.now')}
+                onClick={() => {
+                  onClickLaunchEa();
+                }}
+              >
+                <b>{TranslatorRenderer.translate('launch.now')}</b>
+              </button>
+            </Col>
+          </Row>
+        )}
         {ctx.launchers.includes('epic') && (
           <Row className="gameEntryRow">
             <Col className="gameEntryRowInfo" sm={6}>

@@ -231,6 +231,9 @@
   "ubisoft": {
     "en": "Ubisoft Connect"
   },
+  "ea": {
+    "en": "EA"
+  },
   "report.issue": {
     "es": "Reportar bug",
     "en": "Report bug"
