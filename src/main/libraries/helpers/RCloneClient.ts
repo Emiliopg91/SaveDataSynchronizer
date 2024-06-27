@@ -264,15 +264,17 @@ export class RCloneClient {
     });
   }
   public static clearLockFiles(): void {
-    let count = 0;
-    new File({ file: Constants.RCLONE_BYSINC_FOLDER }).list().forEach((f) => {
-      if (f.getName().endsWith('.lck')) {
-        f.delete();
-        count++;
+    if (new File({ file: Constants.RCLONE_BYSINC_FOLDER }).exists()) {
+      let count = 0;
+      new File({ file: Constants.RCLONE_BYSINC_FOLDER }).list().forEach((f) => {
+        if (f.getName().endsWith('.lck')) {
+          f.delete();
+          count++;
+        }
+      });
+      if (count > 0) {
+        RCloneClient.LOGGER.info('Removed ' + count + ' lock files');
       }
-    });
-    if (count > 0) {
-      RCloneClient.LOGGER.info('Removed ' + count + ' lock files');
     }
   }
 }

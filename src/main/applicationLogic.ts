@@ -25,11 +25,11 @@ export async function runWhenReady(): Promise<void> {
   }
 
   if (!new File({ file: Constants.RCLONE_EXE }).exists()) {
-    new File({ file: Constants.RCLONE_EXE }).copy(new File({ file: rcloneExe }));
+    new File({ file: rcloneExe }).copy(new File({ file: Constants.RCLONE_EXE }));
   }
 
   if (!new File({ file: Constants.PSSUSPEND_EXE }).exists()) {
-    new File({ file: Constants.PSSUSPEND_EXE }).copy(new File({ file: pssuspendExe }));
+    new File({ file: pssuspendExe }).copy(new File({ file: Constants.PSSUSPEND_EXE }));
   }
 
   SaveDataSynchronizer.main();

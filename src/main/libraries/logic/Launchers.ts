@@ -118,7 +118,7 @@ export class Launchers {
     if (Launchers.UBISOFT_START_ENTRY.exists()) {
       return Launchers.UBISOFT_START_ENTRY.getAbsolutePath();
     } else {
-      Launchers.LOGGER.error('No Epic installation found');
+      Launchers.LOGGER.error('No Ubisoft installation found');
       return '';
     }
   }
