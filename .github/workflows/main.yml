@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     permissions: write-all
-    runs-on: ubuntu-latest
+    runs-on: windows-2016
 
     steps:
     - name: Checkout repository
@@ -21,12 +21,6 @@ jobs:
 
     - name: Install pnpm
       run: npm install -g pnpm
-        
-    - name: Install Wine
-      run: |
-        sudo dpkg --add-architecture i386
-        sudo apt update
-        sudo apt install -y wine64 wine32
 
     - name: Update version in package.json
       id: update_version
