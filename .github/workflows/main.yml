@@ -41,6 +41,13 @@ jobs:
         mkdir -p ./resources/dist
         cp PSTools/pssuspend64.exe ./resources/dist/pssuspend.exe
 
+    - name: Download RClone
+      run: |
+        wget -q https://downloads.rclone.org/v1.67.0/rclone-v1.67.0-windows-amd64.zip
+        mkdir -p RClone
+        unzip -q rclone-v1.67.0-windows-amd64.zip -d RClone
+        cp RClone/rclone-v1.67.0-windows-amd64/rclone.exe ./resources/dist/rclone.exe
+
     - name: Build for Windows
       run: pnpm build:win
 
