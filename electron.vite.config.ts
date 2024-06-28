@@ -25,10 +25,10 @@ console.info('HTMLS: ', htmls);
 
 export default defineConfig({
   main: {
-    plugins: [swcPlugin(), bytecodePlugin({ transformArrowFunctions: false })]
+    plugins: [swcPlugin()]
   },
   preload: {
-    plugins: [swcPlugin(), bytecodePlugin({ transformArrowFunctions: false })]
+    plugins: [swcPlugin()]
   },
   renderer: {
     resolve: {
