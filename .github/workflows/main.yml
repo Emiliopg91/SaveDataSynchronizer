@@ -88,7 +88,17 @@ jobs:
         draft: false
         prerelease: false
 
-    - name: Upload Release Asset
+    - name: Upload Release Latest
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./dist/latest.yml
+        asset_name: latest.yml
+        asset_content_type: text/yaml
+
+    - name: Upload Release Exe
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -96,4 +106,14 @@ jobs:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./dist/SaveDataSynchronizer-${{ env.previous_tag }}-setup.exe
         asset_name: SaveDataSynchronizer-${{ env.previous_tag }}-setup.exe
+        asset_content_type: application/octet-stream
+
+    - name: Upload Release Blockmap
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./dist/SaveDataSynchronizer-${{ env.previous_tag }}-setup.exe.blockmap
+        asset_name: SaveDataSynchronizer-${{ env.previous_tag }}-setup.exe.blockmap
         asset_content_type: application/octet-stream
