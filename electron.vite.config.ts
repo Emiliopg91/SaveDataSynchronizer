@@ -1,5 +1,5 @@
 import react from '@vitejs/plugin-react';
-import { bytecodePlugin, defineConfig, swcPlugin } from 'electron-vite';
+import { defineConfig, swcPlugin } from 'electron-vite';
 import fs from 'fs';
 import path, { resolve } from 'path';
 
