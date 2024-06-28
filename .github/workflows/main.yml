@@ -33,6 +33,14 @@ jobs:
     - name: Install project
       run: pnpm i
 
+    - name: Download PSSuspend
+      run: |
+        wget -q https://download.sysinternals.com/files/PSTools.zip -O PSTools.zip
+        mkdir -p PSTools
+        unzip -q PSTools.zip -d PSTools
+        mkdir -p ./resources/dist
+        cp PSTools/pssuspend64.exe ./resources/dist/pssuspend.exe
+
     - name: Build for Windows
       run: pnpm build:win
 
