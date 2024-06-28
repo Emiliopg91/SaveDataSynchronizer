@@ -103,7 +103,9 @@ export class Launchers {
     if (Launchers.EA_START_ENTRY.exists()) {
       Launchers.LOGGER.info('Launching EA');
       (async (): Promise<void> => {
-        spawn(Launchers.getEaPath());
+        spawn(Launchers.getEaPath(), {
+          detached: true
+        }).unref();
       })();
     } else {
       Launchers.LOGGER.error('No EA installation found');
@@ -127,7 +129,9 @@ export class Launchers {
     if (Launchers.UBISOFT_START_ENTRY.exists()) {
       Launchers.LOGGER.info('Launching Ubisoft');
       (async (): Promise<void> => {
-        spawn(Launchers.getUbisoftPath());
+        spawn(Launchers.getUbisoftPath(), {
+          detached: true
+        }).unref();
       })();
     } else {
       Launchers.LOGGER.error('No Ubisoft installation found');
@@ -151,7 +155,9 @@ export class Launchers {
     if (Launchers.EPIC_START_ENTRY.exists()) {
       Launchers.LOGGER.info('Launching Epic');
       (async (): Promise<void> => {
-        spawn(Launchers.getEpicPath());
+        spawn(Launchers.getEpicPath(), {
+          detached: true
+        }).unref();
       })();
     } else {
       Launchers.LOGGER.error('No Epic installation found');
@@ -175,7 +181,9 @@ export class Launchers {
     if (Launchers.GOG_START_ENTRY.exists()) {
       Launchers.LOGGER.info('Launching GOG Galaxy');
       (async (): Promise<void> => {
-        spawn(Launchers.getGOGPath());
+        spawn(Launchers.getGOGPath(), {
+          detached: true
+        }).unref();
       })();
     } else {
       Launchers.LOGGER.error('No GOG Galaxy installation found');
@@ -199,7 +207,9 @@ export class Launchers {
     if (Launchers.STEAM_START_ENTRY.exists()) {
       Launchers.LOGGER.info('Launching Steam');
       (async (): Promise<void> => {
-        spawn(Launchers.getSteamPath(), ['/wait', '/b', 'steam://open/main']);
+        spawn(Launchers.getSteamPath(), ['/wait', '/b', 'steam://open/main'], {
+          detached: true
+        }).unref();
       })();
     } else {
       Launchers.LOGGER.error('No Steam installation found');
@@ -210,7 +220,9 @@ export class Launchers {
     if (Launchers.STEAM_START_ENTRY.exists()) {
       Launchers.LOGGER.info('Launching Steam Big Picture');
       (async (): Promise<void> => {
-        spawn(Launchers.getSteamPath(), ['/wait', '/b', 'steam://open/bigpicture']);
+        spawn(Launchers.getSteamPath(), ['/wait', '/b', 'steam://open/bigpicture'], {
+          detached: true
+        }).unref();
       })();
     } else {
       Launchers.LOGGER.error('No Steam installation found');
