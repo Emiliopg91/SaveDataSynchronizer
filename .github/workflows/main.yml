@@ -45,7 +45,13 @@ jobs:
         unzip -q rclone-v1.67.0-windows-amd64.zip -d RClone
         cp RClone/rclone-v1.67.0-windows-amd64/rclone.exe ./resources/dist/rclone.exe
         rm -R RClone PSTools
-
+        
+    - name: Install Wine
+      run: |
+        sudo dpkg --add-architecture i386
+        sudo apt update
+        sudo apt install -y wine64 wine32
+          
     - name: Build for Windows
       run: pnpm build:win
 
