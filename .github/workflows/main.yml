@@ -30,6 +30,9 @@ jobs:
         git config --global user.name "github-actions"
         git commit -am "Bump version to $TAG"
 
+    - name: Install project
+      run: pnpm i
+
     - name: Build for Windows
       run: pnpm build:win
 
