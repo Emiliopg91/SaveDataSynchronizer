@@ -2,8 +2,8 @@ name: Build and Release
 
 on:
   push:
-    tags:
-      - '*'
+    branches:
+      - main
 
 jobs:
   build:
@@ -28,23 +28,23 @@ jobs:
           sudo apt update
           sudo apt install -y wine64 wine32
 
-      - name: Update version in package.json
-        id: update_version
-        run: |
-          TAG=$(echo ${GITHUB_REF#refs/tags/})
-          npm version $TAG --no-git-tag-version
-          git config --global user.email "actions@github.com"
-          git config --global user.name "github-actions"
-          git commit -am "Bump version to $TAG"
-
-      - name: Push changes
-        uses: ad-m/github-push-action@v0.6.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: main
-
       - name: Install project
         run: pnpm i
+
+      - name: Extract version from package.json
+        id: extract_version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> $GITHUB_ENV
+
+      - name: Create a new tag
+        id: create_tag
+        run: |
+          VERSION=${{ env.version }}
+          git config --global user.email "actions@github.com"
+          git config --global user.name "github-actions"
+          git tag "v$VERSION"
+          git push origin "v$VERSION"
 
       - name: Download external binaries
         run: |
@@ -65,14 +65,14 @@ jobs:
       - name: Get the previous tag
         id: get_previous_tag
         run: |
-          PREVIOUS_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
+          PREVIOUS_TAG=$(git describe --tags $(git rev-list --tags --skip=1 --max-count=1))
           echo "previous_tag=$PREVIOUS_TAG" >> $GITHUB_ENV
 
       - name: Generate Changelog
         id: generate_changelog
         run: |
           PREVIOUS_TAG=${{ env.previous_tag }}
-          CURRENT_TAG=$(echo ${GITHUB_REF#refs/tags/})
+          CURRENT_TAG="v${{ env.version }}"
           CHANGELOG=$(git log $PREVIOUS_TAG..HEAD --pretty=format:"* %s")
           echo "changelog=$CHANGELOG" >> $GITHUB_ENV
 
@@ -82,8 +82,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref_name }}
-          release_name: ${{ github.ref_name }}
+          tag_name: "v${{ env.version }}"
+          release_name: "v${{ env.version }}"
           body: ${{ env.changelog }}
           draft: false
           prerelease: false
@@ -104,8 +104,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/SaveDataSynchronizer-${{ env.previous_tag }}-setup.exe
-          asset_name: SaveDataSynchronizer-${{ env.previous_tag }}-setup.exe
+          asset_path: ./dist/SaveDataSynchronizer-v${{ env.version }}-setup.exe
+          asset_name: SaveDataSynchronizer-v${{ env.version }}-setup.exe
           asset_content_type: application/octet-stream
 
       - name: Upload Release Blockmap
@@ -114,6 +114,19 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/SaveDataSynchronizer-${{ env.previous_tag }}-setup.exe.blockmap
-          asset_name: SaveDataSynchronizer-${{ env.previous_tag }}-setup.exe.blockmap
+          asset_path: ./dist/SaveDataSynchronizer-v${{ env.version }}-setup.exe.blockmap
+          asset_name: SaveDataSynchronizer-v${{ env.version }}-setup.exe.blockmap
           asset_content_type: application/octet-stream
+
+      - name: Bump minor version
+        run: |
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          NEW_VERSION=$(echo $CURRENT_VERSION | awk -F. '{print $1"."$2+1".0"}')
+          echo "Updating version from $CURRENT_VERSION to $NEW_VERSION"
+          jq --arg new_version "$NEW_VERSION" '.version = $new_version' package.json > package.tmp.json
+          mv package.tmp.json package.json
+          git config --global user.email "actions@github.com"
+          git config --global user.name "github-actions"
+          git add package.json
+          git commit -m "Bump version to $NEW_VERSION"
+          git push origin main
