@@ -43,8 +43,8 @@ jobs:
           VERSION=${{ env.version }}
           git config --global user.email "actions@github.com"
           git config --global user.name "github-actions"
-          git tag "v$VERSION"
-          git push origin "v$VERSION"
+          git tag "$VERSION"
+          git push origin "$VERSION"
 
       - name: Download external binaries
         run: |
