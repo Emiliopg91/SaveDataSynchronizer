@@ -104,8 +104,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/SaveDataSynchronizer-v${{ env.version }}-setup.exe
-          asset_name: SaveDataSynchronizer-v${{ env.version }}-setup.exe
+          asset_path: ./dist/SaveDataSynchronizer-${{ env.version }}-setup.exe
+          asset_name: SaveDataSynchronizer-${{ env.version }}-setup.exe
           asset_content_type: application/octet-stream
 
       - name: Upload Release Blockmap
@@ -114,8 +114,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/SaveDataSynchronizer-v${{ env.version }}-setup.exe.blockmap
-          asset_name: SaveDataSynchronizer-v${{ env.version }}-setup.exe.blockmap
+          asset_path: ./dist/SaveDataSynchronizer-${{ env.version }}-setup.exe.blockmap
+          asset_name: SaveDataSynchronizer-${{ env.version }}-setup.exe.blockmap
           asset_content_type: application/octet-stream
 
       - name: Bump minor version
