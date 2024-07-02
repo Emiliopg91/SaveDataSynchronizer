@@ -72,7 +72,7 @@ jobs:
         id: generate_changelog
         run: |
           PREVIOUS_TAG=${{ env.previous_tag }}
-          CURRENT_TAG="v${{ env.version }}"
+          CURRENT_TAG="${{ env.version }}"
           CHANGELOG=$(git log $PREVIOUS_TAG..HEAD --pretty=format:"* %s")
           echo "changelog=$CHANGELOG" >> $GITHUB_ENV
 
@@ -82,8 +82,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: "v${{ env.version }}"
-          release_name: "v${{ env.version }}"
+          tag_name: "${{ env.version }}"
+          release_name: "${{ env.version }}"
           body: ${{ env.changelog }}
           draft: false
           prerelease: false
