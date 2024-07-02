@@ -131,6 +131,6 @@ jobs:
           git reset -- .github/workflows/main.yml
           git commit -m "[ci skip] Prepare for next development iteration"
           git push origin main
-          git checkout develop
+          git checkout --progress --force -B develop refs/remotes/origin/develop
           git reset --hard main
           git push --force
