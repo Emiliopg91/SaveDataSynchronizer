@@ -133,6 +133,7 @@ jobs:
           
       - name: Sync develop with main
         run: |
+          git add .
           git commit -m "[ci skip] Prepare for next development iteration"
           git push
           git checkout develop
