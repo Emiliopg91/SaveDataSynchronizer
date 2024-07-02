@@ -121,7 +121,7 @@ jobs:
       - name: Bump minor version
         run: |
           CURRENT_VERSION=$(node -p "require('./package.json').version")
-          NEW_VERSION=$(echo $CURRENT_VERSION | awk -F. '{print $1"."$2".$3+1"}')
+          NEW_VERSION=$(echo $CURRENT_VERSION | awk -F. '{print $1"."$2"."($3+1)}')
           echo "Updating version from $CURRENT_VERSION to $NEW_VERSION"
           jq --arg new_version "$NEW_VERSION" '.version = $new_version' package.json > package.tmp.json
           mv package.tmp.json package.json
@@ -133,7 +133,7 @@ jobs:
           
       - name: Sync develop with main
         run: |
-          git fetch origin
+          git fetch origin	
           git checkout develop
-          git merge main
+          git merge origin/main
           git push origin develop
