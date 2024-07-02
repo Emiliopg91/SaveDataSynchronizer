@@ -118,7 +118,7 @@ jobs:
           asset_name: SaveDataSynchronizer-${{ env.version }}-setup.exe.blockmap
           asset_content_type: application/octet-stream
 
-      - name: Bump minor version
+      - name: Prepare for next iteration
         run: |
           CURRENT_VERSION=$(node -p "require('./package.json').version")
           NEW_VERSION=$(echo $CURRENT_VERSION | awk -F. '{print $1"."$2"."($3+1)}')
@@ -127,15 +127,10 @@ jobs:
           mv package.tmp.json package.json
           git config --global user.email "actions@github.com"
           git config --global user.name "github-actions"
-          git add package.json
-          git commit -m "[ci skip] Bump version to $NEW_VERSION"
-          git push origin main
-          
-      - name: Sync develop with main
-        run: |
+          git reset HEAD .github/workflows/main.yml
           git add .
           git commit -m "[ci skip] Prepare for next development iteration"
-          git push
+          git push origin main
           git checkout develop
           git reset --hard main
           git push --force
