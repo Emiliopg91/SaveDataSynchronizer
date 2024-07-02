@@ -130,3 +130,10 @@ jobs:
           git add package.json
           git commit -m "[ci skip] Bump version to $NEW_VERSION"
           git push origin main
+          
+      - name: Sync develop with main
+        run: |
+          git fetch origin
+          git checkout develop
+          git merge main
+          git push origin develop
