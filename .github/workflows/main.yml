@@ -133,8 +133,8 @@ jobs:
           
       - name: Sync develop with main
         run: |
-          git fetch origin	
+          git commit -m "[ci skip] Prepare for next development iteration"
+          git push
           git checkout develop
-          git merge origin/main
-          git commit -m "[ci skip] Merge main to develop"
-          git push origin develop
+          git reset --hard main
+          git push --force
