@@ -132,6 +132,6 @@ jobs:
           git commit -m "[ci skip] Prepare for next development iteration"
           git push origin main
           git fetch
-          git checkout develop
+          git checkout --force develop
           git reset --hard main
           git push --force
