@@ -1,4 +1,4 @@
-name: Build and Release
+name: Release production build
 
 on:
   push:
@@ -53,20 +53,6 @@ jobs:
       - name: Build for Windows
         run: pnpm build:win
 
-      - name: Get the previous tag
-        id: get_previous_tag
-        run: |
-          PREVIOUS_TAG=$(git describe --tags $(git rev-list --tags --skip=1 --max-count=1))
-          echo "previous_tag=$PREVIOUS_TAG" >> $GITHUB_ENV
-
-      - name: Generate Changelog
-        id: generate_changelog
-        run: |
-          PREVIOUS_TAG=${{ env.previous_tag }}
-          CURRENT_TAG="${{ env.version }}"
-          CHANGELOG=$(git log $PREVIOUS_TAG..HEAD --pretty=format:"* %s")
-          echo "changelog=$CHANGELOG" >> $GITHUB_ENV
-
       - name: Tag and prepare for next iteration
         env:
           GITHUB_TOKEN: ${{ secrets.GH_ACTION_PAT }}
@@ -88,6 +74,20 @@ jobs:
           git checkout --force develop
           git reset --hard main
           git push --force
+
+      - name: Get the previous tag
+        id: get_previous_tag
+        run: |
+          PREVIOUS_TAG=$(git describe --tags $(git rev-list --tags --skip=1 --max-count=1))
+          echo "previous_tag=$PREVIOUS_TAG" >> $GITHUB_ENV
+
+      - name: Generate Changelog
+        id: generate_changelog
+        run: |
+          PREVIOUS_TAG=${{ env.previous_tag }}
+          CURRENT_TAG="${{ env.version }}"
+          CHANGELOG=$(git log $PREVIOUS_TAG..HEAD --pretty=format:"* %s")
+          echo "changelog=$CHANGELOG" >> $GITHUB_ENV
 
       - name: Create GitHub Release
         id: create_release
