@@ -52,6 +52,12 @@ jobs:
 
       - name: Build for Windows
         run: pnpm build:win
+          
+      - name: Changelog
+        uses: Bullrich/generate-release-changelog@master
+        id: Changelog
+        env:
+          REPO: ${{ github.repository }}
 
       - name: Tag and prepare for next iteration
         env:
@@ -75,12 +81,6 @@ jobs:
           git checkout --force develop
           git reset --hard main
           git push --force
-          
-      - name: Changelog
-        uses: Bullrich/generate-release-changelog@master
-        id: Changelog
-        env:
-          REPO: ${{ github.repository }}
 
       - name: Create GitHub Release
         id: create_release
