@@ -75,20 +75,12 @@ jobs:
           git checkout --force develop
           git reset --hard main
           git push --force
-
-      - name: Get the previous tag
-        id: get_previous_tag
-        run: |
-          PREVIOUS_TAG=$(git describe --tags $(git rev-list --tags --skip=1 --max-count=1))
-          echo "previous_tag=$PREVIOUS_TAG" >> $GITHUB_ENV
-
-      - name: Generate Changelog
-        id: generate_changelog
-        run: |
-          PREVIOUS_TAG=${{ env.previous_tag }}
-          CURRENT_TAG="${{ env.version }}"
-          CHANGELOG=$(git log $PREVIOUS_TAG..HEAD --pretty=format:"* %s")
-          echo "changelog=$CHANGELOG" >> $GITHUB_ENV
+          
+      - name: Changelog
+        uses: Bullrich/generate-release-changelog@master
+        id: Changelog
+        env:
+          REPO: ${{ github.repository }}
 
       - name: Create GitHub Release
         id: create_release
@@ -98,7 +90,8 @@ jobs:
         with:
           tag_name: "${{ env.version }}"
           release_name: "${{ env.version }}"
-          body: ${{ env.changelog }}
+          body: |
+            ${{ steps.Changelog.outputs.changelog }}
           draft: false
           prerelease: false
 
