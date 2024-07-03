@@ -132,6 +132,7 @@ jobs:
           git config --global user.email "actions@github.com"
           git config --global user.name "github-actions"
           git add -u
+          git reset -- .github/workflows/main.yml
           git commit -m "[ci skip] Prepare for next development iteration"
           git push origin main
           git fetch
