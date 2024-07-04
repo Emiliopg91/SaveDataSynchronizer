@@ -128,6 +128,9 @@ export const exposed = {
     },
     reportBug(): void {
       ipcRenderer.send('report-bug', status);
+    },
+    viewLogs(): void {
+      return ipcRenderer.send('open-logs');
     }
   },
   app: {
