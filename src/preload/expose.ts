@@ -61,6 +61,9 @@ export const exposed = {
     sync(name: string): void {
       return ipcRenderer.send('sync', name);
     },
+    syncAll(): void {
+      return ipcRenderer.send('sync-all');
+    },
     saveEntry(game: object): Promise<void> {
       return ipcRenderer.invoke('save-entry', game);
     },
@@ -128,6 +131,9 @@ export const exposed = {
     },
     reportBug(): void {
       ipcRenderer.send('report-bug', status);
+    },
+    viewLogs(): void {
+      return ipcRenderer.send('open-logs');
     }
   },
   app: {
