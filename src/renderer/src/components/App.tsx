@@ -7,7 +7,7 @@ import {
   TranslatorRenderer
 } from '@tser-framework/renderer';
 import { useContext, useEffect, useState } from 'react';
-import { FaBug, FaCoffee, FaCog, FaExclamation, FaFileAlt } from 'react-icons/fa';
+import { FaBug, FaCoffee, FaCog, FaExclamation, FaFileAlt, FaSync } from 'react-icons/fa';
 
 import { ConfigurationModal } from './ConfigurationModal';
 import { Games } from './Games';
@@ -34,6 +34,9 @@ export function App(): JSX.Element {
   };
   const onClickViewLogFile = (): void => {
     window.api.viewLogs();
+  };
+  const onClickSyncAll = (): void => {
+    window.api.syncAll();
   };
 
   useEffect(() => {
@@ -71,6 +74,11 @@ export function App(): JSX.Element {
 
   useEffect(() => {
     const newNavBarCfgBottom: Array<NavBarConfiguration> = [
+      {
+        text: TranslatorRenderer.translate('sync.all'),
+        icon: <FaSync />,
+        onClick: onClickSyncAll
+      },
       {
         text: TranslatorRenderer.translate('configuration'),
         icon: <FaCog />,

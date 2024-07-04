@@ -160,6 +160,26 @@ export const ipcListeners: Record<string, IpcListener> = {
       }
     }
   },
+  'sync-all': {
+    sync: false,
+    async fn(_) {
+      await RCloneClient.remoteSync();
+
+      let count = 0;
+      SaveDataSynchronizer.CONFIG.games.forEach((g) => {
+        try {
+          count += GameHelper.synchronize(g);
+        } catch (e) {
+          LOGGER.error("Error syncing '" + g.name + "'", e);
+        }
+      });
+
+      if (count > 0) {
+        LOGGER.info('');
+        await RCloneClient.localSync();
+      }
+    }
+  },
   'explore-exe': {
     sync: true,
     fn() {
