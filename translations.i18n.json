@@ -238,6 +238,10 @@
     "es": "Reportar bug",
     "en": "Report bug"
   },
+  "view.log": {
+    "es": "Ver logs",
+    "en": "View logs"
+  },
   "sync.all": {
     "es": "Sincronizar todo",
     "en": "Sync all"

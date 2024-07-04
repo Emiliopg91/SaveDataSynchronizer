@@ -434,6 +434,12 @@ export const ipcListeners: Record<string, IpcListener> = {
       shell.openExternal(issues);
     }
   },
+  'open-logs': {
+    sync: false,
+    fn() {
+      shell.openPath(LoggerMain.LOG_FILE);
+    }
+  },
   'network-status': {
     sync: false,
     fn(_, connected: boolean) {

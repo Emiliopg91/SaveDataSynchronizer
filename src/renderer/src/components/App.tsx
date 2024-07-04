@@ -7,7 +7,7 @@ import {
   TranslatorRenderer
 } from '@tser-framework/renderer';
 import { useContext, useEffect, useState } from 'react';
-import { FaBug, FaCoffee, FaCog, FaExclamation, FaSync } from 'react-icons/fa';
+import { FaBug, FaCoffee, FaCog, FaExclamation, FaFileAlt, FaSync } from 'react-icons/fa';
 
 import { ConfigurationModal } from './ConfigurationModal';
 import { Games } from './Games';
@@ -31,6 +31,9 @@ export function App(): JSX.Element {
   };
   const onClickReportBug = (): void => {
     window.api.reportBug();
+  };
+  const onClickViewLogFile = (): void => {
+    window.api.viewLogs();
   };
   const onClickSyncAll = (): void => {
     window.api.syncAll();
@@ -80,6 +83,11 @@ export function App(): JSX.Element {
         text: TranslatorRenderer.translate('configuration'),
         icon: <FaCog />,
         onClick: onClickConfiguration
+      },
+      {
+        text: TranslatorRenderer.translate('view.log'),
+        icon: <FaFileAlt />,
+        onClick: onClickViewLogFile
       },
       {
         text: TranslatorRenderer.translate('make.a.donation'),
