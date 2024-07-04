@@ -237,5 +237,9 @@
   "report.issue": {
     "es": "Reportar bug",
     "en": "Report bug"
+  },
+  "sync.all": {
+    "es": "Sincronizar todo",
+    "en": "Sync all"
   }
 }
