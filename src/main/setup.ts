@@ -75,6 +75,12 @@ export const trayBuilder: TrayBuilder | undefined = TrayBuilder.builder(icon45)
   .withToolTip(app.name + ' v' + app.getVersion())
   .withMenu([
     {
+      label: 'view.log',
+      click(): void {
+        shell.openPath(LoggerMain.LOG_FILE);
+      }
+    },
+    {
       label: 'exit',
       click(): void {
         RCloneClient.MUTEX.acquire().then(() => {
