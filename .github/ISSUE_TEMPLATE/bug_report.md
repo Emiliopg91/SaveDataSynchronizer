@@ -27,7 +27,7 @@ If applicable, add screenshots to help explain your problem.
 [e.g. 1.2.0]
 
 **Log file**
-You can find it in <userdir>\SaveDataSynchronizer\logs\application.log
+You can find it in %userdir%\SaveDataSynchronizer\logs\application.log
 
 **Additional context**
 Add any other context about the problem here.
