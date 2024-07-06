@@ -234,6 +234,15 @@
   "ea": {
     "en": "EA"
   },
+  "emudeck": {
+    "en": "EmuDeck"
+  },
+  "esde": {
+    "en": "EmulationStation-DE"
+  },
+  "pegasus": {
+    "en": "Pegasus"
+  },
   "report.issue": {
     "es": "Reportar bug",
     "en": "Report bug"

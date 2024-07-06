@@ -168,7 +168,7 @@ export const ipcListeners: Record<string, IpcListener> = {
   },
   'sync-all': {
     sync: false,
-    async fn(_) {
+    async fn() {
       await RCloneClient.remoteSync();
 
       let count = 0;
@@ -388,7 +388,10 @@ export const ipcListeners: Record<string, IpcListener> = {
         gog: Launchers.isGOGInstalled(),
         epic: Launchers.isEpicInstalled(),
         ubisoft: Launchers.isUbisoftInstalled(),
-        ea: Launchers.isEaInstalled()
+        ea: Launchers.isEaInstalled(),
+        emudeck: Launchers.isEmudeckInstalled(),
+        esde: Launchers.isEsdeInstalled(),
+        pegasus: Launchers.isPegasusInstalled()
       };
     }
   },
@@ -432,6 +435,24 @@ export const ipcListeners: Record<string, IpcListener> = {
     sync: false,
     fn() {
       Launchers.launchEa();
+    }
+  },
+  'launch-emudeck': {
+    sync: false,
+    fn() {
+      Launchers.launchEmudeck();
+    }
+  },
+  'launch-pegasus': {
+    sync: false,
+    fn() {
+      Launchers.launchPegasus();
+    }
+  },
+  'launch-esde': {
+    sync: false,
+    fn() {
+      Launchers.launchEsde();
     }
   },
   'report-bug': {
