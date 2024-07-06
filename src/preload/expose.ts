@@ -126,6 +126,15 @@ export const exposed = {
     launchEa(): void {
       ipcRenderer.send('launch-ea');
     },
+    launchEmudeck(): void {
+      ipcRenderer.send('launch-emudeck');
+    },
+    launchEsde(): void {
+      ipcRenderer.send('launch-esde');
+    },
+    launchPegasus(): void {
+      ipcRenderer.send('launch-pegasus');
+    },
     networkStatus(status: boolean): void {
       ipcRenderer.send('network-status', status);
     },

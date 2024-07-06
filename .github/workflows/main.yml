@@ -52,7 +52,7 @@ jobs:
 
       - name: Build for Windows
         run: pnpm build:win
-          
+
       - name: Changelog
         uses: Bullrich/generate-release-changelog@master
         id: Changelog
@@ -88,8 +88,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_ACTION_PAT }}
         with:
-          tag_name: "${{ env.version }}"
-          release_name: "${{ env.version }}"
+          tag_name: '${{ env.version }}'
+          release_name: '${{ env.version }}'
           body: |
             ${{ steps.Changelog.outputs.changelog }}
           draft: false

@@ -49,17 +49,19 @@ export class Launchers {
   });
 
   private static STEAM_START_ENTRY = new File({
-    file: path.join(
-      OSHelper.getHome(),
-      'AppData',
-      'Roaming',
-      'Microsoft',
-      'Windows',
-      'Start Menu',
-      'Programs',
-      'Steam',
-      'Steam.lnk'
-    )
+    file: path.join('C:', 'Program Files (x86)', 'Steam', 'steam.exe')
+  });
+
+  private static EMUDECK_START_ENTRY = new File({
+    file: path.join(OSHelper.getHome(), 'AppData', 'Local', 'Programs', 'EmuDeck', 'EmuDeck.exe')
+  });
+
+  private static ESDE_START_ENTRY = new File({
+    file: path.join(OSHelper.getHome(), 'EmuDeck', 'EmulationStation-DE', 'ES-DE.exe')
+  });
+
+  private static PEGASUS_START_ENTRY = new File({
+    file: path.join(OSHelper.getHome(), 'EmuDeck', 'Pegasus', 'pegasus-fe.exe')
   });
 
   private constructor() {}
@@ -67,11 +69,14 @@ export class Launchers {
   public static async generateIcons(): Promise<void> {
     const launchers: Record<string, string> = {};
     if (Launchers.isSteamInstalled()) {
-      launchers['Steam'] = Launchers.getSteamPath();
-      launchers['GOG-GALAXY'] = Launchers.getGOGPath();
-      launchers['Epic'] = Launchers.getEpicPath();
-      launchers['Ubisoft'] = Launchers.getUbisoftPath();
       launchers['EA'] = Launchers.getEaPath();
+      launchers['Emudeck'] = Launchers.getEmudeckPath();
+      launchers['ESDE'] = Launchers.getEsdePath();
+      launchers['Epic'] = Launchers.getEpicPath();
+      launchers['GOG-GALAXY'] = Launchers.getGOGPath();
+      launchers['Pegasus'] = Launchers.getPegasusPath();
+      launchers['Steam'] = Launchers.getSteamPath();
+      launchers['Ubisoft'] = Launchers.getUbisoftPath();
     }
     for (const id in launchers) {
       const g: Game = {
@@ -83,6 +88,79 @@ export class Launchers {
         icon: path.join(Constants.ICONS_FOLDER, 'Launcher-' + id + '.ico')
       };
       await GameHelper.generateIcon(g);
+    }
+  }
+
+  private static async runLaucher(exe: string, params: Array<string> = []): Promise<void> {
+    spawn(exe, params, {
+      cwd: new File({ file: exe }).getParentFile().getAbsolutePath(),
+      detached: true
+    }).unref();
+  }
+
+  public static isEmudeckInstalled(): boolean {
+    return Launchers.EMUDECK_START_ENTRY.exists();
+  }
+
+  public static getEmudeckPath(): string {
+    if (Launchers.EMUDECK_START_ENTRY.exists()) {
+      return Launchers.EMUDECK_START_ENTRY.getAbsolutePath();
+    } else {
+      Launchers.LOGGER.error('No Emudeck installation found');
+      return '';
+    }
+  }
+
+  public static launchEmudeck(): void {
+    if (Launchers.EMUDECK_START_ENTRY.exists()) {
+      Launchers.LOGGER.info('Launching Emudeck');
+      Launchers.runLaucher(Launchers.getEmudeckPath());
+    } else {
+      Launchers.LOGGER.error('No Emudeck installation found');
+    }
+  }
+
+  public static isEsdeInstalled(): boolean {
+    return Launchers.ESDE_START_ENTRY.exists();
+  }
+
+  public static getEsdePath(): string {
+    if (Launchers.ESDE_START_ENTRY.exists()) {
+      return Launchers.ESDE_START_ENTRY.getAbsolutePath();
+    } else {
+      Launchers.LOGGER.error('No ESDE installation found');
+      return '';
+    }
+  }
+
+  public static launchEsde(): void {
+    if (Launchers.ESDE_START_ENTRY.exists()) {
+      Launchers.LOGGER.info('Launching ESDE');
+      Launchers.runLaucher(Launchers.getEsdePath());
+    } else {
+      Launchers.LOGGER.error('No ESDE installation found');
+    }
+  }
+
+  public static isPegasusInstalled(): boolean {
+    return Launchers.PEGASUS_START_ENTRY.exists();
+  }
+
+  public static getPegasusPath(): string {
+    if (Launchers.PEGASUS_START_ENTRY.exists()) {
+      return Launchers.PEGASUS_START_ENTRY.getAbsolutePath();
+    } else {
+      Launchers.LOGGER.error('No Pegasus installation found');
+      return '';
+    }
+  }
+
+  public static launchPegasus(): void {
+    if (Launchers.PEGASUS_START_ENTRY.exists()) {
+      Launchers.LOGGER.info('Launching Pegasus');
+      Launchers.runLaucher(Launchers.getPegasusPath());
+    } else {
+      Launchers.LOGGER.error('No Pegasus installation found');
     }
   }
 
@@ -102,11 +180,7 @@ export class Launchers {
   public static launchEa(): void {
     if (Launchers.EA_START_ENTRY.exists()) {
       Launchers.LOGGER.info('Launching EA');
-      (async (): Promise<void> => {
-        spawn(Launchers.getEaPath(), {
-          detached: true
-        }).unref();
-      })();
+      Launchers.runLaucher(Launchers.getEaPath());
     } else {
       Launchers.LOGGER.error('No EA installation found');
     }
@@ -128,11 +202,7 @@ export class Launchers {
   public static launchUbisoft(): void {
     if (Launchers.UBISOFT_START_ENTRY.exists()) {
       Launchers.LOGGER.info('Launching Ubisoft');
-      (async (): Promise<void> => {
-        spawn(Launchers.getUbisoftPath(), {
-          detached: true
-        }).unref();
-      })();
+      Launchers.runLaucher(Launchers.getUbisoftPath());
     } else {
       Launchers.LOGGER.error('No Ubisoft installation found');
     }
@@ -154,11 +224,7 @@ export class Launchers {
   public static launchEpic(): void {
     if (Launchers.EPIC_START_ENTRY.exists()) {
       Launchers.LOGGER.info('Launching Epic');
-      (async (): Promise<void> => {
-        spawn(Launchers.getEpicPath(), {
-          detached: true
-        }).unref();
-      })();
+      Launchers.runLaucher(Launchers.getEpicPath());
     } else {
       Launchers.LOGGER.error('No Epic installation found');
     }
@@ -180,11 +246,7 @@ export class Launchers {
   public static launchGOG(): void {
     if (Launchers.GOG_START_ENTRY.exists()) {
       Launchers.LOGGER.info('Launching GOG Galaxy');
-      (async (): Promise<void> => {
-        spawn(Launchers.getGOGPath(), {
-          detached: true
-        }).unref();
-      })();
+      Launchers.runLaucher(Launchers.getGOGPath());
     } else {
       Launchers.LOGGER.error('No GOG Galaxy installation found');
     }
@@ -196,7 +258,7 @@ export class Launchers {
 
   public static getSteamPath(): string {
     if (Launchers.STEAM_START_ENTRY.exists()) {
-      return shell.readShortcutLink(Launchers.STEAM_START_ENTRY.getAbsolutePath()).target;
+      return Launchers.STEAM_START_ENTRY.getAbsolutePath();
     } else {
       Launchers.LOGGER.error('No Steam installation found');
       return '';
@@ -206,11 +268,7 @@ export class Launchers {
   public static launchSteam(): void {
     if (Launchers.STEAM_START_ENTRY.exists()) {
       Launchers.LOGGER.info('Launching Steam');
-      (async (): Promise<void> => {
-        spawn(Launchers.getSteamPath(), ['/wait', '/b', 'steam://open/main'], {
-          detached: true
-        }).unref();
-      })();
+      Launchers.runLaucher(Launchers.getSteamPath(), ['/wait', '/b', 'steam://open/main']);
     } else {
       Launchers.LOGGER.error('No Steam installation found');
     }
@@ -219,11 +277,7 @@ export class Launchers {
   public static launchSteamBigPicture(): void {
     if (Launchers.STEAM_START_ENTRY.exists()) {
       Launchers.LOGGER.info('Launching Steam Big Picture');
-      (async (): Promise<void> => {
-        spawn(Launchers.getSteamPath(), ['/wait', '/b', 'steam://open/bigpicture'], {
-          detached: true
-        }).unref();
-      })();
+      Launchers.runLaucher(Launchers.getSteamPath(), ['/wait', '/b', 'steam://open/bigpicture']);
     } else {
       Launchers.LOGGER.error('No Steam installation found');
     }
