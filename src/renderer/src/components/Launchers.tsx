@@ -28,8 +28,20 @@ export function Launchers(): JSX.Element {
     window.api.launchUbisoft();
   };
 
+  const onClickLaunchEmudeck = (): void => {
+    window.api.launchEmudeck();
+  };
+
   const onClickLaunchEa = (): void => {
     window.api.launchEa();
+  };
+
+  const onClickLaunchEsde = (): void => {
+    window.api.launchEsde();
+  };
+
+  const onClickLaunchPegasus = (): void => {
+    window.api.launchPegasus();
   };
 
   return (
@@ -51,6 +63,52 @@ export function Launchers(): JSX.Element {
                 title={TranslatorRenderer.translate('launch.now')}
                 onClick={() => {
                   onClickLaunchEa();
+                }}
+              >
+                <b>{TranslatorRenderer.translate('launch.now')}</b>
+              </button>
+            </Col>
+          </Row>
+        )}
+        {ctx.launchers.includes('emudeck') && (
+          <Row className="gameEntryRow">
+            <Col className="gameEntryRowInfo" sm={6}>
+              <img
+                className="card-img-top"
+                src={'local://' + ctx.iconPath?.replaceAll('\\', '/') + '/Launcher-Emudeck.ico'}
+              />
+              <b>{TranslatorRenderer.translate('emudeck')}</b>
+            </Col>
+            <Col className="gameEntryRowControl" sm={6}>
+              <button
+                type="button"
+                className="btn"
+                title={TranslatorRenderer.translate('launch.now')}
+                onClick={() => {
+                  onClickLaunchEmudeck();
+                }}
+              >
+                <b>{TranslatorRenderer.translate('launch.now')}</b>
+              </button>
+            </Col>
+          </Row>
+        )}
+        {ctx.launchers.includes('esde') && (
+          <Row className="gameEntryRow">
+            <Col className="gameEntryRowInfo" sm={6}>
+              <img
+                className="card-img-top"
+                src={'local://' + ctx.iconPath?.replaceAll('\\', '/') + '/Launcher-ESDE.ico'}
+              />
+              <b>{TranslatorRenderer.translate('esde')}</b>
+            </Col>
+            <Col className="gameEntryRowControl" sm={6}>
+              <button
+                type="button"
+                className="btn"
+                title={TranslatorRenderer.translate('launch.now')}
+                onClick={() => {
+                  onClickLaunchEsde();
                 }}
               >
                 <b>{TranslatorRenderer.translate('launch.now')}</b>
@@ -97,6 +155,29 @@ export function Launchers(): JSX.Element {
                 title={TranslatorRenderer.translate('launch.now')}
                 onClick={() => {
                   onClickGogGalaxy();
+                }}
+              >
+                <b>{TranslatorRenderer.translate('launch.now')}</b>
+              </button>
+            </Col>
+          </Row>
+        )}
+        {ctx.launchers.includes('pegasus') && (
+          <Row className="gameEntryRow">
+            <Col className="gameEntryRowInfo" sm={6}>
+              <img
+                className="card-img-top"
+                src={'local://' + ctx.iconPath?.replaceAll('\\', '/') + '/Launcher-Pegasus.ico'}
+              />
+              <b>{TranslatorRenderer.translate('pegasus')}</b>
+            </Col>
+            <Col className="gameEntryRowControl" sm={6}>
+              <button
+                type="button"
+                className="btn"
+                title={TranslatorRenderer.translate('launch.now')}
+                onClick={() => {
+                  onClickLaunchPegasus();
                 }}
               >
                 <b>{TranslatorRenderer.translate('launch.now')}</b>
