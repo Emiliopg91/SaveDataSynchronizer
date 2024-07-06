@@ -1,6 +1,5 @@
 import { File, LoggerMain, OSHelper } from '@tser-framework/main';
 import { spawn } from 'child_process';
-import { shell } from 'electron/common';
 import path from 'path';
 
 import { Game } from '../dtos/Game';
