@@ -84,12 +84,14 @@ export class RCloneClient {
         ];
         RCloneClient.runRclone(params)
           .then((retCode) => {
-            if (retCode > 0) {
+            if (retCode !== undefined && retCode > 0) {
+              release();
               throw new RCloneException('Error on setup');
+            } else {
+              RCloneClient.LOGGER.info('Setup up successful');
+              release();
+              resolve();
             }
-            RCloneClient.LOGGER.info('Setup up successful');
-            release();
-            resolve();
           })
           .catch((e) => {
             RCloneClient.LOGGER.error('Error on setup', e);
@@ -106,24 +108,18 @@ export class RCloneClient {
         RCloneClient.LOGGER.info('Syncing with server');
         RCloneClient.runRclone(RCloneClient.LOCAL_SYNC_COMMAND)
           .then((retCode) => {
-            if (retCode > 0) {
+            if (retCode !== undefined && retCode > 0) {
               RCloneClient.runRclone(RCloneClient.LOCAL_RESYNC_COMMAND)
                 .then((retCode) => {
-                  if (retCode) {
-                    if (retCode > 0) {
-                      release();
-                      reject();
-                      NotificationUtils.displaySyncError();
-                      throw new RCloneException('Error on sync');
-                    }
-                  } else {
+                  if (retCode !== undefined && retCode > 0) {
                     release();
                     reject();
                     NotificationUtils.displaySyncError();
                     throw new RCloneException('Error on sync');
+                  } else {
+                    release();
+                    resolve();
                   }
-                  release();
-                  resolve();
                 })
                 .catch((e) => {
                   NotificationUtils.displaySyncError();
@@ -152,17 +148,18 @@ export class RCloneClient {
         RCloneClient.LOGGER.info('Syncing with server');
         RCloneClient.runRclone(RCloneClient.REMOTE_SYNC_COMMAND)
           .then((retCode) => {
-            if (retCode > 0) {
+            if (retCode !== undefined && retCode > 0) {
               RCloneClient.runRclone(RCloneClient.REMOTE_RESYNC_COMMAND)
                 .then((retCode) => {
-                  if (retCode > 0) {
+                  if (retCode !== undefined && retCode > 0) {
                     release();
                     reject();
                     NotificationUtils.displaySyncError();
                     throw new RCloneException('Error on sync');
+                  } else {
+                    release();
+                    resolve();
                   }
-                  release();
-                  resolve();
                 })
                 .catch((e) => {
                   NotificationUtils.displaySyncError();
@@ -191,7 +188,7 @@ export class RCloneClient {
         RCloneClient.LOGGER.info('Resyncing with server');
         RCloneClient.runRclone(RCloneClient.REMOTE_RESYNC_COMMAND)
           .then((retCode) => {
-            if (retCode > 0) {
+            if (retCode !== undefined && retCode > 0) {
               NotificationUtils.displaySyncError();
               reject();
               throw new RCloneException('Error on resync');
@@ -209,8 +206,8 @@ export class RCloneClient {
     });
   }
 
-  private static runRclone(command: Array<string>): Promise<number> {
-    return new Promise<number>((resolve, reject) => {
+  private static runRclone(command: Array<string>): Promise<number | undefined> {
+    return new Promise<number | undefined>((resolve, reject) => {
       if (RCloneClient.CONNECTED) {
         RCloneClient.clearLockFiles();
         const t0 = Date.now();

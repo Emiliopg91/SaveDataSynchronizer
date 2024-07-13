@@ -29,6 +29,7 @@ export class SaveDataSynchronizer {
     games: []
   };
   public static READY = false;
+  static CHECKER_ID: NodeJS.Timeout;
 
   public static main(): void {
     (async (): Promise<void> => {
@@ -93,7 +94,7 @@ export class SaveDataSynchronizer {
             await RCloneClient.localSync();
           }
 
-          setInterval(() => {
+          SaveDataSynchronizer.CHECKER_ID = setInterval(() => {
             SaveDataSynchronizer.MUTEX.acquire().then((release) => {
               try {
                 let command = 'Get-Process -ErrorAction SilentlyContinue -Name ';
